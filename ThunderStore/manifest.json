@@ -1,0 +1,10 @@
+{
+  "name": "SCP4666",
+  "version_number": "1.0.0",
+  "website_url": "https://github.com/snowlance7/SCP4666",
+  "description": "Adds the Yuleman to the game",
+  "dependencies": [
+    "BepInEx-BepInExPack-5.4.2100",
+    "Evaisa-LethalLib-0.16.1"
+  ]
+}
