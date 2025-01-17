@@ -70,36 +70,38 @@ namespace Something
 
             InitializeNetworkBehaviours();
 
+            SomethingInputs.Init();
+
             // Configs
 
             // SCP-4666 Configs
             configEnableSomething = Config.Bind("Something", "Enable Something", true, "Set to false to disable spawning Something.");
-            configSomethingLevelRarities = Config.Bind("Something Rarities", "Level Rarities", "ExperimentationLevel:5, AssuranceLevel:5, VowLevel:9, OffenseLevel:10, AdamanceLevel:10, MarchLevel:10, RendLevel:75, DineLevel:75, TitanLevel:75, ArtificeLevel:20, EmbrionLevel:25, Modded:15", "Rarities for each level. See default for formatting.");
+            configSomethingLevelRarities = Config.Bind("Something Rarities", "Level Rarities", "All: 10", "Rarities for each level. See default for formatting.");
             configSomethingCustomLevelRarities = Config.Bind("Something Rarities", "Custom Level Rarities", "", "Rarities for modded levels. Same formatting as level rarities.");
 
             // Polaroid Configs
-            configGoodPolaroidLevelRarities = Config.Bind("Good Polaroid Rarities", "Level Rarities", "ExperimentationLevel:5, AssuranceLevel:5, VowLevel:9, OffenseLevel:10, AdamanceLevel:10, MarchLevel:10, RendLevel:75, DineLevel:75, TitanLevel:75, ArtificeLevel:20, EmbrionLevel:25, Modded:15", "Rarities for Good Polaroid levels.");
+            configGoodPolaroidLevelRarities = Config.Bind("Good Polaroid Rarities", "Level Rarities", "All: 10", "Rarities for Good Polaroid levels.");
             configGoodPolaroidCustomLevelRarities = Config.Bind("Good Polaroid Rarities", "Custom Level Rarities", "", "Rarities for custom Good Polaroid levels.");
 
             configGoodPolaroidMinValue = Config.Bind("Good Polaroid Values", "Min Value", 5, "Minimum value for Good Polaroid.");
             configGoodPolaroidMaxValue = Config.Bind("Good Polaroid Values", "Max Value", 50, "Maximum value for Good Polaroid.");
 
 
-            configNeutralPolaroidLevelRarities = Config.Bind("Neutral Polaroid Rarities", "Level Rarities", "ExperimentationLevel:5, AssuranceLevel:5, VowLevel:9, OffenseLevel:10, AdamanceLevel:10, MarchLevel:10, RendLevel:75, DineLevel:75, TitanLevel:75, ArtificeLevel:20, EmbrionLevel:25, Modded:15", "Rarities for Neutral Polaroid levels.");
+            configNeutralPolaroidLevelRarities = Config.Bind("Neutral Polaroid Rarities", "Level Rarities", "All: 20", "Rarities for Neutral Polaroid levels.");
             configNeutralPolaroidCustomLevelRarities = Config.Bind("Neutral Polaroid Rarities", "Custom Level Rarities", "", "Rarities for custom Neutral Polaroid levels.");
 
             configNeutralPolaroidMinValue = Config.Bind("Neutral Polaroid Values", "Min Value", 5, "Minimum value for Neutral Polaroid.");
             configNeutralPolaroidMaxValue = Config.Bind("Neutral Polaroid Values", "Max Value", 50, "Maximum value for Neutral Polaroid.");
 
 
-            configBadPolaroidLevelRarities = Config.Bind("Bad Polaroid Rarities", "Level Rarities", "ExperimentationLevel:5, AssuranceLevel:5, VowLevel:9, OffenseLevel:10, AdamanceLevel:10, MarchLevel:10, RendLevel:75, DineLevel:75, TitanLevel:75, ArtificeLevel:20, EmbrionLevel:25, Modded:15", "Rarities for Bad Polaroid levels.");
+            configBadPolaroidLevelRarities = Config.Bind("Bad Polaroid Rarities", "Level Rarities", "All: 15", "Rarities for Bad Polaroid levels.");
             configBadPolaroidCustomLevelRarities = Config.Bind("Bad Polaroid Rarities", "Custom Level Rarities", "", "Rarities for custom Bad Polaroid levels.");
 
             configBadPolaroidMinValue = Config.Bind("Bad Polaroid Values", "Min Value", 10, "Minimum value for Bad Polaroid.");
             configBadPolaroidMaxValue = Config.Bind("Bad Polaroid Values", "Max Value", 100, "Maximum value for Bad Polaroid.");
 
 
-            configCursedPolaroidLevelRarities = Config.Bind("Cursed Polaroid Rarities", "Level Rarities", "ExperimentationLevel:5, AssuranceLevel:5, VowLevel:9, OffenseLevel:10, AdamanceLevel:10, MarchLevel:10, RendLevel:75, DineLevel:75, TitanLevel:75, ArtificeLevel:20, EmbrionLevel:25, Modded:15", "Rarities for Cursed Polaroid levels.");
+            configCursedPolaroidLevelRarities = Config.Bind("Cursed Polaroid Rarities", "Level Rarities", "All: 5", "Rarities for Cursed Polaroid levels.");
             configCursedPolaroidCustomLevelRarities = Config.Bind("Cursed Polaroid Rarities", "Custom Level Rarities", "", "Rarities for custom Cursed Polaroid levels.");
 
             configCursedPolaroidMinValue = Config.Bind("Cursed Polaroid Values", "Min Value", 10, "Minimum value for Cursed Polaroid.");

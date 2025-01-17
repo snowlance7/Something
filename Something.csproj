@@ -44,6 +44,10 @@
         -->
         <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=./</PathMap>
     </PropertyGroup>
+    <ItemGroup>
+      <None Remove=".gitattributes" />
+      <None Remove=".gitignore" />
+    </ItemGroup>
 
     <!-- Primary Package References -->
     <ItemGroup>
@@ -65,8 +69,17 @@
       <Folder Include="ThunderStore\Something\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Reference Include="LethalCompanyInputUtils">
+        <HintPath>..\1Resources\1Assemblies\LethalCompanyInputUtils\LethalCompanyInputUtils.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
     <!-- Netcode Patcher Post-Build Event -->
     <Target Name="NetcodePatch" AfterTargets="PostBuildEvent">
         <Exec Command="dotnet netcode-patch &quot;$(TargetPath)&quot; @(ReferencePathWithRefAssemblies->'&quot;%(Identity)&quot;', ' ')" />
+    </Target>
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+      <Exec Command="xcopy &quot;C:\Users\snowl\source\repos\Something\Assets\something_assets&quot; &quot;C:\Users\snowl\AppData\Roaming\com.kesomannen.gale\lethal-company\profiles\Testing\BepInEx\plugins\Snowlance.Something&quot; /Y" />
     </Target>
 </Project>
