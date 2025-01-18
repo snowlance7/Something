@@ -1,4 +1,5 @@
 ﻿using BepInEx.Logging;
+using GameNetcodeStuff;
 using UnityEngine;
 using static Something.Plugin;
 
@@ -21,9 +22,12 @@ namespace Something
 
         public void OnTriggerEnter(Collider other)
         {
+            if (!other.CompareTag("Player") || !other.gameObject.TryGetComponent(out PlayerControllerB player)) { return; }
+            if (player != localPlayer) { return; }
+            logger.LogDebug("Player stepped on little one");
             localPlayer.insanityLevel++;
             creatureSFX.Play();
-            GameObject.Destroy(this, 1f);
+            GameObject.Destroy(this.gameObject, 0.5f);
         }
     }
 }

@@ -21,8 +21,9 @@ namespace Something
         public GameObject littleOnePrefab;
         public AudioClip disappearSFX;
         public AudioClip[] ambientSFX;
+        public AudioClip[] attackSFX;
         public SpriteRenderer somethingMesh;
-        public ScanNodeProperties ScanNode;
+        public GameObject ScanNode;
         public GameObject BreathingMechanicPrefab;
         System.Random random;
         BreathingBehavior BreathingUI;
@@ -43,18 +44,10 @@ namespace Something
         const float maxInsanity = 50f;
 
         // Configs
-        int lsMinSpawnTime = 10;
-        int lsMaxSpawnTime = 30;
-        bool lsUseFixedSpawnAmount = false;
-        int lsMinFixedAmount;
-        int lsMaxFixedAmount;
-        float lsMinAmount = 0.1f;
-        float lsMaxAmount = 0.7f;
-        bool tsUseFixedSpawnAmount = false;
-        int tsMinFixedAmount;
-        int tsMaxFixedAmount;
-        float tsMinAmount = 0.5f;
-        float tsMaxAmount = 0.8f;
+        float lsMinSpawnTime = 10;
+        float lsMaxSpawnTime = 30;
+        float lsAmount = 0.1f;
+        float tsAmount = 0.5f;
         float insanityToStare = 0.3f;
         float stareCooldown = 20f;
         float stareBufferTime = 5f;
@@ -93,13 +86,15 @@ namespace Something
             base.Start();
             logger.LogDebug("Something spawned");
 
+
+
             if (!RoundManager.Instance.hasInitializedLevelRandomSeed)
             {
                 RoundManager.Instance.InitializeRandomNumberGenerators();
             }
             logger.LogDebug("initialized random number generators");
 
-            StartCoroutine(ChoosePlayerToHauntCoroutine(15f));
+            StartCoroutine(ChoosePlayerToHauntCoroutine(5f));
             currentBehaviourStateIndex = (int)State.Inactive;
         }
 
@@ -189,6 +184,12 @@ namespace Something
                         StarePlayer();
                     }
 
+                    if (timeSinceSpawnLS > nextSpawnTimeLS)
+                    {
+                        timeSinceSpawnLS = 0f;
+                        SpawnLesserSomethings();
+                    }
+
                     break;
 
                 case (int)State.Chasing:
@@ -243,7 +244,8 @@ namespace Something
 
         void StarePlayer()
         {
-            targetNode = ChooseStarePosition(15f);
+            //targetNode = ChooseStarePosition(15f);
+            targetNode = TryFindingHauntPosition(true); // TODO: Testing
             if (targetNode == null)
             {
                 logger.LogDebug("targetNode is null!");
@@ -267,6 +269,23 @@ namespace Something
                 timeSinceStare = 0f;
                 staring = false;
             }
+        }
+
+        private Transform? TryFindingHauntPosition(bool mustBeInLOS = true)
+        {
+            if (targetPlayer.isInsideFactory)
+            {
+                for (int i = 0; i < allAINodes.Length; i++)
+                {
+                    if ((!mustBeInLOS || !Physics.Linecast(targetPlayer.gameplayCamera.transform.position, allAINodes[i].transform.position, StartOfRound.Instance.collidersAndRoomMaskAndDefault)) && !targetPlayer.HasLineOfSightToPosition(allAINodes[i].transform.position, 80f, 100, 8f))
+                    {
+                        Debug.DrawLine(targetPlayer.gameplayCamera.transform.position, allAINodes[i].transform.position, Color.green, 2f);
+                        Debug.Log($"Player distance to haunt position: {Vector3.Distance(targetPlayer.transform.position, allAINodes[i].transform.position)}");
+                        return allAINodes[i].transform;
+                    }
+                }
+            }
+            return null;
         }
 
         public Transform? ChooseStarePosition(float minDistance)
@@ -319,7 +338,7 @@ namespace Something
         {
             logger.LogDebug($"EnableEnemyMesh({enable})");
             somethingMesh.enabled = enable;
-            ScanNode.enabled = enable;
+            ScanNode.SetActive(enable);
             spawnedAndVisible = enable;
         }
 
@@ -413,6 +432,46 @@ namespace Something
             agent.Warp(position);
         }
 
+        void SpawnLesserSomethings()
+        {
+            timeSinceSpawnLS = 0f;
+            nextSpawnTimeLS = Random.Range(lsMinSpawnTime, lsMaxSpawnTime);
+            int debugSpawnAmount = 0;
+
+            /*int minAmount = (int)(allAINodes.Length * lsMinAmount);
+            int maxAmount = (int)(allAINodes.Length * lsMaxAmount);
+            int spawnAmount = Random.Range(minAmount, maxAmount + 1);*/
+
+            int spawnAmount = (int)(allAINodes.Length * lsAmount);
+
+            List<GameObject> nodes = allAINodes.ToList();
+            for (int i = 0; i < spawnAmount; i++)
+            {
+                if (nodes.Count <= 0) { break; }
+                GameObject node = GetRandomAINode(nodes);
+                nodes.Remove(node);
+
+                if (targetPlayer.HasLineOfSightToPosition(node.transform.position))
+                {
+                    i--;
+                    continue;
+                }
+
+                int lsIndex = Random.Range(0, lesserSomethingPrefabs.Length);
+
+                Vector3 pos = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(node.transform.position, 10f, RoundManager.Instance.navHit, random);
+                LesserSomethingAI ls = GameObject.Instantiate(lesserSomethingPrefabs[lsIndex], pos, Quaternion.identity).GetComponent<LesserSomethingAI>();
+                ls.spawnNode = node.transform;
+                ls.targetPlayer = targetPlayer;
+                ls.destroyTime = nextSpawnTimeLS;
+                ls.init = true;
+                //UnityEngine.GameObject.Destroy(ls.gameObject, nextSpawnTimeLS);
+                debugSpawnAmount++;
+            }
+
+            logger.LogDebug($"Spawned {debugSpawnAmount}/{allAINodes.Length} lesser_somethings which will self destruct in {nextSpawnTimeLS} seconds");
+        }
+
         void SpawnLittleOnes()
         {
             if (SpawnedTinySomethings.Count > 0)
@@ -427,70 +486,70 @@ namespace Something
 
             if (!hauntingLocalPlayer) { return; }
 
-            int spawnAmount;
+            /*int minAmount = (int)(allAINodes.Length * tsMinAmount);
+            int maxAmount = (int)(allAINodes.Length * tsMaxAmount);
+            int spawnAmount = Random.Range(minAmount, maxAmount + 1);*/
 
-            if (tsUseFixedSpawnAmount)
-            {
-                spawnAmount = Random.Range(tsMinFixedAmount, tsMaxFixedAmount + 1);
-            }
-            else
-            {
-                int minAmount = (int)(allAINodes.Length * tsMinAmount);
-                int maxAmount = (int)(allAINodes.Length * tsMaxAmount);
-                spawnAmount = Random.Range(minAmount, maxAmount + 1);
-            }
+            int spawnAmount = (int)(allAINodes.Length * tsAmount);
 
             List<GameObject> nodes = allAINodes.ToList();
             for (int i = 0; i < spawnAmount; i++)
             {
-                GameObject node = GetRandomAINode(nodes.ToArray());
+                GameObject node = GetRandomAINode(nodes);
                 nodes.Remove(node);
                 
-                Vector3 pos = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(node.transform.position);
+                Vector3 pos = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(node.transform.position, 10f, RoundManager.Instance.navHit, random);
                 SpawnedTinySomethings.Add(GameObject.Instantiate(littleOnePrefab, pos, Quaternion.identity));
             }
         }
 
-        GameObject GetRandomAINode(GameObject[] nodes)
+        GameObject GetRandomAINode(List<GameObject> nodes)
         {
-            int randIndex = Random.Range(0, nodes.Length);
+            int randIndex = Random.Range(0, nodes.Count);
             return nodes[randIndex];
         }
 
         public override void OnCollideWithPlayer(Collider other) // This only runs on client collided with
         {
-            logger.LogDebug("Collided with player");
             base.OnCollideWithPlayer(other);
-            PlayerControllerB? player = MeetsStandardPlayerCollisionConditions(other);
-            if (player == null) { return; }
+            if (inSpecialAnimation) { return; }
             if (currentBehaviourStateIndex == (int)State.Inactive) { return; }
+            if (!other.gameObject.TryGetComponent(out PlayerControllerB player)) { return; }
+            if (player == null || player != localPlayer) { return; }
 
-            player.KillPlayer(Vector3.zero, false);
-            KilledPlayerClientRpc();
+            inSpecialAnimation = true;
+            StartCoroutine(KillPlayerCoroutine());
         }
 
-        public override void OnNetworkDespawn()
+        IEnumerator KillPlayerCoroutine()
         {
-            base.OnNetworkDespawn();
+            logger.LogDebug("In KillPlayerCoroutine()");
+            yield return null;
+            StartCoroutine(FreezePlayerCoroutine(3f));
+            EnableEnemyMesh(false);
+            RoundManager.PlayRandomClip(localPlayer.statusEffectAudio, attackSFX);
+            BreathingUI.JumpscarePlayer();
 
-            foreach (var ts in SpawnedTinySomethings.ToList())
-            {
-                Destroy(ts);
-            }
-            if (BreathingUI != null)
-            {
-                Destroy(BreathingUI);
-            }
+            yield return new WaitForSeconds(3f);
+            localPlayer.KillPlayer(Vector3.zero, false);
+            KilledPlayerClientRpc();
         }
 
         public override void OnDestroy()
         {
-            base.OnDestroy();
+            logger.LogDebug("Destroying little ones");
+            foreach (var ts in SpawnedTinySomethings.ToList())
+            {
+                Destroy(ts);
+            }
+
+            logger.LogDebug("Destroying breathing UI");
             if (BreathingUI != null)
             {
                 Destroy(BreathingUI.gameObject);
-                BreathingUI = null;
             }
+
+            base.OnDestroy();
         }
 
         // Animations
@@ -526,7 +585,7 @@ namespace Something
             ChangeOwnershipOfEnemy(targetPlayer.actualClientId);
             hauntingLocalPlayer = GameNetworkManager.Instance.localPlayerController == targetPlayer;
 
-            //SpawnLittleOnes();
+            SpawnLittleOnes();
             if (!hauntingLocalPlayer) { return; };
             BreathingUI = GameObject.Instantiate(BreathingMechanicPrefab).GetComponent<BreathingBehavior>();
         }
@@ -535,9 +594,10 @@ namespace Something
         public void KilledPlayerClientRpc()
         {
             creatureVoice.PlayOneShot(disappearSFX, 1f);
+            Destroy(this.gameObject, 5f);
 
             if (!IsServerOrHost) { return; }
-            NetworkObject.Despawn(true);
+            NetworkObject.Despawn(false);
         }
     }
 }

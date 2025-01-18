@@ -129,7 +129,7 @@ namespace Something
 
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(GoodPolaroid.spawnPrefab);
             Utilities.FixMixerGroups(GoodPolaroid.spawnPrefab);
-            LethalLib.Modules.Items.RegisterScrap(GoodPolaroid);
+            LethalLib.Modules.Items.RegisterScrap(GoodPolaroid, GetLevelRarities(configGoodPolaroidLevelRarities.Value), GetCustomLevelRarities(configGoodPolaroidCustomLevelRarities.Value));
 
             // Neutral Polaroid
             Item NeutralPolaroid = ModAssets.LoadAsset<Item>("Assets/ModAssets/NeutralPolaroidItem.asset");
@@ -141,7 +141,7 @@ namespace Something
 
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(NeutralPolaroid.spawnPrefab);
             Utilities.FixMixerGroups(NeutralPolaroid.spawnPrefab);
-            LethalLib.Modules.Items.RegisterScrap(NeutralPolaroid);
+            LethalLib.Modules.Items.RegisterScrap(NeutralPolaroid, GetLevelRarities(configNeutralPolaroidLevelRarities.Value), GetCustomLevelRarities(configNeutralPolaroidCustomLevelRarities.Value));
 
             // Bad Polaroid
             Item BadPolaroid = ModAssets.LoadAsset<Item>("Assets/ModAssets/BadPolaroidItem.asset");
@@ -153,7 +153,7 @@ namespace Something
 
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(BadPolaroid.spawnPrefab);
             Utilities.FixMixerGroups(BadPolaroid.spawnPrefab);
-            LethalLib.Modules.Items.RegisterScrap(BadPolaroid);
+            LethalLib.Modules.Items.RegisterScrap(BadPolaroid, GetLevelRarities(configBadPolaroidLevelRarities.Value), GetCustomLevelRarities(configBadPolaroidCustomLevelRarities.Value));
 
             // Cursed Polaroid
             Item CursedPolaroid = ModAssets.LoadAsset<Item>("Assets/ModAssets/CursedPolaroidItem.asset");
@@ -165,7 +165,7 @@ namespace Something
 
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(CursedPolaroid.spawnPrefab);
             Utilities.FixMixerGroups(CursedPolaroid.spawnPrefab);
-            LethalLib.Modules.Items.RegisterScrap(CursedPolaroid);
+            LethalLib.Modules.Items.RegisterScrap(CursedPolaroid, GetLevelRarities(configCursedPolaroidLevelRarities.Value), GetCustomLevelRarities(configCursedPolaroidCustomLevelRarities.Value));
 
             if (configEnableSomething.Value)
             {
@@ -174,7 +174,7 @@ namespace Something
                 LoggerInstance.LogDebug($"Got Something enemy prefab");
                 TerminalNode SomethingTN = ModAssets.LoadAsset<TerminalNode>("Assets/ModAssets/Bestiary/SomethingTN.asset");
                 TerminalKeyword SomethingTK = ModAssets.LoadAsset<TerminalKeyword>("Assets/ModAssets/Bestiary/SomethingTK.asset");
-
+                
                 LoggerInstance.LogDebug("Registering enemy network prefab...");
                 LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(something.enemyPrefab);
                 LoggerInstance.LogDebug("Registering enemy...");

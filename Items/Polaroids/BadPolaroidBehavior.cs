@@ -1,8 +1,4 @@
-﻿using GameNetcodeStuff;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using Unity.Netcode;
+﻿using Unity.Netcode;
 using UnityEngine;
 using static Something.Plugin;
 
@@ -19,7 +15,7 @@ namespace Something.Items.Polaroids
         public AudioClip[] clips;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-        public void Start()
+        public override void Start()
         {
             if (!IsServerOrHost) { return; }
 

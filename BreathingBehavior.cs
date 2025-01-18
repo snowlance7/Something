@@ -2,8 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using UnityEngine.UI;
 using static Something.Plugin;
+using UnityEngine.UI;
 
 namespace Something
 {
@@ -12,23 +12,43 @@ namespace Something
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public Slider BreathSlider;
         public GameObject SliderObj;
+        public AudioClip BreathInSFX;
+        public AudioClip BreathOutSFX;
+        public Sprite[] JumpscareSprites;
+        public GameObject PanelObj;
+        public UnityEngine.UI.Image PanelImage;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         bool active;
-        const float multiplier = 0.5f;
-        const float insanityMultiplier = 2f;
         bool holdingKey;
+
+        // Configs
+        float multiplier = 0.5f;
+        float insanityMultiplier = 2.5f;
+
+        public void Start()
+        {
+            HUDManager.Instance.ChangeControlTip(HUDManager.Instance.controlTipLines.Length - 1, $"Breath [{SomethingInputs.Instance.BreathKey.bindings[0].path}]");
+        }
 
         public void Update()
         {
-            if (SomethingInputs.Instance.BreathKey.WasPressedThisFrame()/* && localPlayer.CheckConditionsForEmote()*/)
+            if (SomethingInputs.Instance.BreathKey.WasPressedThisFrame())
             {
                 LoggerInstance.LogDebug("Start Breathing");
+                localPlayer.movementAudio.Stop();
+                localPlayer.movementAudio.loop = false;
+                localPlayer.movementAudio.clip = BreathInSFX;
+                localPlayer.movementAudio.Play();
                 holdingKey = true;
             }
             else if (SomethingInputs.Instance.BreathKey.WasReleasedThisFrame())
             {
                 LoggerInstance.LogDebug("Stop Breathing");
+                localPlayer.movementAudio.Stop();
+                localPlayer.movementAudio.loop = false;
+                localPlayer.movementAudio.clip = BreathOutSFX;
+                localPlayer.movementAudio.Play();
                 holdingKey = false;
             }
 
@@ -63,6 +83,13 @@ namespace Something
                     active = false;
                 }
             }
+        }
+
+        public void JumpscarePlayer()
+        {
+            PanelObj.SetActive(true);
+            int index = UnityEngine.Random.Range(0, JumpscareSprites.Length);
+            PanelImage.sprite = JumpscareSprites[index];
         }
     }
 }
