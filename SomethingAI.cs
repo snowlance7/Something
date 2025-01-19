@@ -242,6 +242,7 @@ namespace Something
 
         void StopChase()
         {
+            creatureVoice.Stop();
             EnableEnemyMesh(false);
             SwitchToBehaviourServerRpc((int)State.Inactive);
         }
@@ -534,7 +535,8 @@ namespace Something
             yield return null;
             StartCoroutine(FreezePlayerCoroutine(3f));
             EnableEnemyMesh(false);
-            RoundManager.PlayRandomClip(localPlayer.statusEffectAudio, attackSFX);
+            creatureVoice.Stop();
+            RoundManager.PlayRandomClip(creatureSFX, attackSFX);
             BreathingUI.JumpscarePlayer();
 
             yield return new WaitForSeconds(3f);
@@ -557,6 +559,7 @@ namespace Something
             }
 
             EnableEnemyMesh(false);
+            creatureVoice.Stop();
         }
 
         public override void OnDestroy()
@@ -578,6 +581,7 @@ namespace Something
         public void EndDespawnAnimation()
         {
             log("In EndDespawnAnimation");
+            creatureVoice.Stop();
             inSpecialAnimation = false;
             EnableEnemyMesh(false);
         }
