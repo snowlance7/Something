@@ -456,7 +456,7 @@ namespace Something
                 GameObject node = GetRandomAINode(nodes);
                 nodes.Remove(node);
 
-                if (targetPlayer.HasLineOfSightToPosition(node.transform.position))
+                if (node == null || targetPlayer.HasLineOfSightToPosition(node.transform.position))
                 {
                     i--;
                     continue;
@@ -505,7 +505,13 @@ namespace Something
             {
                 GameObject node = GetRandomAINode(nodes);
                 nodes.Remove(node);
-                
+
+                if (node == null || targetPlayer.HasLineOfSightToPosition(node.transform.position))
+                {
+                    i--;
+                    continue;
+                }
+
                 Vector3 pos = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(node.transform.position, 10f, RoundManager.Instance.navHit, random);
                 SpawnedTinySomethings.Add(GameObject.Instantiate(littleOnePrefab, pos, Quaternion.identity));
             }
