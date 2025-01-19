@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using static Something.Plugin;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 namespace Something
 {
@@ -19,8 +20,12 @@ namespace Something
         public UnityEngine.UI.Image PanelImage;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
+        const float insanityToShowTooltip = 10f;
+
         bool active;
         bool holdingKey;
+        string keyBind = "";
+        bool showedTooltip;
 
         // Configs
         float multiplier = 0.5f;
@@ -28,11 +33,21 @@ namespace Something
 
         public void Start()
         {
-            HUDManager.Instance.ChangeControlTip(HUDManager.Instance.controlTipLines.Length - 1, $"Breath [{SomethingInputs.Instance.BreathKey.bindings[0].path}]");
+            keyBind = InputControlPath.ToHumanReadableString(SomethingInputs.Instance.BreathKey.bindings[0].path, InputControlPath.HumanReadableStringOptions.OmitDevice);
         }
 
         public void Update()
         {
+            if (showedTooltip || localPlayer.insanityLevel >= insanityToShowTooltip)
+            {
+                HUDManager.Instance.ChangeControlTip(HUDManager.Instance.controlTipLines.Length - 1, $"Breath [{keyBind}]");
+                if (!showedTooltip)
+                {
+                    HUDManager.Instance.DisplayTip("???", $"Hold [{keyBind}] to breath", false, true, "SomethingTip");
+                }
+                showedTooltip = true;
+            }
+
             if (SomethingInputs.Instance.BreathKey.WasPressedThisFrame())
             {
                 LoggerInstance.LogDebug("Start Breathing");

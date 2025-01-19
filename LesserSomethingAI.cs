@@ -45,6 +45,7 @@ namespace Something
         float insanityChaseMultiplier = 1.2f;
         float chaseSpeed = 1.5f;
         float wanderSpeed = 1f;
+        float insanityOnCollision = 5f;
 
         public void Start()
         {
@@ -141,9 +142,9 @@ namespace Something
         {
             if (!other.CompareTag("Player") || !other.gameObject.TryGetComponent(out PlayerControllerB player)) { return; }
             if (player != localPlayer) { return; }
-            logger.LogDebug("Player collided with lesser something");
+            log("Player collided with lesser something");
             localPlayer.DamagePlayer(damage);
-            localPlayer.insanityLevel++;
+            localPlayer.insanityLevel += insanityOnCollision;
             RoundManager.PlayRandomClip(localPlayer.statusEffectAudio, attackSFX);
             GameObject.Destroy(this.gameObject);
         }

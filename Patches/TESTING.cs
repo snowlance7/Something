@@ -18,7 +18,7 @@ using static Something.Plugin;
 
 namespace Something
 {
-    [HarmonyPatch]
+    //[HarmonyPatch]
     internal class TESTING : MonoBehaviour
     {
         private static ManualLogSource logger = Plugin.LoggerInstance;
@@ -27,9 +27,7 @@ namespace Something
         [HarmonyPostfix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.PingScan_performed))]
         public static void PingScan_performedPostFix()
         {
-            logger.LogDebug("Insanity: " + localPlayer.insanityLevel);
-            //bool hit = Physics.Raycast(localPlayer.playerEye.transform.position, localPlayer.playerEye.transform.forward, 5f, StartOfRound.Instance.collidersAndRoomMaskAndDefault, QueryTriggerInteraction.Ignore);
-            //logger.LogDebug("Hit: " + hit);
+            log("Insanity: " + localPlayer.insanityLevel);
         }
 
         [HarmonyPrefix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.SubmitChat_performed))]
@@ -45,9 +43,6 @@ namespace Something
                     case "/insanity":
                         localPlayer.insanityLevel = float.Parse(args[1]);
                         break;
-                    case "/crash":
-                        Application.Quit();
-                        break;
                     case "/refresh":
                         RoundManager.Instance.RefreshEnemiesList();
                         HoarderBugAI.RefreshGrabbableObjectsInMapList();
@@ -55,16 +50,16 @@ namespace Something
                     case "/levels":
                         foreach (var level in StartOfRound.Instance.levels)
                         {
-                            logger.LogDebug(level.name);
+                            log(level.name);
                         }
                         break;
                     case "/dungeon":
-                        logger.LogDebug(RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.name);
+                        log(RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.name);
                         break;
                     case "/dungeons":
                         foreach (var dungeon in RoundManager.Instance.dungeonFlowTypes)
                         {
-                            logger.LogDebug(dungeon.dungeonFlow.name);
+                            log(dungeon.dungeonFlow.name);
                         }
                         break;
                     default:

@@ -24,7 +24,7 @@ namespace Something
         {
             if (!other.CompareTag("Player") || !other.gameObject.TryGetComponent(out PlayerControllerB player)) { return; }
             if (player != localPlayer) { return; }
-            logger.LogDebug("Player stepped on little one");
+            log("Player stepped on little one");
             localPlayer.insanityLevel++;
             creatureSFX.Play();
             GameObject.Destroy(this.gameObject, 0.5f);
