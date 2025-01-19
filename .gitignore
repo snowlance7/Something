@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/ThunderStore/CHANGELOG.md
+/ThunderStore/icon.png
+/ThunderStore/manifest.json
+/ThunderStore/README.md
