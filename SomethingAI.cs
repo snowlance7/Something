@@ -542,8 +542,8 @@ namespace Something
             StartCoroutine(FreezePlayerCoroutine(3f));
             EnableEnemyMesh(false);
             creatureVoice.Stop();
-            RoundManager.PlayRandomClip(creatureSFX, attackSFX);
-            BreathingUI.JumpscarePlayer();
+            RoundManager.PlayRandomClip(targetPlayer.movementAudio, attackSFX);
+            BreathingUI.JumpscarePlayer(3f);
 
             yield return new WaitForSeconds(3f);
             localPlayer.KillPlayer(Vector3.zero, false);
@@ -635,6 +635,7 @@ namespace Something
             choosingNewPlayerToHaunt = true;
             ResetHallucinations();
             targetPlayer = null;
+            SwitchToBehaviourStateOnLocalClient((int)State.Inactive);
             StartCoroutine(ChoosePlayerToHauntCoroutine(5f));
         }
     }

@@ -5,6 +5,7 @@ using System.Text;
 using static Something.Plugin;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
+using System.Collections;
 
 namespace Something
 {
@@ -20,30 +21,32 @@ namespace Something
         public UnityEngine.UI.Image PanelImage;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
+        string KeyBind
+        {
+            get
+            {
+                return InputControlPath.ToHumanReadableString(SomethingInputs.Instance.BreathKey.bindings[0].path, InputControlPath.HumanReadableStringOptions.OmitDevice);
+            }
+        }
+
         const float insanityToShowTooltip = 10f;
 
         bool active;
         bool holdingKey;
-        string keyBind = "";
         bool showedTooltip;
 
         // Configs
         float multiplier = 0.5f;
         float insanityMultiplier = 2.5f;
 
-        public void Start()
-        {
-            keyBind = InputControlPath.ToHumanReadableString(SomethingInputs.Instance.BreathKey.bindings[0].path, InputControlPath.HumanReadableStringOptions.OmitDevice);
-        }
-
         public void Update()
         {
             if (showedTooltip || localPlayer.insanityLevel >= insanityToShowTooltip)
             {
-                HUDManager.Instance.ChangeControlTip(HUDManager.Instance.controlTipLines.Length - 1, $"Breath [{keyBind}]");
+                HUDManager.Instance.ChangeControlTip(HUDManager.Instance.controlTipLines.Length - 1, $"Breath [{KeyBind}]");
                 if (!showedTooltip)
                 {
-                    HUDManager.Instance.DisplayTip("???", $"Hold [{keyBind}] to breath", false, true, "SomethingTip");
+                    HUDManager.Instance.DisplayTip("???", $"Hold [{KeyBind}] to breath", false, true, "SomethingTip");
                 }
                 showedTooltip = true;
             }
@@ -100,11 +103,19 @@ namespace Something
             }
         }
 
-        public void JumpscarePlayer()
+        public void JumpscarePlayer(float time)
         {
             PanelObj.SetActive(true);
             int index = UnityEngine.Random.Range(0, JumpscareSprites.Length);
             PanelImage.sprite = JumpscareSprites[index];
+            StartCoroutine(JumpscarePlayerCoroutine(time));
+        }
+        
+        IEnumerator JumpscarePlayerCoroutine(float time)
+        {
+            yield return new WaitForSeconds(time);
+            PanelObj.SetActive(false);
+            Destroy(this.gameObject);
         }
     }
 }
