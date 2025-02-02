@@ -85,8 +85,8 @@ namespace Something
 
             // SCP-4666 Configs
             //configEnableSomething = Config.Bind("Something", "Enable Something", true, "Set to false to disable spawning Something.");
-            configSomethingLevelRarities = Config.Bind("Something Rarities", "Level Rarities", "All: 20", "Rarities for each level. See default for formatting.");
-            configSomethingCustomLevelRarities = Config.Bind("Something Rarities", "Custom Level Rarities", "", "Rarities for modded levels. Same formatting as level rarities.");
+            configSomethingLevelRarities = Config.Bind("Rarities", "Something Level Rarities", "All: 30, Modded: 40", "Rarities for each level. See default for formatting.");
+            configSomethingCustomLevelRarities = Config.Bind("Rarities", "Something Custom Level Rarities", "", "Rarities for modded levels. Same formatting as level rarities.");
 
             // Polaroid Configs
             /*configEnablePolaroids = Config.Bind("Polaroid Rarities", "Enable Polaroids", false, "Enables polaroids from the game as scrap.");

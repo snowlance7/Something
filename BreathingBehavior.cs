@@ -43,7 +43,7 @@ namespace Something
         {
             if (showedTooltip || localPlayer.insanityLevel >= insanityToShowTooltip)
             {
-                HUDManager.Instance.ChangeControlTip(HUDManager.Instance.controlTipLines.Length - 1, $"Breath [{KeyBind}]");
+                HUDManager.Instance.ChangeControlTip(HUDManager.Instance.controlTipLines.Length, $"Breath [{KeyBind}]");
                 if (!showedTooltip)
                 {
                     HUDManager.Instance.DisplayTip("???", $"Hold [{KeyBind}] to breath", false, true, "SomethingTip");
