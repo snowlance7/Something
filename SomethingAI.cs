@@ -34,7 +34,7 @@ namespace Something
 
         bool enemyMeshEnabled;
         bool initializedRandomSeed;
-        bool hauntingLocalPlayer;
+        public static bool hauntingLocalPlayer;
         float timeSinceSpawnLS;
         float nextSpawnTimeLS;
         float timeSinceStare;

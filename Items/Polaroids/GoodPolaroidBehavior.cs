@@ -13,9 +13,25 @@ namespace Something.Items.Polaroids
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public MeshRenderer Renderer;
         public Texture2D[] Photos;
+        public Texture2D[] AltPhotos;
         Material uniqueMaterial;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
+        public override void Start()
+        {
+            if (!IsServerOrHost) { return; }
 
+            int index = configSpoilerFreeVersion.Value ? UnityEngine.Random.Range(0, AltPhotos.Length) : UnityEngine.Random.Range(0, Photos.Length);
+
+            ChangePhotoClientRpc(index);
+        }
+
+        [ClientRpc]
+        public void ChangePhotoClientRpc(int index)
+        {
+            uniqueMaterial = new Material(Renderer.material);
+            uniqueMaterial.mainTexture = Photos[index];
+            Renderer.material = uniqueMaterial;
+        }
     }
 }

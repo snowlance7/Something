@@ -9,10 +9,9 @@ namespace Something.Items.Polaroids
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public MeshRenderer Renderer;
         public Texture2D[] Photos;
-        Material uniqueMaterial;
+        public Texture2D[] AltPhotos;
         public GameObject SomethingPrefab;
-        public AudioSource ItemSFX;
-        public AudioClip[] clips;
+        Material uniqueMaterial;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         public override void Start()

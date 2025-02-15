@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 3851241407
+CRC: 381831229
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: a9ddb0fae873f70f13131214e8fed5f4
+    Hash: f7309087d7c0b361ff04fcea2c2a0935
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 2f1d03c39b66e5b2947305e5fcdac7a7
+    Hash: 6a3695de7a318864955a7a321af74a62
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: a9ddb0fae873f70f13131214e8fed5f4
+    Hash: f7309087d7c0b361ff04fcea2c2a0935
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -18,7 +18,13 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 21
   Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
 - Class: 28
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
   Script: {instanceID: 0}
 - Class: 48
   Script: {instanceID: 0}
@@ -45,7 +51,11 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: 04f75356a7e9c978bddc7d568e58a50b, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: c30496d6ae6d6f907456e10a94e01ec6, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: 3c36d0a92cbb1f26a39169ef0eae393a, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 3d0cf24d2ccc3b7eab72048d0f57c437, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 6d7127b8f98ca8ec9896b384a71d39a2, type: 3}
 - Class: 114
@@ -57,7 +67,13 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
 - Class: 114
+  Script: {fileID: 99817204, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
+- Class: 114
   Script: {fileID: 457316765, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
+- Class: 114
+  Script: {fileID: -347197305, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
+- Class: 114
+  Script: {fileID: 141226145, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
 - Class: 114
   Script: {fileID: -821152973, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
 - Class: 114
@@ -66,6 +82,8 @@ ClassTypes:
   Script: {fileID: 1918530828, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: d3cecf05b78b173605122a700874719c, type: 3}
+- Class: 114
+  Script: {fileID: 1559722288, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 195
@@ -90,6 +108,8 @@ SerializeReferenceClassIdentifiers:
 - AssemblyName: Assembly-CSharp
   ClassName: AISearchRoutine
 - AssemblyName: Assembly-CSharp
+  ClassName: Battery
+- AssemblyName: Assembly-CSharp
   ClassName: EnemyBehaviourState
 - AssemblyName: Assembly-CSharp
   ClassName: NavSizeLimit
@@ -108,7 +128,15 @@ SerializeReferenceClassIdentifiers:
 - AssemblyName: UnityEngine.UI
   ClassName: UnityEngine.UI.SpriteState
 Assets:
+- Assets/ModAssets/BadPolaroidItem.asset
 - Assets/ModAssets/SomethingEnemy.asset
+- Assets/ModAssets/BunnybunItem.asset
 - Assets/ModAssets/Bestiary/SomethingTK.asset
+- Assets/ModAssets/CursedPolaroidItem.asset
+- Assets/ModAssets/BasilPlushItem.asset
+- Assets/ModAssets/MailboxItem.asset
+- Assets/ModAssets/AubreyPlushItem.asset
+- Assets/ModAssets/GoodPolaroidItem.asset
 - Assets/ModAssets/Bestiary/SomethingTN.asset
+- Assets/ModAssets/KeytarItem.asset
 Dependencies: []
