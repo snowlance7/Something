@@ -60,7 +60,10 @@ namespace Something.Items.Polaroids
         [ClientRpc]
         public void DoAnimationClientRpc(string animationName)
         {
-            ItemAnimator.SetTrigger(animationName);
+            if (configSpoilerFreeVersion.Value)
+            {
+                ItemAnimator.SetTrigger(animationName);
+            }
             ItemAudio.Play();
             playerHeldBy.insanityLevel = 45f;
         }
