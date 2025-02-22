@@ -43,11 +43,14 @@ namespace Something
         {
             if (showedTooltip || localPlayer.insanityLevel >= insanityToShowTooltip)
             {
-                //HUDManager.Instance.ChangeControlTip(HUDManager.Instance.controlTipLines.Length, $"Breath: [{KeyBind}]");
-                HUDManager.Instance.ChangeControlTipMultiple([$"Breath: [{KeyBind}]"]); // TODO: Test this
+                if (configShowBreathingTooltip.Value)
+                {
+                    //HUDManager.Instance.ChangeControlTip(HUDManager.Instance.controlTipLines.Length, $"Breath: [{KeyBind}]");
+                    HUDManager.Instance.ChangeControlTipMultiple([$"Breath: [{KeyBind}]"]);
+                }
                 if (!showedTooltip)
                 {
-                    HUDManager.Instance.DisplayTip("???", $"Hold [{KeyBind}] to breath", false, true, "SomethingTip");
+                    HUDManager.Instance.DisplayTip("???", $"Hold [{KeyBind}] to breath", false, true, "SomethingModTip1");
                 }
                 showedTooltip = true;
             }

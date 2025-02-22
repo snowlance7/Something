@@ -26,14 +26,12 @@ namespace Something
         public SpriteRenderer somethingMesh;
         public GameObject ScanNode;
         public GameObject BreathingMechanicPrefab;
-        System.Random random;
         BreathingBehavior BreathingUI;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         List<GameObject> SpawnedTinySomethings = [];
 
         bool enemyMeshEnabled;
-        bool initializedRandomSeed;
         public static bool hauntingLocalPlayer;
         float timeSinceSpawnLS;
         float nextSpawnTimeLS;
@@ -72,15 +70,10 @@ namespace Something
             log("Something spawned");
             base.Start();
 
-
-
-            if (!RoundManager.Instance.hasInitializedLevelRandomSeed)
-            {
-                RoundManager.Instance.InitializeRandomNumberGenerators();
-            }
-            log("initialized random number generators");
-
             currentBehaviourStateIndex = (int)State.Inactive;
+
+            if (!IsServerOrHost) { return; }
+            choosingNewPlayerToHaunt = true;
             StartCoroutine(ChoosePlayerToHauntCoroutine(5f));
         }
 
@@ -92,8 +85,9 @@ namespace Something
 
             if (IsServerOrHost && targetPlayer != null && !targetPlayer.isPlayerControlled && !choosingNewPlayerToHaunt)
             {
+                targetPlayer = null;
                 choosingNewPlayerToHaunt = true;
-                ChooseNewPlayerToHauntClientRpc();
+                StartCoroutine(ChoosePlayerToHauntCoroutine(5f));
                 return;
             }
             else if (!base.IsOwner)
@@ -112,13 +106,12 @@ namespace Something
             if (targetPlayer == null
                 || targetPlayer.isPlayerDead
                 || targetPlayer.disconnectedMidGame
+                || !targetPlayer.isPlayerControlled
                 || inSpecialAnimation
                 || choosingNewPlayerToHaunt)
             {
                 return;
             }
-
-            if (!base.IsOwner) { return; }
 
             turnCompass.LookAt(localPlayer.gameplayCamera.transform.position);
             transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(new Vector3(0f, turnCompass.eulerAngles.y, 0f)), 10f * Time.deltaTime); // Always look at local player
@@ -141,6 +134,7 @@ namespace Something
                 || targetPlayer == null
                 || targetPlayer.isPlayerDead
                 || targetPlayer.disconnectedMidGame
+                || !targetPlayer.isPlayerControlled
                 || inSpecialAnimation
                 || choosingNewPlayerToHaunt)
             {
@@ -351,12 +345,7 @@ namespace Something
         void ChoosePlayerToHaunt()
         {
             log("starting ChoosePlayerToHaunt()");
-            if (!initializedRandomSeed)
-            {
-                int seed = StartOfRound.Instance.randomMapSeed + 158;
-                log("Assigning new random with seed: " + seed);
-                random = new System.Random(seed);
-            }
+
             float highestInsanity = 0f;
             float highestInsanityPlayerIndex = 0f;
             int maxTurns = 0;
@@ -403,7 +392,7 @@ namespace Something
 
                 log($"{StartOfRound.Instance.allPlayerScripts[j].playerUsername}: {playerScores[j]}");
             }
-            PlayerControllerB hauntingPlayer = StartOfRound.Instance.allPlayerScripts[RoundManager.Instance.GetRandomWeightedIndex(playerScores, random)];
+            PlayerControllerB hauntingPlayer = StartOfRound.Instance.allPlayerScripts[RoundManager.Instance.GetRandomWeightedIndex(playerScores)];
             if (hauntingPlayer.isPlayerDead)
             {
                 for (int k = 0; k < StartOfRound.Instance.allPlayerScripts.Length; k++)
@@ -416,20 +405,9 @@ namespace Something
                 }
             }
 
-            Debug.Log($"Something: Haunting player with playerClientId: {hauntingPlayer.playerClientId}; actualClientId: {hauntingPlayer.actualClientId}");
-            ChangeOwnershipOfEnemy(hauntingPlayer.actualClientId);
-            hauntingLocalPlayer = GameNetworkManager.Instance.localPlayerController == hauntingPlayer;
-            hauntingPlayer.insanityLevel = 0f;
+            logger.LogDebug($"Something: Haunting player with playerClientId: {hauntingPlayer.playerClientId}; actualClientId: {hauntingPlayer.actualClientId}");
             targetPlayer = hauntingPlayer;
-
-            if (IsServerOrHost)
-            {
-                NetworkObject.ChangeOwnership(targetPlayer.actualClientId);
-            }
-
-            SpawnLittleOnes(true);
-            if (!hauntingLocalPlayer) { return; };
-            BreathingUI = GameObject.Instantiate(BreathingMechanicPrefab).GetComponent<BreathingBehavior>();
+            ChangeTargetPlayerClientRpc(hauntingPlayer.actualClientId);
         }
 
         public void Teleport(Vector3 position)
@@ -464,7 +442,7 @@ namespace Something
 
                 int lsIndex = UnityEngine.Random.Range(0, lesserSomethingPrefabs.Length);
 
-                Vector3 pos = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(node.transform.position, 10f, RoundManager.Instance.navHit, random);
+                Vector3 pos = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(node.transform.position, 10f, RoundManager.Instance.navHit, RoundManager.Instance.AnomalyRandom);
                 LesserSomethingAI ls = GameObject.Instantiate(lesserSomethingPrefabs[lsIndex], pos, Quaternion.identity).GetComponent<LesserSomethingAI>();
                 ls.spawnNode = node.transform;
                 ls.targetPlayer = targetPlayer;
@@ -494,10 +472,6 @@ namespace Something
 
             if (!hauntingLocalPlayer) { return; }
 
-            /*int minAmount = (int)(allAINodes.Length * tsMinAmount);
-            int maxAmount = (int)(allAINodes.Length * tsMaxAmount);
-            int spawnAmount = Random.Range(minAmount, maxAmount + 1);*/
-
             int spawnAmount = (int)(allAINodes.Length * tsAmount);
 
             List<GameObject> nodes = allAINodes.ToList();
@@ -512,7 +486,7 @@ namespace Something
                     continue;
                 }
 
-                Vector3 pos = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(node.transform.position, 10f, RoundManager.Instance.navHit, random);
+                Vector3 pos = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(node.transform.position, 10f, RoundManager.Instance.navHit, RoundManager.Instance.AnomalyRandom);
                 SpawnedTinySomethings.Add(GameObject.Instantiate(littleOnePrefab, pos, Quaternion.identity));
             }
         }
@@ -627,16 +601,6 @@ namespace Something
         public void PlayDisappearSFXClientRpc()
         {
             creatureVoice.PlayOneShot(disappearSFX, 1f);
-        }
-
-        [ClientRpc]
-        public void ChooseNewPlayerToHauntClientRpc()
-        {
-            choosingNewPlayerToHaunt = true;
-            ResetHallucinations();
-            targetPlayer = null;
-            SwitchToBehaviourStateOnLocalClient((int)State.Inactive);
-            StartCoroutine(ChoosePlayerToHauntCoroutine(5f));
         }
     }
 }

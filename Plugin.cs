@@ -37,8 +37,10 @@ namespace Something
         // General
         public static ConfigEntry<bool> configSpoilerFreeVersion;
 
+        // BreathingUI
+        public static ConfigEntry<bool> configShowBreathingTooltip;
+
         // Something Configs
-        //public static ConfigEntry<bool> configEnableSomething;
         public static ConfigEntry<string> configSomethingLevelRarities;
         public static ConfigEntry<string> configSomethingCustomLevelRarities;
 
@@ -54,11 +56,13 @@ namespace Something
         public static ConfigEntry<string> configBadPolaroidCustomLevelRarities;
         public static ConfigEntry<int> configBadPolaroidMinValue;
         public static ConfigEntry<int> configBadPolaroidMaxValue;
-
+        public static ConfigEntry<float> configBadPolaroidSomethingChance;
         public static ConfigEntry<string> configCursedPolaroidLevelRarities;
         public static ConfigEntry<string> configCursedPolaroidCustomLevelRarities;
         public static ConfigEntry<int> configCursedPolaroidMinValue;
         public static ConfigEntry<int> configCursedPolaroidMaxValue;
+        public static ConfigEntry<float> configCursedPolaroidSomethingChance;
+
         // Config entries for Keytar
         public static ConfigEntry<string> configKeytarLevelRarities;
         public static ConfigEntry<string> configKeytarCustomLevelRarities;
@@ -113,57 +117,61 @@ namespace Something
             // General
             configSpoilerFreeVersion = Config.Bind("Spoilers", "Spoiler-Free Version", true, "Replaces most spoilers for the game with alternatives.");
 
-            // SCP-4666 Configs
-            //configEnableSomething = Config.Bind("Something", "Enable Something", true, "Set to false to disable spawning Something.");
-            configSomethingLevelRarities = Config.Bind("Rarities", "Something Level Rarities", "All: 30, Modded: 40", "Rarities for each level. See default for formatting.");
+            // BreathingUI
+            configShowBreathingTooltip = Config.Bind("BreathingUI", "Show Breathing Tooltip", true, "Shows the breathing tooltip on the top right when you are being haunted by Something.");
+
+            // Something Configs
+            configSomethingLevelRarities = Config.Bind("Rarities", "Something Level Rarities", "All: 40, Modded: 40", "Rarities for each level. See default for formatting.");
             configSomethingCustomLevelRarities = Config.Bind("Rarities", "Something Custom Level Rarities", "", "Rarities for modded levels.");
 
             // Polaroid Configs
-            configEnablePolaroids = Config.Bind("Polaroid Rarities", "Enable Polaroids", false, "Enables polaroids from the game as scrap.");
+            configEnablePolaroids = Config.Bind("Polaroid Rarities", "Enable Polaroids", true, "Enables polaroids from the game as scrap.");
 
-            configGoodPolaroidLevelRarities = Config.Bind("Polaroid Rarities", "Good Polaroid Level Rarities", "All: 10", "Rarities for Good Polaroids.");
+            configGoodPolaroidLevelRarities = Config.Bind("Polaroid Rarities", "Good Polaroid Level Rarities", "All: 50, Modded: 50", "Rarities for Good Polaroids.");
             configGoodPolaroidCustomLevelRarities = Config.Bind("Polaroid Rarities", "Good Polaroid Custom Level Rarities", "", "Custom rarities for Good Polaroids.");
-            configGoodPolaroidMinValue = Config.Bind("Polaroids", "Good Polaroid Min Value", 5, "Minimum value for Good Polaroid.");
-            configGoodPolaroidMaxValue = Config.Bind("Polaroids", "Good Polaroid Max Value", 50, "Maximum value for Good Polaroid.");
+            configGoodPolaroidMinValue = Config.Bind("Polaroids", "Good Polaroid Min Value", 50, "Minimum value for Good Polaroid.");
+            configGoodPolaroidMaxValue = Config.Bind("Polaroids", "Good Polaroid Max Value", 75, "Maximum value for Good Polaroid.");
 
 
-            configBadPolaroidLevelRarities = Config.Bind("Polaroid Rarities", "Bad Polaroid Level Rarities", "All: 15", "Rarities for Bad Polaroids.");
+            configBadPolaroidLevelRarities = Config.Bind("Polaroid Rarities", "Bad Polaroid Level Rarities", "All: 50, Modded: 50", "Rarities for Bad Polaroids.");
             configBadPolaroidCustomLevelRarities = Config.Bind("Polaroid Rarities", "Bad Polaroid Custom Level Rarities", "", "Custom rarities for Bad Polaroids.");
-            configBadPolaroidMinValue = Config.Bind("Polaroids", "Bad Polaroid Min Value", 10, "Minimum value for Bad Polaroid.");
+            configBadPolaroidMinValue = Config.Bind("Polaroids", "Bad Polaroid Min Value", 50, "Minimum value for Bad Polaroid.");
             configBadPolaroidMaxValue = Config.Bind("Polaroids", "Bad Polaroid Max Value", 100, "Maximum value for Bad Polaroid.");
+            configBadPolaroidSomethingChance = Config.Bind("Polaroids", "Bad Polaroid Something Spawn Chance", 0.5f, "Chance of spawning somethiing on first player who picked up Bad Polaroid.");
 
 
-            configCursedPolaroidLevelRarities = Config.Bind("Polaroid Rarities", "Cursed Polaroid Level Rarities", "All: 5", "Rarities for Cursed Polaroids.");
+            configCursedPolaroidLevelRarities = Config.Bind("Polaroid Rarities", "Cursed Polaroid Level Rarities", "All: 5, Modded: 5", "Rarities for Cursed Polaroids.");
             configCursedPolaroidCustomLevelRarities = Config.Bind("Polaroid Rarities", "Cursed Polaroid Custom Level Rarities", "", "Custom rarities for Cursed Polaroids.");
-            configCursedPolaroidMinValue = Config.Bind("Polaroids", "Cursed Polaroid Min Value", 10, "Minimum value for Cursed Polaroid.");
+            configCursedPolaroidMinValue = Config.Bind("Polaroids", "Cursed Polaroid Min Value", 200, "Minimum value for Cursed Polaroid.");
             configCursedPolaroidMaxValue = Config.Bind("Polaroids", "Cursed Polaroid Max Value", 300, "Maximum value for Cursed Polaroid.");
+            configCursedPolaroidSomethingChance = Config.Bind("Polaroids", "Cursed Polaroid Something Spawn Chance", 0.99f, "Chance of spawning somethiing on first player who picked up Cursed Polaroid.");
 
             // Keytar
-            configKeytarLevelRarities = Config.Bind("Keytar Rarities", "Keytar Level Rarities", "All: 10", "Rarities for Keytar.");
+            configKeytarLevelRarities = Config.Bind("Keytar Rarities", "Keytar Level Rarities", "All: 10, Modded: 10", "Rarities for Keytar.");
             configKeytarCustomLevelRarities = Config.Bind("Keytar Rarities", "Keytar Custom Level Rarities", "", "Custom rarities for Keytar.");
             configKeytarMinValue = Config.Bind("Keytar", "Keytar Min Value", 10, "Minimum value for Keytar.");
             configKeytarMaxValue = Config.Bind("Keytar", "Keytar Max Value", 100, "Maximum value for Keytar.");
 
             // AubreyPlush
-            configAubreyPlushLevelRarities = Config.Bind("AubreyPlush Rarities", "AubreyPlush Level Rarities", "All: 10", "Rarities for AubreyPlush.");
+            configAubreyPlushLevelRarities = Config.Bind("AubreyPlush Rarities", "AubreyPlush Level Rarities", "All: 20, Modded: 20", "Rarities for AubreyPlush.");
             configAubreyPlushCustomLevelRarities = Config.Bind("AubreyPlush Rarities", "AubreyPlush Custom Level Rarities", "", "Custom rarities for AubreyPlush.");
             configAubreyPlushMinValue = Config.Bind("AubreyPlush", "AubreyPlush Min Value", 5, "Minimum value for AubreyPlush.");
             configAubreyPlushMaxValue = Config.Bind("AubreyPlush", "AubreyPlush Max Value", 50, "Maximum value for AubreyPlush.");
 
             // BasilPlush
-            configBasilPlushLevelRarities = Config.Bind("BasilPlush Rarities", "BasilPlush Level Rarities", "All: 10", "Rarities for BasilPlush.");
+            configBasilPlushLevelRarities = Config.Bind("BasilPlush Rarities", "BasilPlush Level Rarities", "All: 20, Modded: 20", "Rarities for BasilPlush.");
             configBasilPlushCustomLevelRarities = Config.Bind("BasilPlush Rarities", "BasilPlush Custom Level Rarities", "", "Custom rarities for BasilPlush.");
             configBasilPlushMinValue = Config.Bind("BasilPlush", "BasilPlush Min Value", 5, "Minimum value for BasilPlush.");
             configBasilPlushMaxValue = Config.Bind("BasilPlush", "BasilPlush Max Value", 50, "Maximum value for BasilPlush.");
 
             // Bunnybun
-            configBunnybunLevelRarities = Config.Bind("Bunnybun Rarities", "Bunnybun Level Rarities", "All: 10", "Rarities for Bunnybun.");
+            configBunnybunLevelRarities = Config.Bind("Bunnybun Rarities", "Bunnybun Level Rarities", "All: 20, Modded: 20", "Rarities for Bunnybun.");
             configBunnybunCustomLevelRarities = Config.Bind("Bunnybun Rarities", "Bunnybun Custom Level Rarities", "", "Custom rarities for Bunnybun.");
             configBunnybunMinValue = Config.Bind("Bunnybun", "Bunnybun Min Value", 5, "Minimum value for Bunnybun.");
             configBunnybunMaxValue = Config.Bind("Bunnybun", "Bunnybun Max Value", 50, "Maximum value for Bunnybun.");
 
             // Mailbox
-            configMailboxLevelRarities = Config.Bind("Mailbox Rarities", "Mailbox Level Rarities", "All: 10", "Rarities for Mailbox.");
+            configMailboxLevelRarities = Config.Bind("Mailbox Rarities", "Mailbox Level Rarities", "All: 15, Modded: 15", "Rarities for Mailbox.");
             configMailboxCustomLevelRarities = Config.Bind("Mailbox Rarities", "Mailbox Custom Level Rarities", "", "Custom rarities for Mailbox.");
             configMailboxMinValue = Config.Bind("Mailbox", "Mailbox Min Value", 15, "Minimum value for Mailbox.");
             configMailboxMaxValue = Config.Bind("Mailbox", "Mailbox Max Value", 150, "Maximum value for Mailbox.");
@@ -178,42 +186,6 @@ namespace Something
                 return;
             }
             LoggerInstance.LogDebug($"Got AssetBundle at: {Path.Combine(sAssemblyLocation, "something_assets")}");
-
-            /*// Good Polaroid
-            Item GoodPolaroid = ModAssets.LoadAsset<Item>("Assets/ModAssets/GoodPolaroidItem.asset");
-            if (GoodPolaroid == null) { LoggerInstance.LogError("Error: Couldnt get GoodPolaroidItem from assets"); return; }
-            LoggerInstance.LogDebug($"Got GoodPolaroid prefab");
-
-            GoodPolaroid.minValue = configGoodPolaroidMinValue.Value;
-            GoodPolaroid.maxValue = configGoodPolaroidMaxValue.Value;
-
-            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(GoodPolaroid.spawnPrefab);
-            Utilities.FixMixerGroups(GoodPolaroid.spawnPrefab);
-            LethalLib.Modules.Items.RegisterScrap(GoodPolaroid, GetLevelRarities(configGoodPolaroidLevelRarities.Value), GetCustomLevelRarities(configGoodPolaroidCustomLevelRarities.Value));
-
-            // Bad Polaroid
-            Item BadPolaroid = ModAssets.LoadAsset<Item>("Assets/ModAssets/BadPolaroidItem.asset");
-            if (BadPolaroid == null) { LoggerInstance.LogError("Error: Couldnt get BadPolaroidItem from assets"); return; }
-            LoggerInstance.LogDebug($"Got BadPolaroid prefab");
-
-            BadPolaroid.minValue = configBadPolaroidMinValue.Value;
-            BadPolaroid.maxValue = configBadPolaroidMaxValue.Value;
-
-            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(BadPolaroid.spawnPrefab);
-            Utilities.FixMixerGroups(BadPolaroid.spawnPrefab);
-            LethalLib.Modules.Items.RegisterScrap(BadPolaroid, GetLevelRarities(configBadPolaroidLevelRarities.Value), GetCustomLevelRarities(configBadPolaroidCustomLevelRarities.Value));
-
-            // Cursed Polaroid
-            Item CursedPolaroid = ModAssets.LoadAsset<Item>("Assets/ModAssets/CursedPolaroidItem.asset");
-            if (CursedPolaroid == null) { LoggerInstance.LogError("Error: Couldnt get CursedPolaroidItem from assets"); return; }
-            LoggerInstance.LogDebug($"Got CursedPolaroid prefab");
-
-            CursedPolaroid.minValue = configCursedPolaroidMinValue.Value;
-            CursedPolaroid.maxValue = configCursedPolaroidMaxValue.Value;
-
-            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(CursedPolaroid.spawnPrefab);
-            Utilities.FixMixerGroups(CursedPolaroid.spawnPrefab);
-            LethalLib.Modules.Items.RegisterScrap(CursedPolaroid, GetLevelRarities(configCursedPolaroidLevelRarities.Value), GetCustomLevelRarities(configCursedPolaroidCustomLevelRarities.Value));*/
 
             RegisterItem("GoodPolaroid", configGoodPolaroidMinValue, configGoodPolaroidMaxValue, configGoodPolaroidLevelRarities, configGoodPolaroidCustomLevelRarities);
             RegisterItem("BadPolaroid", configBadPolaroidMinValue, configBadPolaroidMaxValue, configBadPolaroidLevelRarities, configBadPolaroidCustomLevelRarities);
