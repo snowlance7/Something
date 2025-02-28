@@ -344,6 +344,7 @@ namespace Something
 
         void ChoosePlayerToHaunt()
         {
+            if (StartOfRound.Instance.inShipPhase || StartOfRound.Instance.shipIsLeaving) { return; }
             log("starting ChoosePlayerToHaunt()");
 
             float highestInsanity = 0f;
@@ -567,13 +568,6 @@ namespace Something
         }
 
         // RPC's
-
-        [ServerRpc(RequireOwnership = false)]
-        public void ChangeTargetPlayerServerRpc(ulong clientId)
-        {
-            if (!IsServerOrHost) { return; }
-            ChangeTargetPlayerClientRpc(clientId);
-        }
 
         [ClientRpc]
         public void ChangeTargetPlayerClientRpc(ulong clientId)

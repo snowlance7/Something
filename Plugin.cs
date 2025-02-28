@@ -142,8 +142,8 @@ namespace Something
 
             configCursedPolaroidLevelRarities = Config.Bind("Polaroid Rarities", "Cursed Polaroid Level Rarities", "All: 5, Modded: 5", "Rarities for Cursed Polaroids.");
             configCursedPolaroidCustomLevelRarities = Config.Bind("Polaroid Rarities", "Cursed Polaroid Custom Level Rarities", "", "Custom rarities for Cursed Polaroids.");
-            configCursedPolaroidMinValue = Config.Bind("Polaroids", "Cursed Polaroid Min Value", 200, "Minimum value for Cursed Polaroid.");
-            configCursedPolaroidMaxValue = Config.Bind("Polaroids", "Cursed Polaroid Max Value", 300, "Maximum value for Cursed Polaroid.");
+            configCursedPolaroidMinValue = Config.Bind("Polaroids", "Cursed Polaroid Min Value", 300, "Minimum value for Cursed Polaroid.");
+            configCursedPolaroidMaxValue = Config.Bind("Polaroids", "Cursed Polaroid Max Value", 750, "Maximum value for Cursed Polaroid.");
             configCursedPolaroidSomethingChance = Config.Bind("Polaroids", "Cursed Polaroid Something Spawn Chance", 0.99f, "Chance of spawning somethiing on first player who picked up Cursed Polaroid.");
 
             // Keytar

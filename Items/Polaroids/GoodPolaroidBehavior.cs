@@ -1,9 +1,6 @@
-﻿using GameNetcodeStuff;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using Unity.Netcode;
+﻿using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Rendering.HighDefinition;
 using static Something.Plugin;
 
 namespace Something.Items.Polaroids
@@ -17,15 +14,19 @@ namespace Something.Items.Polaroids
         public Sprite[] AltPhotos;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-        int photoIndex;
+        int photoIndex = -1;
 
         public override void Start()
         {
             base.Start();
             if (!IsServerOrHost) { return; }
-            
-            int index = configSpoilerFreeVersion.Value ? Random.Range(0, AltPhotos.Length) : Random.Range(0, Photos.Length);
-            ChangeSpriteClientRpc(index, configSpoilerFreeVersion.Value);
+
+            if (photoIndex == -1)
+            {
+                photoIndex = configSpoilerFreeVersion.Value ? Random.Range(0, AltPhotos.Length) : Random.Range(0, Photos.Length);
+            }
+
+            ChangeSpriteClientRpc(photoIndex, configSpoilerFreeVersion.Value);
         }
 
         public override void EnableItemMeshes(bool enable)
@@ -37,8 +38,7 @@ namespace Something.Items.Polaroids
 
         public override void LoadItemSaveData(int saveData)
         {
-            if (!IsServerOrHost) { return; }
-            ChangeSpriteClientRpc(saveData, configSpoilerFreeVersion.Value);
+            photoIndex = saveData;
         }
 
         public override int GetItemDataToSave()
@@ -49,8 +49,9 @@ namespace Something.Items.Polaroids
         [ClientRpc]
         public void ChangeSpriteClientRpc(int index, bool spoilerFree)
         {
-            renderer.sprite = spoilerFree ? AltPhotos[index] : Photos[index];
             photoIndex = index;
+            log($"Changing sprite to {photoIndex}: {Photos[photoIndex].name}");
+            renderer.sprite = spoilerFree ? AltPhotos[photoIndex] : Photos[photoIndex];
         }
     }
 }

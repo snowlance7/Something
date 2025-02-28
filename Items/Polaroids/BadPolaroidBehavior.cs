@@ -19,35 +19,46 @@ namespace Something.Items.Polaroids
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         int photoIndex;
+        bool wasHeld;
 
         public override void Start()
         {
             base.Start();
             if (!IsServerOrHost) { return; }
 
-            int index = configSpoilerFreeVersion.Value ? Random.Range(0, AltPhotos.Length) : Random.Range(0, Photos.Length);
-            ChangeSpriteClientRpc(index, configSpoilerFreeVersion.Value);
+            if (photoIndex == -1)
+            {
+                photoIndex = configSpoilerFreeVersion.Value ? Random.Range(0, AltPhotos.Length) : Random.Range(0, Photos.Length);
+            }
+
+            ChangeSpriteClientRpc(photoIndex, configSpoilerFreeVersion.Value);
         }
 
         public override void EquipItem()
         {
-            LoggerInstance.LogDebug("Item held: " + hasBeenHeld); // TODO: Test this
-            if (IsServerOrHost && !hasBeenHeld && !StartOfRound.Instance.inShipPhase)
+            if (IsServerOrHost && !wasHeld)
             {
                 if (UnityEngine.Random.Range(0f, 1f) < configBadPolaroidSomethingChance.Value)
                 {
                     SpawnSomething(playerHeldBy);
+                    ItemAudio.Play();
                 }
             }
+
+            wasHeld = true;
+
             base.EquipItem();
         }
 
         public void SpawnSomething(PlayerControllerB playerToHaunt)
         {
+            if (!IsServerOrHost) { return; }
+            if (StartOfRound.Instance.inShipPhase || StartOfRound.Instance.shipIsLeaving) { return; }
             SomethingAI something = Instantiate(SomethingPrefab, Vector3.zero, Quaternion.identity).GetComponent<SomethingAI>();
             something.NetworkObject.Spawn(destroyWithScene: true);
             RoundManager.Instance.SpawnedEnemies.Add(something);
             something.ChangeTargetPlayerClientRpc(playerToHaunt.actualClientId);
+            PlaySomethingSFXClientRpc();
         }
 
         public override void EnableItemMeshes(bool enable)
@@ -59,8 +70,8 @@ namespace Something.Items.Polaroids
 
         public override void LoadItemSaveData(int saveData)
         {
-            if (!IsServerOrHost) { return; }
-            ChangeSpriteClientRpc(saveData, configSpoilerFreeVersion.Value);
+            photoIndex = saveData;
+            wasHeld = true;
         }
 
         public override int GetItemDataToSave()

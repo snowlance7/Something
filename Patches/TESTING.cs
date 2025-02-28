@@ -22,12 +22,11 @@ namespace Something
     internal class TESTING : MonoBehaviour
     {
         private static ManualLogSource logger = Plugin.LoggerInstance;
-        private static bool toggle;
 
         [HarmonyPostfix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.PingScan_performed))]
         public static void PingScan_performedPostFix()
         {
-            log("Insanity: " + localPlayer.insanityLevel);
+
         }
 
         [HarmonyPrefix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.SubmitChat_performed))]
@@ -40,6 +39,9 @@ namespace Something
 
                 switch (args[0])
                 {
+                    case "/save":
+                        GameNetworkManager.Instance.SaveItemsInShip();
+                        break;
                     case "/insanity":
                         localPlayer.insanityLevel = float.Parse(args[1]);
                         break;
