@@ -44,6 +44,10 @@ namespace Something
         public static ConfigEntry<string> configSomethingLevelRarities;
         public static ConfigEntry<string> configSomethingCustomLevelRarities;
 
+        // Rabbit Configs
+        public static ConfigEntry<string> configRabbitLevelRarities;
+        public static ConfigEntry<string> configRabbitCustomLevelRarities;
+
         // Polaroid Configs
 
         public static ConfigEntry<bool> configEnablePolaroids;
@@ -123,6 +127,10 @@ namespace Something
             // Something Configs
             configSomethingLevelRarities = Config.Bind("Rarities", "Something Level Rarities", "All: 40, Modded: 40", "Rarities for each level. See default for formatting.");
             configSomethingCustomLevelRarities = Config.Bind("Rarities", "Something Custom Level Rarities", "", "Rarities for modded levels.");
+
+            // Rabbit
+            configRabbitLevelRarities = Config.Bind("Rarities", "Rabbit Level Rarities", "All: 5, Modded: 5", "Rarities for each level. See default for formatting.");
+            configRabbitCustomLevelRarities = Config.Bind("Rarities", "Rabbit Custom Level Rarities", "", "Rarities for modded levels.");
 
             // Polaroid Configs
             configEnablePolaroids = Config.Bind("Polaroid Rarities", "Enable Polaroids", true, "Enables polaroids from the game as scrap.");
@@ -207,6 +215,18 @@ namespace Something
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(something.enemyPrefab);
             LoggerInstance.LogDebug("Registering enemy...");
             Enemies.RegisterEnemy(something, GetLevelRarities(configSomethingLevelRarities.Value), GetCustomLevelRarities(configSomethingCustomLevelRarities.Value), SomethingTN, SomethingTK);
+
+
+            EnemyType rabbit = ModAssets.LoadAsset<EnemyType>("Assets/ModAssets/RabbitEnemy.asset");
+            if (rabbit == null) { LoggerInstance.LogError("Error: Couldnt get Rabbit enemy from assets"); return; }
+            LoggerInstance.LogDebug($"Got Rabbit enemy prefab");
+            TerminalNode RabbitTN = ModAssets.LoadAsset<TerminalNode>("Assets/ModAssets/Bestiary/RabbitTN.asset");
+            TerminalKeyword RabbitTK = ModAssets.LoadAsset<TerminalKeyword>("Assets/ModAssets/Bestiary/RabbitTK.asset");
+
+            LoggerInstance.LogDebug("Registering enemy network prefab...");
+            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(rabbit.enemyPrefab);
+            LoggerInstance.LogDebug("Registering enemy...");
+            Enemies.RegisterEnemy(rabbit, GetLevelRarities(configRabbitLevelRarities.Value), GetCustomLevelRarities(configRabbitCustomLevelRarities.Value), RabbitTN, RabbitTK);
 
             // Finished
             Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
