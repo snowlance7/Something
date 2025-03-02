@@ -6,6 +6,7 @@ using static Something.Plugin;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using System.Collections;
+using TMPro;
 
 namespace Something
 {
@@ -19,6 +20,7 @@ namespace Something
         public Sprite[] JumpscareSprites;
         public GameObject PanelObj;
         public UnityEngine.UI.Image PanelImage;
+        public TextMeshPro BreathingTooltip;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         string KeyBind
@@ -45,8 +47,7 @@ namespace Something
             {
                 if (configShowBreathingTooltip.Value)
                 {
-                    //HUDManager.Instance.ChangeControlTip(HUDManager.Instance.controlTipLines.Length, $"Breath: [{KeyBind}]");
-                    HUDManager.Instance.ChangeControlTipMultiple([$"Breath: [{KeyBind}]"]);
+                    BreathingTooltip.text = $"Breath: [{KeyBind}]";
                 }
                 if (!showedTooltip)
                 {

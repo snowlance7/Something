@@ -30,11 +30,15 @@ namespace Something
         public Transform MouthTransform;
         public GameObject Container;
         public NetworkAnimator networkAnimator;
+        public AudioClip GlassBreakSFX;
+        public AudioClip KillSFX;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         bool grabbingTargetPlayer;
         bool grabbingRight;
         bool targetPlayerInChest;
+
+        float timeSinceMeow;
 
         // Const
         const float turnSpeed = 15f;
@@ -43,6 +47,7 @@ namespace Something
         // Configs
         float triggerDistance = 5f;
         float distanceToLoseAggro = 20f;
+        float meowCooldown = 30f;
 
         public enum State
         {
@@ -94,37 +99,28 @@ namespace Something
                     }
                 }
             }
-            if (!base.IsOwner)
+
+            if (currentBehaviourStateIndex == (int)State.Inactive)
             {
-                if (currentSearch.inProgress)
+                timeSinceMeow += Time.deltaTime;
+
+                if (timeSinceMeow > meowCooldown)
                 {
-                    StopSearch(currentSearch);
+                    creatureVoice.Play();
+                    timeSinceMeow = 0;
                 }
-                /*SetClientCalculatingAI(enable: false);
-                if (!inSpecialAnimation)
+            }
+
+            if (targetPlayer != null)
+            {
+                if (grabbingTargetPlayer)
                 {
-                    if (RoundManager.Instance.currentDungeonType == 4 && Vector3.Distance(base.transform.position, RoundManager.Instance.currentMineshaftElevator.elevatorInsidePoint.position) < 1f)
-                    {
-                        serverPosition += RoundManager.Instance.currentMineshaftElevator.elevatorInsidePoint.position - RoundManager.Instance.currentMineshaftElevator.previousElevatorPosition;
-                    }
-                    base.transform.position = Vector3.SmoothDamp(base.transform.position, serverPosition, ref tempVelocity, syncMovementSpeed);
-                    base.transform.eulerAngles = new Vector3(base.transform.eulerAngles.x, Mathf.LerpAngle(base.transform.eulerAngles.y, targetYRotation, 15f * Time.deltaTime), base.transform.eulerAngles.z);
-                }*/
-                timeSinceSpawn += Time.deltaTime;
-                return;
-            }
-            if (inSpecialAnimation)
-            {
-                return;
-            }
-            if (updateDestinationInterval >= 0f)
-            {
-                updateDestinationInterval -= Time.deltaTime;
-            }
-            else
-            {
-                DoAIInterval();
-                updateDestinationInterval = AIIntervalTime + UnityEngine.Random.Range(-0.015f, 0.015f);
+                    targetPlayer.transform.position = grabbingRight ? RightHandTransform.position : LeftHandTransform.position;
+                }
+                else if (targetPlayerInChest)
+                {
+                    targetPlayer.transform.position = ChestTransform.position;
+                }
             }
 
             if (StartOfRound.Instance.allPlayersDead || inSpecialAnimation) { return; }
@@ -135,12 +131,29 @@ namespace Something
                 {
                     turnCompass.LookAt(targetPlayer.gameplayCamera.transform.position);
                     MeshTransform.rotation = Quaternion.Lerp(MeshTransform.rotation, Quaternion.Euler(new Vector3(0f, turnCompass.eulerAngles.y, 0f)), turnSpeed * Time.deltaTime);
+                    HeadTransform.rotation = Quaternion.Lerp(HeadTransform.rotation, Quaternion.Euler(new Vector3(turnCompass.eulerAngles.x, turnCompass.eulerAngles.y, turnCompass.eulerAngles.z)), turnSpeed * Time.deltaTime);
                 }
                 else
                 {
                     turnCompass.LookAt(targetPlayer.gameplayCamera.transform.position);
-                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(new Vector3(0f, turnCompass.eulerAngles.y, 0f)), turnSpeed * Time.deltaTime);
+                    //transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(new Vector3(0f, turnCompass.eulerAngles.y, 0f)), turnSpeed * Time.deltaTime);
+                    HeadTransform.rotation = Quaternion.Lerp(HeadTransform.rotation, Quaternion.Euler(new Vector3(turnCompass.eulerAngles.x, turnCompass.eulerAngles.y, turnCompass.eulerAngles.z)), turnSpeed * Time.deltaTime);
                 }
+            }
+            else
+            {
+                HeadTransform.rotation = Quaternion.identity;
+            }
+
+            if (!base.IsOwner) { return; }
+            if (updateDestinationInterval >= 0f)
+            {
+                updateDestinationInterval -= Time.deltaTime;
+            }
+            else
+            {
+                DoAIInterval();
+                updateDestinationInterval = AIIntervalTime + UnityEngine.Random.Range(-0.015f, 0.015f);
             }
         }
 
@@ -254,7 +267,8 @@ namespace Something
             if (!other.gameObject.TryGetComponent(out PlayerControllerB player)) { return; }
             if (player == null || player != localPlayer) { return; }
 
-
+            inSpecialAnimation = true;
+            KillPlayerServerRpc(player.actualClientId);
         }
 
         IEnumerator KillTargetPlayerAfterDelay(float delay, int deathAnimation)
@@ -278,7 +292,7 @@ namespace Something
         {
             inSpecialAnimation = false;
         }
-
+        // TODO: Test all these
         public void GrabTargetPlayerRightHand()
         {
             if (targetPlayer == null) { return; }
@@ -331,7 +345,7 @@ namespace Something
             targetPlayer.playerRigidbody.isKinematic = true;
         }*/
 
-        public void ThrowTargetPlayer(Transform throwDirection) // TODO: Test this
+        public void ThrowTargetPlayer() // TODO: Test this
         {
             if (targetPlayer == null) { return; }
 
@@ -339,7 +353,7 @@ namespace Something
             targetPlayer.playerRigidbody.isKinematic = true;
 
             if (localPlayer != targetPlayer) { return; }
-            localPlayer.KillPlayer(throwDirection.forward * throwForce, true, CauseOfDeath.Inertia);
+            localPlayer.KillPlayer(LeftHandTransform.forward * throwForce, true, CauseOfDeath.Inertia);
         }
 
         public void KillTargetPlayerWithDeathAnimation(int deathAnimation)
@@ -397,19 +411,46 @@ namespace Something
             targetPlayer.deadBody.attachedTo = MouthTransform;
             targetPlayer.deadBody.attachedLimb = targetPlayer.deadBody.bodyParts[5];
             targetPlayer.deadBody.matchPositionExactly = true;
+            StartCoroutine(KeepPlayerInMouthForDelay(targetPlayer, 5f));
+        }
+
+        IEnumerator KeepPlayerInMouthForDelay(PlayerControllerB player, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+
+            player.deadBody.attachedTo = null;
+            player.deadBody.attachedLimb = null;
+            player.deadBody.matchPositionExactly = false;
         }
 
         // RPC's
 
+        [ServerRpc(RequireOwnership = false)]
+        public void KillPlayerServerRpc(ulong clientId)
+        {
+            if (!IsServerOrHost) { return; }
+            int index = UnityEngine.Random.Range(1, 7);
+            KillPlayerClientRpc(clientId, $"killPlayer{index}");
+        }
+
         [ClientRpc]
-        void BreakOutOfContainmentClientRpc()
+        public void KillPlayerClientRpc(ulong clientId, string animationName)
+        {
+            targetPlayer = PlayerFromId(clientId);
+            creatureAnimator.SetTrigger(animationName);
+            creatureSFX.PlayOneShot(KillSFX);
+        }
+
+        [ClientRpc]
+        public void BreakOutOfContainmentClientRpc()
         {
             SwitchToBehaviourStateOnLocalClient((int)State.Chasing);
             Container.SetActive(false);
-            MeshTransform.position = Vector3.zero;
-            MeshTransform.rotation = Quaternion.identity;
+            MeshTransform.localPosition = Vector3.zero;
+            MeshTransform.localRotation = Quaternion.identity;
             creatureAnimator.SetTrigger("walk");
-            creatureVoice.Play();
+            creatureSFX.Play();
+            creatureSFX.PlayOneShot(GlassBreakSFX);
         }
 
         [ServerRpc(RequireOwnership = false)]
