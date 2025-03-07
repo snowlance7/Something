@@ -18,10 +18,12 @@ using static Something.Plugin;
 
 namespace Something
 {
-    //[HarmonyPatch]
+    [HarmonyPatch]
     internal class TESTING : MonoBehaviour
     {
         private static ManualLogSource logger = Plugin.LoggerInstance;
+        public static bool testing = false;
+        public static int SpringCatKillIndex = 0;
 
         [HarmonyPostfix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.PingScan_performed))]
         public static void PingScan_performedPostFix()
@@ -39,6 +41,14 @@ namespace Something
 
                 switch (args[0])
                 {
+                    case "/killIndex":
+                        SpringCatKillIndex = int.Parse(args[1]);
+                        HUDManager.Instance.DisplayTip("SpringCatKillIndex", SpringCatKillIndex.ToString());
+                        break;
+                    case "/testing":
+                        testing = !testing;
+                        HUDManager.Instance.DisplayTip("Testing", testing.ToString());
+                        break;
                     case "/save":
                         GameNetworkManager.Instance.SaveItemsInShip();
                         break;

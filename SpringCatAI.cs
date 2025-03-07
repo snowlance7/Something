@@ -271,31 +271,21 @@ namespace Something
             KillPlayerServerRpc(player.actualClientId);
         }
 
-        IEnumerator KillTargetPlayerAfterDelay(float delay, int deathAnimation)
-        {
-            yield return new WaitForSeconds(delay);
-
-            if (targetPlayer != null)
-            {
-                targetPlayer.KillPlayer(Vector3.zero, true, CauseOfDeath.Inertia, deathAnimation);
-            }
-        }
-
         // Animations
 
-        public void SetInSpecialAnimation()
+        public void SetInSpecialAnimation() // Animation
         {
             inSpecialAnimation = true;
         }
 
-        public void UnSetInSpecialAnimation()
+        public void UnSetInSpecialAnimation() // Animation
         {
             inSpecialAnimation = false;
         }
         // TODO: Test all these
-        public void GrabTargetPlayerRightHand()
+        public void GrabTargetPlayerRightHand() // Animation
         {
-            if (targetPlayer == null) { return; }
+            if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
 
             inSpecialAnimation = true;
             targetPlayer.playerRigidbody.isKinematic = false;
@@ -303,9 +293,9 @@ namespace Something
             grabbingTargetPlayer = true;
         }
 
-        public void GrabTargetPlayerLeftHand()
+        public void GrabTargetPlayerLeftHand() // Animation
         {
-            if (targetPlayer == null) { return; }
+            if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
 
             inSpecialAnimation = true;
             targetPlayer.playerRigidbody.isKinematic = false;
@@ -313,9 +303,9 @@ namespace Something
             grabbingTargetPlayer = true;
         }
 
-        public void DropTargetPlayer()
+        public void DropTargetPlayer() // Animation
         {
-            if (targetPlayer == null) { return; }
+            if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
 
             grabbingTargetPlayer = false;
             targetPlayerInChest = false;
@@ -331,9 +321,9 @@ namespace Something
             }
         }
 
-        /*public void ThrowTargetPlayer(Transform throwDirection)
+        /*public void ThrowTargetPlayer(Transform throwDirection) // Animation
         {
-            if (targetPlayer == null) { return; }
+            if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
 
             targetPlayer.DropAllHeldItems();
             grabbingTargetPlayer = false;
@@ -345,77 +335,107 @@ namespace Something
             targetPlayer.playerRigidbody.isKinematic = true;
         }*/
 
-        public void ThrowTargetPlayer() // TODO: Test this
+        public void ThrowTargetPlayer() // Animation
         {
-            if (targetPlayer == null) { return; }
+            if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
 
-            grabbingTargetPlayer = false;
             targetPlayer.playerRigidbody.isKinematic = true;
+            grabbingTargetPlayer = false;
 
             if (localPlayer != targetPlayer) { return; }
             localPlayer.KillPlayer(LeftHandTransform.forward * throwForce, true, CauseOfDeath.Inertia);
         }
 
-        public void KillTargetPlayerWithDeathAnimation(int deathAnimation)
+        public void KillTargetPlayerWithDeathAnimation(int deathAnimation) // Animation
         {
-            if (targetPlayer == null) { return; }
+            if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
             if (localPlayer != targetPlayer) { return; }
+
+            grabbingTargetPlayer = false;
+            targetPlayer.playerRigidbody.isKinematic = true;
 
             localPlayer.KillPlayer(Vector3.zero, true, CauseOfDeath.Mauling, deathAnimation);
         }
 
-        /*public void TearTargetPlayerApart()
+        public void TearTargetPlayerApart() // Animation
         {
-            if (targetPlayer == null) { return; }
-            if (localPlayer != targetPlayer) { return; }
+            if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
 
-            localPlayer.KillPlayer(Vector3.zero, true, CauseOfDeath.Mauling, 7);
-            PullTargetPlayerBodyApartServerRpc();
-        }*/
+            grabbingTargetPlayer = false;
+            targetPlayer.playerRigidbody.isKinematic = true;
 
-        public void TearTargetPlayerApart()
+            if (localPlayer == targetPlayer)
+            {
+                localPlayer.KillPlayer(Vector3.zero, true, CauseOfDeath.Mauling, 7);
+            }
+
+            StartCoroutine(GrabBodyPartsCoroutine(6, 0));
+        }
+
+        public void PullOffTargetPlayerHead() // Animation
         {
-            if (targetPlayer == null || targetPlayer.deadBody == null) { logger.LogError("TargetPlayer or dead body is null"); return; }
+            if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
+
+            grabbingTargetPlayer = false;
+            targetPlayer.playerRigidbody.isKinematic = true;
+
+            if (localPlayer == targetPlayer)
+            {
+                localPlayer.KillPlayer(Vector3.zero, true, CauseOfDeath.Mauling, 1);
+            }
+
+            StartCoroutine(GrabBodyPartsCoroutine(0, 5));
+        }
+
+        IEnumerator GrabBodyPartsCoroutine(int leftHandPart, int rightHandPart)
+        {
+            yield return null;
+            yield return new WaitUntil(() => (targetPlayer.isPlayerDead && targetPlayer.deadBody != null) || !inSpecialAnimation);
+            if (!inSpecialAnimation) { yield break; }
+
+            targetPlayer.deadBody.secondaryAttachedTo = LeftHandTransform;
+            targetPlayer.deadBody.secondaryAttachedLimb = targetPlayer.deadBody.bodyParts[leftHandPart];
 
             targetPlayer.deadBody.attachedTo = RightHandTransform;
-            targetPlayer.deadBody.attachedLimb = targetPlayer.deadBody.bodyParts[0];
-            targetPlayer.deadBody.secondaryAttachedTo = LeftHandTransform;
-            targetPlayer.deadBody.secondaryAttachedLimb = targetPlayer.deadBody.bodyParts[6];
+            targetPlayer.deadBody.attachedLimb = targetPlayer.deadBody.bodyParts[rightHandPart];
+
             targetPlayer.deadBody.matchPositionExactly = true;
         }
 
-        public void PullOffTargetPlayerHead()
+        public void PutTargetPlayerInChest() // Animation
         {
-            if (targetPlayer == null || targetPlayer.deadBody == null) { logger.LogError("TargetPlayer or dead body is null"); return; }
-
-            targetPlayer.deadBody.attachedTo = RightHandTransform;
-            targetPlayer.deadBody.attachedLimb = targetPlayer.deadBody.bodyParts[5];
-            targetPlayer.deadBody.secondaryAttachedTo = LeftHandTransform;
-            targetPlayer.deadBody.secondaryAttachedLimb = targetPlayer.deadBody.bodyParts[0];
-            targetPlayer.deadBody.matchPositionExactly = true;
-        }
-
-        public void PutTargetPlayerInChest()
-        {
-            if (targetPlayer == null) { return; }
+            if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
 
             inSpecialAnimation = true;
             targetPlayer.playerRigidbody.isKinematic = false;
             targetPlayerInChest = true;
         }
 
-        public void PutTargetPlayerInMouth()
+        public void PutTargetPlayerInMouth() // Animation
         {
-            if (targetPlayer == null || targetPlayer.deadBody == null) { logger.LogError("TargetPlayer or dead body is null"); return; }
+            if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
 
-            targetPlayer.deadBody.attachedTo = MouthTransform;
-            targetPlayer.deadBody.attachedLimb = targetPlayer.deadBody.bodyParts[5];
-            targetPlayer.deadBody.matchPositionExactly = true;
+            grabbingTargetPlayer = false;
+            targetPlayer.playerRigidbody.isKinematic = true;
+
+            if (localPlayer == targetPlayer)
+            {
+                localPlayer.KillPlayer(Vector3.zero, true, CauseOfDeath.Mauling, 1);
+            }
+
             StartCoroutine(KeepPlayerInMouthForDelay(targetPlayer, 5f));
         }
 
         IEnumerator KeepPlayerInMouthForDelay(PlayerControllerB player, float delay)
         {
+            yield return null;
+            yield return new WaitUntil(() => (targetPlayer.isPlayerDead && targetPlayer.deadBody != null) || !inSpecialAnimation);
+            if (!inSpecialAnimation) { yield break; }
+
+            targetPlayer.deadBody.attachedTo = MouthTransform;
+            targetPlayer.deadBody.attachedLimb = targetPlayer.deadBody.bodyParts[5];
+            targetPlayer.deadBody.matchPositionExactly = true;
+
             yield return new WaitForSeconds(delay);
 
             player.deadBody.attachedTo = null;
@@ -429,7 +449,7 @@ namespace Something
         public void KillPlayerServerRpc(ulong clientId)
         {
             if (!IsServerOrHost) { return; }
-            int index = UnityEngine.Random.Range(1, 7);
+            int index = TESTING.testing ? TESTING.SpringCatKillIndex : UnityEngine.Random.Range(1, 7);
             KillPlayerClientRpc(clientId, $"killPlayer{index}");
         }
 
@@ -451,19 +471,6 @@ namespace Something
             creatureAnimator.SetTrigger("walk");
             creatureSFX.Play();
             creatureSFX.PlayOneShot(GlassBreakSFX);
-        }
-
-        [ServerRpc(RequireOwnership = false)]
-        public void PullTargetPlayerBodyApartServerRpc()
-        {
-            if (!IsServerOrHost) { return; }
-            PullTargetPlayerBodyApartClientRpc();
-        }
-
-        [ClientRpc]
-        public void PullTargetPlayerBodyApartClientRpc()
-        {
-
         }
     }
 }
