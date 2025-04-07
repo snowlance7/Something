@@ -22,8 +22,8 @@ namespace Something
     internal class TESTING : MonoBehaviour
     {
         private static ManualLogSource logger = Plugin.LoggerInstance;
-        public static bool testing = false;
-        public static int SpringCatKillIndex = 0;
+        public static bool testing = true;
+        public static int SpringCatKillIndex = 1;
 
         [HarmonyPostfix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.PingScan_performed))]
         public static void PingScan_performedPostFix()

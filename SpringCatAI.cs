@@ -34,11 +34,13 @@ namespace Something
         public AudioClip KillSFX;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
+        BreakerBox? breakerBox;
         bool grabbingTargetPlayer;
         bool grabbingRight;
         bool targetPlayerInChest;
 
         float timeSinceMeow;
+        float timeSinceSwitchLights;
 
         // Const
         const float turnSpeed = 15f;
@@ -48,6 +50,8 @@ namespace Something
         float triggerDistance = 5f;
         float distanceToLoseAggro = 20f;
         float meowCooldown = 30f;
+        float lightSwitchCooldown = 5f;
+        float turnOffLightsDistance = 10f;
 
         public enum State
         {
@@ -80,26 +84,11 @@ namespace Something
             }
 
             currentBehaviourStateIndex = (int)State.Inactive;
+            breakerBox = UnityEngine.Object.FindObjectOfType<BreakerBox>();
         }
 
         public override void Update()
         {
-            if (stunnedIndefinitely <= 0)
-            {
-                if (stunNormalizedTimer >= 0f)
-                {
-                    stunNormalizedTimer -= Time.deltaTime / enemyType.stunTimeMultiplier;
-                }
-                else
-                {
-                    stunnedByPlayer = null;
-                    if (postStunInvincibilityTimer >= 0f)
-                    {
-                        postStunInvincibilityTimer -= Time.deltaTime * 5f;
-                    }
-                }
-            }
-
             if (currentBehaviourStateIndex == (int)State.Inactive)
             {
                 timeSinceMeow += Time.deltaTime;
@@ -108,18 +97,6 @@ namespace Something
                 {
                     creatureVoice.Play();
                     timeSinceMeow = 0;
-                }
-            }
-
-            if (targetPlayer != null)
-            {
-                if (grabbingTargetPlayer)
-                {
-                    targetPlayer.transform.position = grabbingRight ? RightHandTransform.position : LeftHandTransform.position;
-                }
-                else if (targetPlayerInChest)
-                {
-                    targetPlayer.transform.position = ChestTransform.position;
                 }
             }
 
@@ -145,7 +122,10 @@ namespace Something
                 HeadTransform.rotation = Quaternion.identity;
             }
 
-            if (!base.IsOwner) { return; }
+            if (!IsServerOrHost) { return; }
+
+            timeSinceSwitchLights += Time.deltaTime;
+
             if (updateDestinationInterval >= 0f)
             {
                 updateDestinationInterval -= Time.deltaTime;
@@ -154,6 +134,24 @@ namespace Something
             {
                 DoAIInterval();
                 updateDestinationInterval = AIIntervalTime + UnityEngine.Random.Range(-0.015f, 0.015f);
+            }
+        }
+
+        public void LateUpdate()
+        {
+
+            if (targetPlayer != null)
+            {
+                if (grabbingTargetPlayer)
+                {
+                    targetPlayer.transform.position = grabbingRight ? RightHandTransform.position : LeftHandTransform.position; // TODO: Dont do offset or parenting! Change the transform of the handtransform in unity editor
+                    Vector3 chestOffset = targetPlayer.transform.position - targetPlayer.bodyParts[5].position;
+                    targetPlayer.transform.position += chestOffset;
+                }
+                else if (targetPlayerInChest)
+                {
+                    targetPlayer.transform.position = ChestTransform.position;
+                }
             }
         }
 
@@ -198,6 +196,12 @@ namespace Something
                     break;
 
                 case (int)State.Chasing:
+
+                    if (timeSinceSwitchLights > lightSwitchCooldown)
+                    {
+                        timeSinceSwitchLights = 0f;
+                        TurnOffNearbyLightsClientRpc(turnOffLightsDistance);
+                    }
 
                     if (!TargetClosestPlayerInRange(distanceToLoseAggro))
                     {
@@ -246,6 +250,23 @@ namespace Something
             return targetPlayer != null;
         }
 
+        public void TurnOffNearbyLightsOnClient(float distance)
+        {
+            logger.LogDebug("Turning off nearby lights");
+            foreach (var light in RoundManager.Instance.allPoweredLightsAnimators)
+            {
+                if (Vector3.Distance(transform.position, light.transform.position) <= distance)
+                {
+                    light.SetBool("on", false);
+                }
+            }
+
+            if (breakerBox != null)
+            {
+                creatureSFX.PlayOneShot(breakerBox.switchPowerSFX);
+            }
+        }
+
         IEnumerator FreezePlayerCoroutine(float freezeTime)
         {
             FreezePlayer(targetPlayer, true);
@@ -275,41 +296,50 @@ namespace Something
 
         public void SetInSpecialAnimation() // Animation
         {
+            logger.LogDebug("SetInSpecialAnimation");
             inSpecialAnimation = true;
         }
 
         public void UnSetInSpecialAnimation() // Animation
         {
+            logger.LogDebug("UnSetInSpecialAnimation");
             inSpecialAnimation = false;
         }
+
         // TODO: Test all these
         public void GrabTargetPlayerRightHand() // Animation
         {
+            logger.LogDebug("GrabTargetPlayerRightHand");
             if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
 
             inSpecialAnimation = true;
             targetPlayer.playerRigidbody.isKinematic = false;
             grabbingRight = true;
             grabbingTargetPlayer = true;
+            targetPlayer.transform.SetParent(RightHandTransform);
         }
 
         public void GrabTargetPlayerLeftHand() // Animation
         {
+            logger.LogDebug("GrabTargetPlayerLeftHand");
             if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
 
             inSpecialAnimation = true;
             targetPlayer.playerRigidbody.isKinematic = false;
             grabbingRight = false;
             grabbingTargetPlayer = true;
+            targetPlayer.transform.SetParent(LeftHandTransform);
         }
 
         public void DropTargetPlayer() // Animation
         {
+            logger.LogDebug("DropTargetPlayer");
             if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
 
             grabbingTargetPlayer = false;
             targetPlayerInChest = false;
             targetPlayer.playerRigidbody.isKinematic = true;
+            targetPlayer.transform.rotation = Quaternion.identity;
 
             if (targetPlayer.isPlayerDead && targetPlayer.deadBody != null)
             {
@@ -321,33 +351,22 @@ namespace Something
             }
         }
 
-        /*public void ThrowTargetPlayer(Transform throwDirection) // Animation
-        {
-            if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
-
-            targetPlayer.DropAllHeldItems();
-            grabbingTargetPlayer = false;
-            targetPlayer.transform.position = throwDirection.position;
-
-            logger.LogDebug("Applying force: " + throwDirection.forward * throwForce);
-            targetPlayer.playerRigidbody.velocity = Vector3.zero;
-            targetPlayer.externalForceAutoFade += throwDirection.forward * throwForce;
-            targetPlayer.playerRigidbody.isKinematic = true;
-        }*/
-
         public void ThrowTargetPlayer() // Animation
         {
+            logger.LogDebug("ThrowTargetPlayer");
             if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
 
             targetPlayer.playerRigidbody.isKinematic = true;
             grabbingTargetPlayer = false;
 
+            creatureSFX.PlayOneShot(KillSFX);
             if (localPlayer != targetPlayer) { return; }
             localPlayer.KillPlayer(LeftHandTransform.forward * throwForce, true, CauseOfDeath.Inertia);
         }
 
         public void KillTargetPlayerWithDeathAnimation(int deathAnimation) // Animation
         {
+            logger.LogDebug("KillTargetPlayerWithDeathAnimation: " + deathAnimation);
             if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
             if (localPlayer != targetPlayer) { return; }
 
@@ -355,10 +374,12 @@ namespace Something
             targetPlayer.playerRigidbody.isKinematic = true;
 
             localPlayer.KillPlayer(Vector3.zero, true, CauseOfDeath.Mauling, deathAnimation);
+            creatureSFX.PlayOneShot(KillSFX);
         }
 
         public void TearTargetPlayerApart() // Animation
         {
+            logger.LogDebug("TearTargetPlayerApart");
             if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
 
             grabbingTargetPlayer = false;
@@ -369,11 +390,13 @@ namespace Something
                 localPlayer.KillPlayer(Vector3.zero, true, CauseOfDeath.Mauling, 7);
             }
 
+            creatureSFX.PlayOneShot(KillSFX);
             StartCoroutine(GrabBodyPartsCoroutine(6, 0));
         }
 
         public void PullOffTargetPlayerHead() // Animation
         {
+            logger.LogDebug("PullOffTargetPlayerHead");
             if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
 
             grabbingTargetPlayer = false;
@@ -384,14 +407,17 @@ namespace Something
                 localPlayer.KillPlayer(Vector3.zero, true, CauseOfDeath.Mauling, 1);
             }
 
+            creatureSFX.PlayOneShot(KillSFX);
             StartCoroutine(GrabBodyPartsCoroutine(0, 5));
         }
 
         IEnumerator GrabBodyPartsCoroutine(int leftHandPart, int rightHandPart)
         {
+            logger.LogDebug($"GrabBodyPartsCoroutine: {leftHandPart}, {rightHandPart}");
             yield return null;
             yield return new WaitUntil(() => (targetPlayer.isPlayerDead && targetPlayer.deadBody != null) || !inSpecialAnimation);
-            if (!inSpecialAnimation) { yield break; }
+            if (!inSpecialAnimation) { logger.LogError("No longer inspecialanimation"); yield break; }
+            logger.LogDebug("Continue GrabBodyPartsCoroutine");
 
             targetPlayer.deadBody.secondaryAttachedTo = LeftHandTransform;
             targetPlayer.deadBody.secondaryAttachedLimb = targetPlayer.deadBody.bodyParts[leftHandPart];
@@ -404,6 +430,7 @@ namespace Something
 
         public void PutTargetPlayerInChest() // Animation
         {
+            logger.LogDebug("PutTargetPlayerInChest");
             if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
 
             inSpecialAnimation = true;
@@ -413,6 +440,7 @@ namespace Something
 
         public void PutTargetPlayerInMouth() // Animation
         {
+            logger.LogDebug("PutTargetPlayerInMouth");
             if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
 
             grabbingTargetPlayer = false;
@@ -423,14 +451,16 @@ namespace Something
                 localPlayer.KillPlayer(Vector3.zero, true, CauseOfDeath.Mauling, 1);
             }
 
+            creatureSFX.PlayOneShot(KillSFX);
             StartCoroutine(KeepPlayerInMouthForDelay(targetPlayer, 5f));
         }
 
         IEnumerator KeepPlayerInMouthForDelay(PlayerControllerB player, float delay)
         {
+            logger.LogDebug("KeepPlayerInMouthForDelay");
             yield return null;
             yield return new WaitUntil(() => (targetPlayer.isPlayerDead && targetPlayer.deadBody != null) || !inSpecialAnimation);
-            if (!inSpecialAnimation) { yield break; }
+            if (!inSpecialAnimation) { logger.LogError("No longer inspecialanimation"); yield break; }
 
             targetPlayer.deadBody.attachedTo = MouthTransform;
             targetPlayer.deadBody.attachedLimb = targetPlayer.deadBody.bodyParts[5];
@@ -458,7 +488,6 @@ namespace Something
         {
             targetPlayer = PlayerFromId(clientId);
             creatureAnimator.SetTrigger(animationName);
-            creatureSFX.PlayOneShot(KillSFX);
         }
 
         [ClientRpc]
@@ -471,6 +500,12 @@ namespace Something
             creatureAnimator.SetTrigger("walk");
             creatureSFX.Play();
             creatureSFX.PlayOneShot(GlassBreakSFX);
+        }
+
+        [ClientRpc]
+        public void TurnOffNearbyLightsClientRpc(float distance)
+        {
+            TurnOffNearbyLightsOnClient(distance);
         }
     }
 }
