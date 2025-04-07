@@ -1,0 +1,11 @@
+{
+  "name": "Something",
+  "version_number": "0.3.0",
+  "website_url": "https://github.com/snowlance7/Something",
+  "description": "Adds Something from Omori as an enemy",
+  "dependencies": [
+    "BepInEx-BepInExPack-5.4.2100",
+    "Evaisa-LethalLib-0.16.2",
+    "Rune580-LethalCompany_InputUtils-0.7.7"
+  ]
+}
