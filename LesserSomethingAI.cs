@@ -142,7 +142,7 @@ namespace Something
         {
             if (!other.CompareTag("Player") || !other.gameObject.TryGetComponent(out PlayerControllerB player)) { return; }
             if (player != localPlayer) { return; }
-            log("Player collided with lesser something");
+            logger.LogDebug("Player collided with lesser something");
             localPlayer.DamagePlayer(damage);
             localPlayer.insanityLevel += insanityOnCollision;
             RoundManager.PlayRandomClip(localPlayer.statusEffectAudio, attackSFX);

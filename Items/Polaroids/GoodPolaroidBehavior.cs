@@ -1,4 +1,5 @@
-﻿using Unity.Netcode;
+﻿using BepInEx.Logging;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 using static Something.Plugin;
@@ -7,6 +8,8 @@ namespace Something.Items.Polaroids
 {
     public class GoodPolaroidBehavior : PhysicsProp
     {
+        private static ManualLogSource logger = LoggerInstance;
+
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public GameObject SomethingPrefab;
         public SpriteRenderer renderer;
@@ -50,7 +53,7 @@ namespace Something.Items.Polaroids
         public void ChangeSpriteClientRpc(int index, bool spoilerFree)
         {
             photoIndex = index;
-            log($"Changing sprite to {photoIndex}: {Photos[photoIndex].name}");
+            logger.LogDebug("Changing sprite to {photoIndex}: {Photos[photoIndex].name}");
             renderer.sprite = spoilerFree ? AltPhotos[photoIndex] : Photos[photoIndex];
         }
     }

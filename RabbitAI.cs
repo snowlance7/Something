@@ -20,7 +20,7 @@ namespace Something
 
         public override void Start()
         {
-            log("Rabbit spawned");
+            logger.LogDebug("Rabbit spawned");
             base.Start();
 
             currentBehaviourStateIndex = (int)State.Roaming;

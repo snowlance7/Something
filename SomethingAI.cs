@@ -67,7 +67,7 @@ namespace Something
 
         public override void Start()
         {
-            log("Something spawned");
+            logger.LogDebug("Something spawned");
             base.Start();
 
             currentBehaviourStateIndex = (int)State.Inactive;
@@ -178,7 +178,7 @@ namespace Something
                     }
                     else if ((maxInsanity * insanityPhase3) <= targetPlayer.insanityLevel && timeSinceStare > stareCooldown) // Staring at player
                     {
-                        log("Attempting stare player");
+                        logger.LogDebug("Attempting stare player");
                         staring = true;
                         StarePlayer();
                     }
@@ -217,11 +217,11 @@ namespace Something
 
         void TryStartChase()
         {
-            log("Trying to start chase");
+            logger.LogDebug("Trying to start chase");
             targetNode = ChoosePositionInFrontOfPlayer(5f);
             if (targetNode == null)
             {
-                log("targetNode is null!");
+                logger.LogDebug("targetNode is null!");
                 return;
             }
 
@@ -243,9 +243,9 @@ namespace Something
 
         IEnumerator FreezePlayerCoroutine(float freezeTime)
         {
-            FreezePlayer(targetPlayer, true);
+            Utils.FreezePlayer(targetPlayer, true);
             yield return new WaitForSeconds(freezeTime);
-            FreezePlayer(targetPlayer, false);
+            Utils.FreezePlayer(targetPlayer, false);
         }
 
         void StarePlayer()
@@ -253,7 +253,7 @@ namespace Something
             targetNode = TryFindingHauntPosition();
             if (targetNode == null)
             {
-                log("targetNode is null!");
+                logger.LogDebug("targetNode is null!");
                 timeSinceStare = stareCooldown - stareBufferTime;
                 staring = false;
                 return;
@@ -295,9 +295,9 @@ namespace Something
 
         public Transform? ChoosePositionInFrontOfPlayer(float minDistance)
         {
-            log("Choosing position in front of player");
+            logger.LogDebug("Choosing position in front of player");
             Transform? result = null;
-            log(allAINodes.Count() + " ai nodes");
+            logger.LogDebug(allAINodes.Count() + " ai nodes");
             foreach (var node in allAINodes)
             {
                 if (node == null) { continue; }
@@ -312,13 +312,13 @@ namespace Something
                 result = node.transform;
             }
 
-            log($"null: {targetNode == null}");
+            logger.LogDebug("null: {targetNode == null}");
             return result;
         }
 
         public override void EnableEnemyMesh(bool enable, bool overrideDoNotSet = false)
         {
-            log($"EnableEnemyMesh({enable})");
+            logger.LogDebug("EnableEnemyMesh({enable})");
             somethingMesh.enabled = enable;
             ScanNode.SetActive(enable);
             enemyMeshEnabled = enable;
@@ -333,7 +333,7 @@ namespace Something
         IEnumerator ChoosePlayerToHauntCoroutine(float delay)
         {
             choosingNewPlayerToHaunt = true;
-            log($"choosing player to haunt in {delay} seconds");
+            logger.LogDebug("choosing player to haunt in {delay} seconds");
             yield return new WaitForSeconds(delay);
             if (targetPlayer == null)
             {
@@ -345,7 +345,7 @@ namespace Something
         void ChoosePlayerToHaunt()
         {
             if (StartOfRound.Instance.inShipPhase || StartOfRound.Instance.shipIsLeaving) { return; }
-            log("starting ChoosePlayerToHaunt()");
+            logger.LogDebug("starting ChoosePlayerToHaunt()");
 
             float highestInsanity = 0f;
             float highestInsanityPlayerIndex = 0f;
@@ -370,7 +370,7 @@ namespace Something
                 if (!StartOfRound.Instance.allPlayerScripts[j].isPlayerControlled)
                 {
                     playerScores[j] = 0;
-                    log($"{StartOfRound.Instance.allPlayerScripts[j].playerUsername}: {playerScores[j]}");
+                    logger.LogDebug("{StartOfRound.Instance.allPlayerScripts[j].playerUsername}: {playerScores[j]}");
                     continue;
                 }
                 playerScores[j] += 80;
@@ -391,7 +391,7 @@ namespace Something
                     playerScores[j] += 30;
                 }
 
-                log($"{StartOfRound.Instance.allPlayerScripts[j].playerUsername}: {playerScores[j]}");
+                logger.LogDebug("{StartOfRound.Instance.allPlayerScripts[j].playerUsername}: {playerScores[j]}");
             }
             PlayerControllerB hauntingPlayer = StartOfRound.Instance.allPlayerScripts[RoundManager.Instance.GetRandomWeightedIndex(playerScores)];
             if (hauntingPlayer.isPlayerDead)
@@ -413,7 +413,7 @@ namespace Something
 
         public void Teleport(Vector3 position)
         {
-            log("Teleporting to " + position.ToString());
+            logger.LogDebug("Teleporting to " + position.ToString());
             position = RoundManager.Instance.GetNavMeshPosition(position, RoundManager.Instance.navHit);
             agent.Warp(position);
         }
@@ -453,7 +453,7 @@ namespace Something
                 debugSpawnAmount++;
             }
 
-            log($"Spawned {debugSpawnAmount}/{allAINodes.Length} lesser_somethings which will self destruct in {nextSpawnTimeLS} seconds");
+            logger.LogDebug("Spawned {debugSpawnAmount}/{allAINodes.Length} lesser_somethings which will self destruct in {nextSpawnTimeLS} seconds");
         }
 
         void SpawnLittleOnes(bool reset)
@@ -512,7 +512,7 @@ namespace Something
 
         IEnumerator KillPlayerCoroutine()
         {
-            log("In KillPlayerCoroutine()");
+            logger.LogDebug("In KillPlayerCoroutine()");
             yield return null;
             StartCoroutine(FreezePlayerCoroutine(3f));
             EnableEnemyMesh(false);
@@ -527,13 +527,13 @@ namespace Something
 
         void ResetHallucinations()
         {
-            log("Destroying little ones");
+            logger.LogDebug("Destroying little ones");
             foreach (var ts in SpawnedTinySomethings.ToList())
             {
                 Destroy(ts);
             }
 
-            log("Destroying breathing UI");
+            logger.LogDebug("Destroying breathing UI");
             if (BreathingUI != null)
             {
                 Destroy(BreathingUI.gameObject);
@@ -553,15 +553,15 @@ namespace Something
 
         public void EndSpawnAnimation()
         {
-            log("In EndSpawnAnimation()");
+            logger.LogDebug("In EndSpawnAnimation()");
             inSpecialAnimation = false;
             creatureVoice.Play();
-            FreezePlayer(targetPlayer, false);
+            Utils.FreezePlayer(targetPlayer, false);
         }
 
         public void EndDespawnAnimation()
         {
-            log("In EndDespawnAnimation");
+            logger.LogDebug("In EndDespawnAnimation");
             creatureVoice.Stop();
             inSpecialAnimation = false;
             EnableEnemyMesh(false);
@@ -576,7 +576,7 @@ namespace Something
             PlayerControllerB player = PlayerFromId(clientId);
             player.insanityLevel = 0f;
             targetPlayer = player;
-            log($"Something: Haunting player with playerClientId: {targetPlayer.playerClientId}; actualClientId: {targetPlayer.actualClientId}");
+            logger.LogDebug("Something: Haunting player with playerClientId: {targetPlayer.playerClientId}; actualClientId: {targetPlayer.actualClientId}");
             ChangeOwnershipOfEnemy(targetPlayer.actualClientId);
             hauntingLocalPlayer = localPlayer == targetPlayer;
 

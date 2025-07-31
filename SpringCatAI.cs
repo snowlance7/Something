@@ -31,7 +31,6 @@ namespace Something
         public GameObject Container;
         public NetworkAnimator networkAnimator;
         public AudioClip GlassBreakSFX;
-        public AudioClip KillSFX;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         BreakerBox? breakerBox;
@@ -42,13 +41,17 @@ namespace Something
         float timeSinceMeow;
         float timeSinceSwitchLights;
 
+        float timeSinceRecalcPath;
+
+        private Queue<Vector3> etchPath = new Queue<Vector3>();
+        private bool followingPath = false;
+
         // Const
         const float turnSpeed = 15f;
         const float throwForce = 20f;
 
         // Configs
         float triggerDistance = 5f;
-        float distanceToLoseAggro = 20f;
         float meowCooldown = 30f;
         float lightSwitchCooldown = 5f;
         float turnOffLightsDistance = 10f;
@@ -56,8 +59,7 @@ namespace Something
         public enum State
         {
             Inactive,
-            Roaming,
-            Chasing
+            Active
         }
 
         public override void Start()
@@ -135,11 +137,24 @@ namespace Something
                 DoAIInterval();
                 updateDestinationInterval = AIIntervalTime + UnityEngine.Random.Range(-0.015f, 0.015f);
             }
+
+            if (targetPlayer == null) { return; }
+
+            if (!followingPath && etchPath.Count > 0)
+            {
+                Vector3 nextPoint = etchPath.Dequeue();
+                agent.SetDestination(nextPoint);
+                followingPath = true;
+            }
+
+            if (followingPath && !agent.pathPending && agent.remainingDistance < 0.1f)
+            {
+                followingPath = false;
+            }
         }
 
         public void LateUpdate()
         {
-
             if (targetPlayer != null)
             {
                 if (grabbingTargetPlayer)
@@ -151,6 +166,37 @@ namespace Something
                 else if (targetPlayerInChest)
                 {
                     targetPlayer.transform.position = ChestTransform.position;
+                }
+            }
+        }
+
+        void RecalculatePath()
+        {
+            if (targetPlayer == null) { return; }
+            NavMeshPath rawPath = new NavMeshPath();
+            agent.CalculatePath(targetPlayer.transform.position, rawPath);
+
+            etchPath.Clear();
+
+            Vector3 current = transform.position;
+            foreach (Vector3 corner in rawPath.corners)
+            {
+                Vector3 direction = corner - current;
+
+                // Add a horizontal (X) move
+                if (Mathf.Abs(direction.x) > 0.01f)
+                {
+                    Vector3 horizontal = new Vector3(corner.x, current.y, current.z);
+                    etchPath.Enqueue(horizontal);
+                    current = horizontal;
+                }
+
+                // Then a vertical (Z) move
+                if (Mathf.Abs(direction.z) > 0.01f)
+                {
+                    Vector3 vertical = new Vector3(current.x, current.y, corner.z);
+                    etchPath.Enqueue(vertical);
+                    current = vertical;
                 }
             }
         }
@@ -172,7 +218,7 @@ namespace Something
                     {
                         if (Vector3.Distance(transform.position, targetPlayer.transform.position) > triggerDistance)
                         {
-                            SwitchToBehaviourStateOnLocalClient((int)State.Chasing);
+                            SwitchToBehaviourStateOnLocalClient((int)State.Active);
                             BreakOutOfContainmentClientRpc();
                             return;
                         }
@@ -180,22 +226,14 @@ namespace Something
 
                     break;
 
-                case (int)State.Roaming:
+                case (int)State.Active:
 
-                    if (currentSearch == null || !currentSearch.inProgress)
+                    if (!TargetClosestPlayer())
                     {
-                        StartSearch(transform.position);
+                        targetPlayer = null;
+                        agent.ResetPath();
+                        return;
                     }
-
-                    if (TargetClosestPlayer(1.5f, true))
-                    {
-                        StopSearch(currentSearch);
-                        SwitchToBehaviourClientRpc((int)State.Chasing);
-                    }
-
-                    break;
-
-                case (int)State.Chasing:
 
                     if (timeSinceSwitchLights > lightSwitchCooldown)
                     {
@@ -203,14 +241,8 @@ namespace Something
                         TurnOffNearbyLightsClientRpc(turnOffLightsDistance);
                     }
 
-                    if (!TargetClosestPlayerInRange(distanceToLoseAggro))
-                    {
-                        targetPlayer = null;
-                        SwitchToBehaviourClientRpc((int)State.Roaming);
-                        return;
-                    }
-
-                    SetDestinationToPosition(targetPlayer.transform.position);
+                    //SetDestinationToPosition(targetPlayer.transform.position);
+                    RecalculatePath();
 
                     break;
 
@@ -250,28 +282,36 @@ namespace Something
             return targetPlayer != null;
         }
 
-        public void TurnOffNearbyLightsOnClient(float distance)
+        public new bool TargetClosestPlayer(float bufferDistance = 1.5f, bool requireLineOfSight = false, float viewWidth = 70f)
         {
-            logger.LogDebug("Turning off nearby lights");
-            foreach (var light in RoundManager.Instance.allPoweredLightsAnimators)
+            mostOptimalDistance = 2000f;
+            PlayerControllerB playerControllerB = targetPlayer;
+            targetPlayer = null;
+            for (int i = 0; i < StartOfRound.Instance.connectedPlayersAmount + 1; i++)
             {
-                if (Vector3.Distance(transform.position, light.transform.position) <= distance)
+                if (Utils.disableTargetting && StartOfRound.Instance.allPlayerScripts[i].actualClientId == 0) { continue; }
+                if (PlayerIsTargetable(StartOfRound.Instance.allPlayerScripts[i]) && !PathIsIntersectedByLineOfSight(StartOfRound.Instance.allPlayerScripts[i].transform.position, calculatePathDistance: false, avoidLineOfSight: false) && (!requireLineOfSight || CheckLineOfSightForPosition(StartOfRound.Instance.allPlayerScripts[i].gameplayCamera.transform.position, viewWidth, 40)))
                 {
-                    light.SetBool("on", false);
+                    tempDist = Vector3.Distance(base.transform.position, StartOfRound.Instance.allPlayerScripts[i].transform.position);
+                    if (tempDist < mostOptimalDistance)
+                    {
+                        mostOptimalDistance = tempDist;
+                        targetPlayer = StartOfRound.Instance.allPlayerScripts[i];
+                    }
                 }
             }
-
-            if (breakerBox != null)
+            if (targetPlayer != null && bufferDistance > 0f && playerControllerB != null && Mathf.Abs(mostOptimalDistance - Vector3.Distance(base.transform.position, playerControllerB.transform.position)) < bufferDistance)
             {
-                creatureSFX.PlayOneShot(breakerBox.switchPowerSFX);
+                targetPlayer = playerControllerB;
             }
+            return targetPlayer != null;
         }
 
         IEnumerator FreezePlayerCoroutine(float freezeTime)
         {
-            FreezePlayer(targetPlayer, true);
+            Utils.FreezePlayer(targetPlayer, true);
             yield return new WaitForSeconds(freezeTime);
-            FreezePlayer(targetPlayer, false);
+            Utils.FreezePlayer(targetPlayer, false);
         }
 
         GameObject GetRandomAINode(List<GameObject> nodes)
@@ -286,7 +326,7 @@ namespace Something
             if (inSpecialAnimation) { return; }
             if (currentBehaviourStateIndex == (int)State.Inactive) { return; }
             if (!other.gameObject.TryGetComponent(out PlayerControllerB player)) { return; }
-            if (player == null || player != localPlayer) { return; }
+            if (player == null || player != localPlayer || !player.isPlayerControlled) { return; }
 
             inSpecialAnimation = true;
             KillPlayerServerRpc(player.actualClientId);
@@ -316,7 +356,7 @@ namespace Something
             targetPlayer.playerRigidbody.isKinematic = false;
             grabbingRight = true;
             grabbingTargetPlayer = true;
-            targetPlayer.transform.SetParent(RightHandTransform);
+            //targetPlayer.transform.SetParent(RightHandTransform);
         }
 
         public void GrabTargetPlayerLeftHand() // Animation
@@ -328,7 +368,7 @@ namespace Something
             targetPlayer.playerRigidbody.isKinematic = false;
             grabbingRight = false;
             grabbingTargetPlayer = true;
-            targetPlayer.transform.SetParent(LeftHandTransform);
+            //targetPlayer.transform.SetParent(LeftHandTransform);
         }
 
         public void DropTargetPlayer() // Animation
@@ -359,7 +399,6 @@ namespace Something
             targetPlayer.playerRigidbody.isKinematic = true;
             grabbingTargetPlayer = false;
 
-            creatureSFX.PlayOneShot(KillSFX);
             if (localPlayer != targetPlayer) { return; }
             localPlayer.KillPlayer(LeftHandTransform.forward * throwForce, true, CauseOfDeath.Inertia);
         }
@@ -368,13 +407,13 @@ namespace Something
         {
             logger.LogDebug("KillTargetPlayerWithDeathAnimation: " + deathAnimation);
             if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
-            if (localPlayer != targetPlayer) { return; }
+            //if (localPlayer != targetPlayer) { return; }
 
             grabbingTargetPlayer = false;
             targetPlayer.playerRigidbody.isKinematic = true;
 
+            if (localPlayer != targetPlayer) { return; }
             localPlayer.KillPlayer(Vector3.zero, true, CauseOfDeath.Mauling, deathAnimation);
-            creatureSFX.PlayOneShot(KillSFX);
         }
 
         public void TearTargetPlayerApart() // Animation
@@ -390,7 +429,6 @@ namespace Something
                 localPlayer.KillPlayer(Vector3.zero, true, CauseOfDeath.Mauling, 7);
             }
 
-            creatureSFX.PlayOneShot(KillSFX);
             StartCoroutine(GrabBodyPartsCoroutine(6, 0));
         }
 
@@ -407,7 +445,6 @@ namespace Something
                 localPlayer.KillPlayer(Vector3.zero, true, CauseOfDeath.Mauling, 1);
             }
 
-            creatureSFX.PlayOneShot(KillSFX);
             StartCoroutine(GrabBodyPartsCoroutine(0, 5));
         }
 
@@ -451,7 +488,6 @@ namespace Something
                 localPlayer.KillPlayer(Vector3.zero, true, CauseOfDeath.Mauling, 1);
             }
 
-            creatureSFX.PlayOneShot(KillSFX);
             StartCoroutine(KeepPlayerInMouthForDelay(targetPlayer, 5f));
         }
 
@@ -479,7 +515,7 @@ namespace Something
         public void KillPlayerServerRpc(ulong clientId)
         {
             if (!IsServerOrHost) { return; }
-            int index = TESTING.testing ? TESTING.SpringCatKillIndex : UnityEngine.Random.Range(1, 7);
+            int index = Utils.testing ? TESTING.SpringCatKillIndex : UnityEngine.Random.Range(1, 7);
             KillPlayerClientRpc(clientId, $"killPlayer{index}");
         }
 
@@ -493,7 +529,7 @@ namespace Something
         [ClientRpc]
         public void BreakOutOfContainmentClientRpc()
         {
-            SwitchToBehaviourStateOnLocalClient((int)State.Chasing);
+            SwitchToBehaviourStateOnLocalClient((int)State.Active);
             Container.SetActive(false);
             MeshTransform.localPosition = Vector3.zero;
             MeshTransform.localRotation = Quaternion.identity;
@@ -505,7 +541,19 @@ namespace Something
         [ClientRpc]
         public void TurnOffNearbyLightsClientRpc(float distance)
         {
-            TurnOffNearbyLightsOnClient(distance);
+            logger.LogDebug("Turning off nearby lights");
+            foreach (var light in RoundManager.Instance.allPoweredLightsAnimators)
+            {
+                if (Vector3.Distance(transform.position, light.transform.position) <= distance)
+                {
+                    light.SetBool("on", false);
+                }
+            }
+
+            if (breakerBox != null)
+            {
+                creatureSFX.PlayOneShot(breakerBox.switchPowerSFX);
+            }
         }
     }
 }

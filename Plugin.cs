@@ -4,14 +4,11 @@ using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
 using LethalLib.Modules;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace Something
 {
@@ -31,8 +28,6 @@ namespace Something
 
         // Configs
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        // Debugging
-        public static ConfigEntry<bool> configEnableDebugging;
 
         // General
         public static ConfigEntry<bool> configSpoilerFreeVersion;
@@ -119,9 +114,6 @@ namespace Something
 
             // Configs
 
-            // Debugging Configs
-            configEnableDebugging = Config.Bind("Debuggin", "Enable Debugging", false, "Set to true to enable debug logs");
-
             // General
             configSpoilerFreeVersion = Config.Bind("Spoilers", "Spoiler-Free Version", true, "Replaces most spoilers for the game with alternatives.");
 
@@ -203,14 +195,14 @@ namespace Something
             }
             LoggerInstance.LogDebug($"Got AssetBundle at: {Path.Combine(sAssemblyLocation, "something_assets")}");
 
-            RegisterItem("GoodPolaroid", configGoodPolaroidMinValue, configGoodPolaroidMaxValue, configGoodPolaroidLevelRarities, configGoodPolaroidCustomLevelRarities);
-            RegisterItem("BadPolaroid", configBadPolaroidMinValue, configBadPolaroidMaxValue, configBadPolaroidLevelRarities, configBadPolaroidCustomLevelRarities);
-            RegisterItem("CursedPolaroid", configCursedPolaroidMinValue, configCursedPolaroidMaxValue, configCursedPolaroidLevelRarities, configCursedPolaroidCustomLevelRarities);
-            RegisterItem("Keytar", configKeytarMinValue, configKeytarMaxValue, configKeytarLevelRarities, configKeytarCustomLevelRarities);
-            RegisterItem("AubreyPlush", configAubreyPlushMinValue, configAubreyPlushMaxValue, configAubreyPlushLevelRarities, configAubreyPlushCustomLevelRarities);
-            RegisterItem("BasilPlush", configBasilPlushMinValue, configBasilPlushMaxValue, configBasilPlushLevelRarities, configBasilPlushCustomLevelRarities);
-            RegisterItem("Bunnybun", configBunnybunMinValue, configBunnybunMaxValue, configBunnybunLevelRarities, configBunnybunCustomLevelRarities);
-            RegisterItem("Mailbox", configMailboxMinValue, configMailboxMaxValue, configMailboxLevelRarities, configMailboxCustomLevelRarities);
+            Utils.RegisterItem("Assets/ModAssets/GoodPolaroidItem.asset", configGoodPolaroidMinValue.Value, configGoodPolaroidMaxValue.Value, configGoodPolaroidLevelRarities.Value, configGoodPolaroidCustomLevelRarities.Value);
+            Utils.RegisterItem("Assets/ModAssets/BadPolaroidItem.asset", configBadPolaroidMinValue.Value, configBadPolaroidMaxValue.Value, configBadPolaroidLevelRarities.Value, configBadPolaroidCustomLevelRarities.Value);
+            Utils.RegisterItem("Assets/ModAssets/CursedPolaroidItem.asset", configCursedPolaroidMinValue.Value, configCursedPolaroidMaxValue.Value, configCursedPolaroidLevelRarities.Value, configCursedPolaroidCustomLevelRarities.Value);
+            Utils.RegisterItem("Assets/ModAssets/KeytarItem.asset", configKeytarMinValue.Value, configKeytarMaxValue.Value, configKeytarLevelRarities.Value, configKeytarCustomLevelRarities.Value);
+            Utils.RegisterItem("Assets/ModAssets/AubreyPlushItem.asset", configAubreyPlushMinValue.Value, configAubreyPlushMaxValue.Value, configAubreyPlushLevelRarities.Value, configAubreyPlushCustomLevelRarities.Value);
+            Utils.RegisterItem("Assets/ModAssets/BasilPlushItem.asset", configBasilPlushMinValue.Value, configBasilPlushMaxValue.Value, configBasilPlushLevelRarities.Value, configBasilPlushCustomLevelRarities.Value);
+            Utils.RegisterItem("Assets/ModAssets/BunnybunItem.asset", configBunnybunMinValue.Value, configBunnybunMaxValue.Value, configBunnybunLevelRarities.Value, configBunnybunCustomLevelRarities.Value);
+            Utils.RegisterItem("Assets/ModAssets/MailboxItem.asset", configMailboxMinValue.Value, configMailboxMaxValue.Value, configMailboxLevelRarities.Value, configMailboxCustomLevelRarities.Value);
 
 
             EnemyType something = ModAssets.LoadAsset<EnemyType>("Assets/ModAssets/SomethingEnemy.asset");
@@ -222,7 +214,7 @@ namespace Something
             LoggerInstance.LogDebug("Registering enemy network prefab...");
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(something.enemyPrefab);
             LoggerInstance.LogDebug("Registering enemy...");
-            Enemies.RegisterEnemy(something, GetLevelRarities(configSomethingLevelRarities.Value), GetCustomLevelRarities(configSomethingCustomLevelRarities.Value), SomethingTN, SomethingTK);
+            Enemies.RegisterEnemy(something, Utils.GetLevelRarities(configSomethingLevelRarities.Value), Utils.GetCustomLevelRarities(configSomethingCustomLevelRarities.Value), SomethingTN, SomethingTK);
 
 
             EnemyType rabbit = ModAssets.LoadAsset<EnemyType>("Assets/ModAssets/RabbitEnemy.asset");
@@ -234,7 +226,7 @@ namespace Something
             LoggerInstance.LogDebug("Registering enemy network prefab...");
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(rabbit.enemyPrefab);
             LoggerInstance.LogDebug("Registering enemy...");
-            Enemies.RegisterEnemy(rabbit, GetLevelRarities(configRabbitLevelRarities.Value), GetCustomLevelRarities(configRabbitCustomLevelRarities.Value), RabbitTN, RabbitTK);
+            Enemies.RegisterEnemy(rabbit, Utils.GetLevelRarities(configRabbitLevelRarities.Value), Utils.GetCustomLevelRarities(configRabbitCustomLevelRarities.Value), RabbitTN, RabbitTK);
 
 
             EnemyType springCat = ModAssets.LoadAsset<EnemyType>("Assets/ModAssets/SpringCatEnemy.asset");
@@ -246,110 +238,10 @@ namespace Something
             LoggerInstance.LogDebug("Registering enemy network prefab...");
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(springCat.enemyPrefab);
             LoggerInstance.LogDebug("Registering enemy...");
-            Enemies.RegisterEnemy(springCat, GetLevelRarities(configSpringCatLevelRarities.Value), GetCustomLevelRarities(configSpringCatCustomLevelRarities.Value), SpringCatTN, SpringCatTK);
+            Enemies.RegisterEnemy(springCat, Utils.GetLevelRarities(configSpringCatLevelRarities.Value), Utils.GetCustomLevelRarities(configSpringCatCustomLevelRarities.Value), SpringCatTN, SpringCatTK);
 
             // Finished
             Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
-        }
-        void RegisterItem(string itemName, ConfigEntry<int> minValue, ConfigEntry<int> maxValue, ConfigEntry<string> levelRarities, ConfigEntry<string> customLevelRarities)
-        {
-            Item item = ModAssets!.LoadAsset<Item>($"Assets/ModAssets/{itemName}Item.asset");
-            if (item == null) { LoggerInstance.LogError($"Error: Couldn't get {itemName}Item from assets"); return; }
-            LoggerInstance.LogDebug($"Got {itemName} prefab");
-
-            item.minValue = minValue.Value;
-            item.maxValue = maxValue.Value;
-
-            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(item.spawnPrefab);
-            Utilities.FixMixerGroups(item.spawnPrefab);
-            LethalLib.Modules.Items.RegisterScrap(item, GetLevelRarities(levelRarities.Value), GetCustomLevelRarities(customLevelRarities.Value));
-        }
-
-        public Dictionary<Levels.LevelTypes, int> GetLevelRarities(string levelsString)
-        {
-            try
-            {
-                Dictionary<Levels.LevelTypes, int> levelRaritiesDict = new Dictionary<Levels.LevelTypes, int>();
-
-                if (levelsString != null && levelsString != "")
-                {
-                    string[] levels = levelsString.Split(',');
-
-                    foreach (string level in levels)
-                    {
-                        string[] levelSplit = level.Split(':');
-                        if (levelSplit.Length != 2) { continue; }
-                        string levelType = levelSplit[0].Trim();
-                        string levelRarity = levelSplit[1].Trim();
-
-                        if (Enum.TryParse<Levels.LevelTypes>(levelType, out Levels.LevelTypes levelTypeEnum) && int.TryParse(levelRarity, out int levelRarityInt))
-                        {
-                            levelRaritiesDict.Add(levelTypeEnum, levelRarityInt);
-                        }
-                        else
-                        {
-                            LoggerInstance.LogError($"Error: Invalid level rarity: {levelType}:{levelRarity}");
-                        }
-                    }
-                }
-                return levelRaritiesDict;
-            }
-            catch (Exception e)
-            {
-                Logger.LogError($"Error: {e}");
-                return null!;
-            }
-        }
-
-        public Dictionary<string, int> GetCustomLevelRarities(string levelsString)
-        {
-            try
-            {
-                Dictionary<string, int> customLevelRaritiesDict = new Dictionary<string, int>();
-
-                if (levelsString != null)
-                {
-                    string[] levels = levelsString.Split(',');
-
-                    foreach (string level in levels)
-                    {
-                        string[] levelSplit = level.Split(':');
-                        if (levelSplit.Length != 2) { continue; }
-                        string levelType = levelSplit[0].Trim();
-                        string levelRarity = levelSplit[1].Trim();
-
-                        if (int.TryParse(levelRarity, out int levelRarityInt))
-                        {
-                            customLevelRaritiesDict.Add(levelType, levelRarityInt);
-                        }
-                        else
-                        {
-                            LoggerInstance.LogError($"Error: Invalid level rarity: {levelType}:{levelRarity}");
-                        }
-                    }
-                }
-                return customLevelRaritiesDict;
-            }
-            catch (Exception e)
-            {
-                Logger.LogError($"Error: {e}");
-                return null!;
-            }
-        }
-
-        public static void FreezePlayer(PlayerControllerB player, bool value)
-        {
-            player.disableInteract = value;
-            player.disableLookInput = value;
-            player.disableMoveInput = value;
-        }
-
-        public static void log(string msg)
-        {
-            if (configEnableDebugging.Value)
-            {
-                LoggerInstance.LogDebug(msg);
-            }
         }
 
         private static void InitializeNetworkBehaviours()
