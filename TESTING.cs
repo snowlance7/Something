@@ -22,7 +22,6 @@ namespace Something
     public class TESTING : MonoBehaviour
     {
         private static ManualLogSource logger = LoggerInstance;
-        public static int SpringCatKillIndex = 1;
 
         [HarmonyPostfix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.PingScan_performed))]
         public static void PingScan_performedPostFix()
@@ -40,12 +39,12 @@ namespace Something
             switch (args[0])
             {
                 case "/killIndex":
-                    SpringCatKillIndex = int.Parse(args[1]);
-                    HUDManager.Instance.DisplayTip("SpringCatKillIndex", SpringCatKillIndex.ToString());
+                    SpringCatAI.SpringCatKillIndex = int.Parse(args[1]);
+                    HUDManager.Instance.DisplayTip("SpringCatKillIndex", SpringCatAI.SpringCatKillIndex.ToString());
                     break;
                 case "/targetting":
-                    Utils.disableTargetting = !Utils.disableTargetting;
-                    HUDManager.Instance.DisplayTip("DisableTargetting: ", Utils.disableTargetting.ToString());
+                    Utils.DEBUG_disableTargetting = !Utils.DEBUG_disableTargetting;
+                    HUDManager.Instance.DisplayTip("DisableTargetting: ", Utils.DEBUG_disableTargetting.ToString());
                     break;
                 default:
                     Utils.ChatCommand(args);

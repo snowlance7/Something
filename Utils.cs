@@ -3,11 +3,13 @@ using GameNetcodeStuff;
 using HarmonyLib;
 using LethalLib.Modules;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 using static Something.Plugin;
+using static UnityEngine.Rendering.DebugUI;
 
 namespace Something
 {
@@ -15,14 +17,20 @@ namespace Something
     {
         private static ManualLogSource logger = LoggerInstance;
 
-        public static bool debuggingEnabled = true;
+        public static bool isBeta = false;
+        public static bool trailerMode = false;
 
         public static bool inTestRoom => StartOfRound.Instance?.testRoom != null;
         public static bool testing = false;
-        public static bool spawningAllowed = true; // TODO
-        public static bool trailerMode = false;
-        public static bool disableTargetting = false;
-        public static bool disableMoving = false;
+        public static bool DEBUG_disableSpawning = false;
+        public static bool DEBUG_disableTargetting = true;
+        public static bool DEBUG_disableMoving = false;
+
+        public static bool localPlayerFrozen = false;
+
+        public static bool isOnCompanyMoon => StartOfRound.Instance?.currentLevel.levelID == 3;
+
+        public static GameObject[] allAINodes => insideAINodes.Concat(outsideAINodes).ToArray();
 
         public static GameObject[] insideAINodes
         {
@@ -54,8 +62,8 @@ namespace Something
             switch (args[0])
             {
                 case "/spawning":
-                    spawningAllowed = !spawningAllowed;
-                    HUDManager.Instance.DisplayTip("Spawning Allowed", spawningAllowed.ToString());
+                    DEBUG_disableSpawning = !DEBUG_disableSpawning;
+                    HUDManager.Instance.DisplayTip("Disable Spawning", DEBUG_disableSpawning.ToString());
                     break;
                 case "/hazards":
                     Dictionary<string, GameObject> hazards = Utils.GetAllHazards();
@@ -110,7 +118,7 @@ namespace Something
             HUDManager.Instance.AddChatMessage(msg, "Server");
         }
 
-        public static void RegisterItem(string itemPath, int minValue = 0, int maxValue = 0, string levelRarities = "", string customLevelRarities = "")
+        public static void RegisterItem(string itemPath, string levelRarities = "", string customLevelRarities = "", int minValue = 0, int maxValue = 0)
         {
             Item item = ModAssets!.LoadAsset<Item>(itemPath);
             if (item == null) { LoggerInstance.LogError($"Error: Couldn't get prefab from {itemPath}"); return; }
@@ -309,6 +317,7 @@ namespace Something
 
         public static void FreezePlayer(PlayerControllerB player, bool value)
         {
+            localPlayerFrozen = value;
             player.disableInteract = value;
             player.disableLookInput = value;
             player.disableMoveInput = value;
@@ -370,7 +379,7 @@ namespace Something
             Vector3 to = RoundManager.Instance.GetNavMeshPosition(toPos, RoundManager.Instance.navHit, 1.75f);
 
             NavMeshPath path = new();
-            return NavMesh.CalculatePath(from, to, -1, path) && Vector3.Distance(path.corners[path.corners.Length - 1], RoundManager.Instance.GetNavMeshPosition(to, RoundManager.Instance.navHit, 2.7f)) <= 1.55f; // TODO: Test this
+            return NavMesh.CalculatePath(from, to, -1, path) && Vector3.Distance(path.corners[path.corners.Length - 1], RoundManager.Instance.GetNavMeshPosition(to, RoundManager.Instance.navHit, 2.7f)) <= 1.55f;
         }
 
         public static T? GetClosestGameObjectOfType<T>(Vector3 position) where T : Component
@@ -429,8 +438,8 @@ namespace Something
         {
             Dictionary<string, GameObject> hazards = new Dictionary<string, GameObject>();
             List<SpawnableMapObject> spawnableMapObjects = (from x in StartOfRound.Instance.levels.SelectMany((SelectableLevel level) => level.spawnableMapObjects)
-                                              group x by ((UnityEngine.Object)x.prefabToSpawn).name into g
-                                              select g.First()).ToList();
+                                                            group x by ((UnityEngine.Object)x.prefabToSpawn).name into g
+                                                            select g.First()).ToList();
             foreach (SpawnableMapObject item in spawnableMapObjects)
             {
                 hazards.Add(item.prefabToSpawn.name, item.prefabToSpawn);
@@ -558,20 +567,21 @@ namespace Something
         [HarmonyPrefix, HarmonyPatch(typeof(RoundManager), nameof(RoundManager.SpawnInsideEnemiesFromVentsIfReady))]
         public static bool SpawnInsideEnemiesFromVentsIfReadyPrefix()
         {
-            if (!Utils.spawningAllowed) { return false; } return true;
+            if (Utils.DEBUG_disableSpawning) { return false; }
+            return true;
         }
 
         [HarmonyPrefix, HarmonyPatch(typeof(RoundManager), nameof(RoundManager.SpawnDaytimeEnemiesOutside))]
         public static bool SpawnDaytimeEnemiesOutsidePrefix()
         {
-            if (!Utils.spawningAllowed) { return false; }
+            if (Utils.DEBUG_disableSpawning) { return false; }
             return true;
         }
 
         [HarmonyPrefix, HarmonyPatch(typeof(RoundManager), nameof(RoundManager.SpawnEnemiesOutside))]
         public static bool SpawnEnemiesOutsidePrefix()
         {
-            if (!Utils.spawningAllowed) { return false; }
+            if (Utils.DEBUG_disableSpawning) { return false; }
             return true;
         }
     }

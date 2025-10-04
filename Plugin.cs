@@ -195,14 +195,14 @@ namespace Something
             }
             LoggerInstance.LogDebug($"Got AssetBundle at: {Path.Combine(sAssemblyLocation, "something_assets")}");
 
-            Utils.RegisterItem("Assets/ModAssets/GoodPolaroidItem.asset", configGoodPolaroidMinValue.Value, configGoodPolaroidMaxValue.Value, configGoodPolaroidLevelRarities.Value, configGoodPolaroidCustomLevelRarities.Value);
-            Utils.RegisterItem("Assets/ModAssets/BadPolaroidItem.asset", configBadPolaroidMinValue.Value, configBadPolaroidMaxValue.Value, configBadPolaroidLevelRarities.Value, configBadPolaroidCustomLevelRarities.Value);
-            Utils.RegisterItem("Assets/ModAssets/CursedPolaroidItem.asset", configCursedPolaroidMinValue.Value, configCursedPolaroidMaxValue.Value, configCursedPolaroidLevelRarities.Value, configCursedPolaroidCustomLevelRarities.Value);
-            Utils.RegisterItem("Assets/ModAssets/KeytarItem.asset", configKeytarMinValue.Value, configKeytarMaxValue.Value, configKeytarLevelRarities.Value, configKeytarCustomLevelRarities.Value);
-            Utils.RegisterItem("Assets/ModAssets/AubreyPlushItem.asset", configAubreyPlushMinValue.Value, configAubreyPlushMaxValue.Value, configAubreyPlushLevelRarities.Value, configAubreyPlushCustomLevelRarities.Value);
-            Utils.RegisterItem("Assets/ModAssets/BasilPlushItem.asset", configBasilPlushMinValue.Value, configBasilPlushMaxValue.Value, configBasilPlushLevelRarities.Value, configBasilPlushCustomLevelRarities.Value);
-            Utils.RegisterItem("Assets/ModAssets/BunnybunItem.asset", configBunnybunMinValue.Value, configBunnybunMaxValue.Value, configBunnybunLevelRarities.Value, configBunnybunCustomLevelRarities.Value);
-            Utils.RegisterItem("Assets/ModAssets/MailboxItem.asset", configMailboxMinValue.Value, configMailboxMaxValue.Value, configMailboxLevelRarities.Value, configMailboxCustomLevelRarities.Value);
+            Utils.RegisterItem("Assets/ModAssets/GoodPolaroidItem.asset", configGoodPolaroidLevelRarities.Value, configGoodPolaroidCustomLevelRarities.Value, configGoodPolaroidMinValue.Value, configGoodPolaroidMaxValue.Value);
+            Utils.RegisterItem("Assets/ModAssets/BadPolaroidItem.asset", configBadPolaroidLevelRarities.Value, configBadPolaroidCustomLevelRarities.Value, configBadPolaroidMinValue.Value, configBadPolaroidMaxValue.Value);
+            Utils.RegisterItem("Assets/ModAssets/CursedPolaroidItem.asset",  configCursedPolaroidLevelRarities.Value, configCursedPolaroidCustomLevelRarities.Value, configCursedPolaroidMinValue.Value, configCursedPolaroidMaxValue.Value);
+            Utils.RegisterItem("Assets/ModAssets/KeytarItem.asset", configKeytarLevelRarities.Value, configKeytarCustomLevelRarities.Value, configKeytarMinValue.Value, configKeytarMaxValue.Value);
+            Utils.RegisterItem("Assets/ModAssets/AubreyPlushItem.asset", configAubreyPlushLevelRarities.Value, configAubreyPlushCustomLevelRarities.Value, configAubreyPlushMinValue.Value, configAubreyPlushMaxValue.Value);
+            Utils.RegisterItem("Assets/ModAssets/BasilPlushItem.asset", configBasilPlushLevelRarities.Value, configBasilPlushCustomLevelRarities.Value, configBasilPlushMinValue.Value, configBasilPlushMaxValue.Value);
+            Utils.RegisterItem("Assets/ModAssets/BunnybunItem.asset", configBunnybunLevelRarities.Value, configBunnybunCustomLevelRarities.Value, configBunnybunMinValue.Value, configBunnybunMaxValue.Value);
+            Utils.RegisterItem("Assets/ModAssets/MailboxItem.asset", configMailboxLevelRarities.Value, configMailboxCustomLevelRarities.Value, configMailboxMinValue.Value, configMailboxMaxValue.Value);
 
 
             EnemyType something = ModAssets.LoadAsset<EnemyType>("Assets/ModAssets/SomethingEnemy.asset");

@@ -19,6 +19,8 @@ namespace Something
     {
         private static ManualLogSource logger = LoggerInstance;
 
+        public static int SpringCatKillIndex = 1;
+
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public Transform turnCompass;
         public GameObject ScanNode;
@@ -265,7 +267,7 @@ namespace Something
             foreach (PlayerControllerB player in StartOfRound.Instance.allPlayerScripts)
             {
                 if (player == null || !PlayerIsTargetable(player)) { continue; }
-
+                if (Utils.isBeta && Utils.DEBUG_disableTargetting && player.isHostPlayerObject) { continue; }
                 float distance = Vector3.Distance(player.transform.position, transform.position);
                 if (distance <= range && distance < closestDistance)
                 {
@@ -289,7 +291,7 @@ namespace Something
             targetPlayer = null;
             for (int i = 0; i < StartOfRound.Instance.connectedPlayersAmount + 1; i++)
             {
-                if (Utils.disableTargetting && StartOfRound.Instance.allPlayerScripts[i].actualClientId == 0) { continue; }
+                if (Utils.isBeta && Utils.DEBUG_disableTargetting && StartOfRound.Instance.allPlayerScripts[i].isHostPlayerObject) { continue; }
                 if (PlayerIsTargetable(StartOfRound.Instance.allPlayerScripts[i]) && !PathIsIntersectedByLineOfSight(StartOfRound.Instance.allPlayerScripts[i].transform.position, calculatePathDistance: false, avoidLineOfSight: false) && (!requireLineOfSight || CheckLineOfSightForPosition(StartOfRound.Instance.allPlayerScripts[i].gameplayCamera.transform.position, viewWidth, 40)))
                 {
                     tempDist = Vector3.Distance(base.transform.position, StartOfRound.Instance.allPlayerScripts[i].transform.position);
@@ -515,7 +517,7 @@ namespace Something
         public void KillPlayerServerRpc(ulong clientId)
         {
             if (!IsServerOrHost) { return; }
-            int index = Utils.testing ? TESTING.SpringCatKillIndex : UnityEngine.Random.Range(1, 7);
+            int index = Utils.testing ? SpringCatAI.SpringCatKillIndex : UnityEngine.Random.Range(1, 7);
             KillPlayerClientRpc(clientId, $"killPlayer{index}");
         }
 
