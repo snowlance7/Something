@@ -1,3 +1,7 @@
+## 0.4.0
+- Added Springcat
+- Updated for V73
+
 ## 0.3.0
 - Added a secret enemy
 

@@ -22,7 +22,7 @@ namespace Something
         private readonly Harmony harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
         public static PlayerControllerB localPlayer { get { return GameNetworkManager.Instance.localPlayerController; } }
         public static PlayerControllerB PlayerFromId(ulong id) { return StartOfRound.Instance.allPlayerScripts.Where(x => x.actualClientId == id).First(); }
-        public static bool IsServerOrHost { get { return NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost; } }
+        public static bool IsServer { get { return NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost; } }
 
         public static AssetBundle? ModAssets;
 
@@ -31,9 +31,6 @@ namespace Something
 
         // General
         public static ConfigEntry<bool> configSpoilerFreeVersion;
-
-        // BreathingUI
-        public static ConfigEntry<bool> configShowBreathingTooltip;
 
         // Something Configs
         public static ConfigEntry<string> configSomethingLevelRarities;
@@ -60,6 +57,7 @@ namespace Something
         public static ConfigEntry<int> configBadPolaroidMinValue;
         public static ConfigEntry<int> configBadPolaroidMaxValue;
         public static ConfigEntry<float> configBadPolaroidSomethingChance;
+
         public static ConfigEntry<string> configCursedPolaroidLevelRarities;
         public static ConfigEntry<string> configCursedPolaroidCustomLevelRarities;
         public static ConfigEntry<int> configCursedPolaroidMinValue;
@@ -118,7 +116,7 @@ namespace Something
             configSpoilerFreeVersion = Config.Bind("Spoilers", "Spoiler-Free Version", true, "Replaces most spoilers for the game with alternatives.");
 
             // BreathingUI
-            configShowBreathingTooltip = Config.Bind("BreathingUI", "Show Breathing Tooltip", true, "Shows the breathing tooltip on the top right when you are being haunted by Something.");
+            //configShowBreathingTooltip = Config.Bind("BreathingUI", "Show Breathing Tooltip", true, "Shows the breathing tooltip on the top right when you are being haunted by Something.");
 
             // Something Configs
             configSomethingLevelRarities = Config.Bind("Rarities", "Something Level Rarities", "All: 40, Modded: 40", "Rarities for each level. See default for formatting.");
@@ -150,8 +148,8 @@ namespace Something
 
             configCursedPolaroidLevelRarities = Config.Bind("Polaroid Rarities", "Cursed Polaroid Level Rarities", "All: 5, Modded: 5", "Rarities for Cursed Polaroids.");
             configCursedPolaroidCustomLevelRarities = Config.Bind("Polaroid Rarities", "Cursed Polaroid Custom Level Rarities", "", "Custom rarities for Cursed Polaroids.");
-            configCursedPolaroidMinValue = Config.Bind("Polaroids", "Cursed Polaroid Min Value", 300, "Minimum value for Cursed Polaroid.");
-            configCursedPolaroidMaxValue = Config.Bind("Polaroids", "Cursed Polaroid Max Value", 750, "Maximum value for Cursed Polaroid.");
+            configCursedPolaroidMinValue = Config.Bind("Polaroids", "Cursed Polaroid Min Value", 100, "Minimum value for Cursed Polaroid.");
+            configCursedPolaroidMaxValue = Config.Bind("Polaroids", "Cursed Polaroid Max Value", 200, "Maximum value for Cursed Polaroid.");
             configCursedPolaroidSomethingChance = Config.Bind("Polaroids", "Cursed Polaroid Something Spawn Chance", 0.99f, "Chance of spawning somethiing on first player who picked up Cursed Polaroid.");
 
             // Keytar
@@ -182,7 +180,7 @@ namespace Something
             configMailboxLevelRarities = Config.Bind("Mailbox Rarities", "Mailbox Level Rarities", "All: 15, Modded: 15", "Rarities for Mailbox.");
             configMailboxCustomLevelRarities = Config.Bind("Mailbox Rarities", "Mailbox Custom Level Rarities", "", "Custom rarities for Mailbox.");
             configMailboxMinValue = Config.Bind("Mailbox", "Mailbox Min Value", 15, "Minimum value for Mailbox.");
-            configMailboxMaxValue = Config.Bind("Mailbox", "Mailbox Max Value", 150, "Maximum value for Mailbox.");
+            configMailboxMaxValue = Config.Bind("Mailbox", "Mailbox Max Value", 100, "Maximum value for Mailbox.");
 
             // Loading Assets
             string sAssemblyLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -195,46 +193,43 @@ namespace Something
             }
             LoggerInstance.LogDebug($"Got AssetBundle at: {Path.Combine(sAssemblyLocation, "something_assets")}");
 
-            Utils.RegisterItem("Assets/ModAssets/GoodPolaroidItem.asset", configGoodPolaroidLevelRarities.Value, configGoodPolaroidCustomLevelRarities.Value, configGoodPolaroidMinValue.Value, configGoodPolaroidMaxValue.Value);
-            Utils.RegisterItem("Assets/ModAssets/BadPolaroidItem.asset", configBadPolaroidLevelRarities.Value, configBadPolaroidCustomLevelRarities.Value, configBadPolaroidMinValue.Value, configBadPolaroidMaxValue.Value);
-            Utils.RegisterItem("Assets/ModAssets/CursedPolaroidItem.asset",  configCursedPolaroidLevelRarities.Value, configCursedPolaroidCustomLevelRarities.Value, configCursedPolaroidMinValue.Value, configCursedPolaroidMaxValue.Value);
-            Utils.RegisterItem("Assets/ModAssets/KeytarItem.asset", configKeytarLevelRarities.Value, configKeytarCustomLevelRarities.Value, configKeytarMinValue.Value, configKeytarMaxValue.Value);
-            Utils.RegisterItem("Assets/ModAssets/AubreyPlushItem.asset", configAubreyPlushLevelRarities.Value, configAubreyPlushCustomLevelRarities.Value, configAubreyPlushMinValue.Value, configAubreyPlushMaxValue.Value);
-            Utils.RegisterItem("Assets/ModAssets/BasilPlushItem.asset", configBasilPlushLevelRarities.Value, configBasilPlushCustomLevelRarities.Value, configBasilPlushMinValue.Value, configBasilPlushMaxValue.Value);
-            Utils.RegisterItem("Assets/ModAssets/BunnybunItem.asset", configBunnybunLevelRarities.Value, configBunnybunCustomLevelRarities.Value, configBunnybunMinValue.Value, configBunnybunMaxValue.Value);
-            Utils.RegisterItem("Assets/ModAssets/MailboxItem.asset", configMailboxLevelRarities.Value, configMailboxCustomLevelRarities.Value, configMailboxMinValue.Value, configMailboxMaxValue.Value);
+            Utils.RegisterItem("Assets/ModAssets/Polaroids/GoodPolaroidItem.asset", configGoodPolaroidLevelRarities.Value, configGoodPolaroidCustomLevelRarities.Value, configGoodPolaroidMinValue.Value, configGoodPolaroidMaxValue.Value);
+            Utils.RegisterItem("Assets/ModAssets/Polaroids/BadPolaroidItem.asset", configBadPolaroidLevelRarities.Value, configBadPolaroidCustomLevelRarities.Value, configBadPolaroidMinValue.Value, configBadPolaroidMaxValue.Value);
+            Utils.RegisterItem("Assets/ModAssets/Polaroids/CursedPolaroidItem.asset",  configCursedPolaroidLevelRarities.Value, configCursedPolaroidCustomLevelRarities.Value, configCursedPolaroidMinValue.Value, configCursedPolaroidMaxValue.Value);
+            Utils.RegisterItem("Assets/ModAssets/Keytar/KeytarItem.asset", configKeytarLevelRarities.Value, configKeytarCustomLevelRarities.Value, configKeytarMinValue.Value, configKeytarMaxValue.Value);
+            Utils.RegisterItem("Assets/ModAssets/AubreyPlush/AubreyPlushItem.asset", configAubreyPlushLevelRarities.Value, configAubreyPlushCustomLevelRarities.Value, configAubreyPlushMinValue.Value, configAubreyPlushMaxValue.Value);
+            Utils.RegisterItem("Assets/ModAssets/BasilPlush/BasilPlushItem.asset", configBasilPlushLevelRarities.Value, configBasilPlushCustomLevelRarities.Value, configBasilPlushMinValue.Value, configBasilPlushMaxValue.Value);
+            Utils.RegisterItem("Assets/ModAssets/Bunnybun/BunnybunItem.asset", configBunnybunLevelRarities.Value, configBunnybunCustomLevelRarities.Value, configBunnybunMinValue.Value, configBunnybunMaxValue.Value);
+            Utils.RegisterItem("Assets/ModAssets/Mailbox/MailboxItem.asset", configMailboxLevelRarities.Value, configMailboxCustomLevelRarities.Value, configMailboxMinValue.Value, configMailboxMaxValue.Value);
 
 
-            EnemyType something = ModAssets.LoadAsset<EnemyType>("Assets/ModAssets/SomethingEnemy.asset");
+            EnemyType something = ModAssets.LoadAsset<EnemyType>("Assets/ModAssets/Something/SomethingEnemy.asset");
             if (something == null) { LoggerInstance.LogError("Error: Couldnt get Something enemy from assets"); return; }
             LoggerInstance.LogDebug($"Got Something enemy prefab");
-            TerminalNode SomethingTN = ModAssets.LoadAsset<TerminalNode>("Assets/ModAssets/Bestiary/SomethingTN.asset");
-            TerminalKeyword SomethingTK = ModAssets.LoadAsset<TerminalKeyword>("Assets/ModAssets/Bestiary/SomethingTK.asset");
-
+            TerminalNode SomethingTN = ModAssets.LoadAsset<TerminalNode>("Assets/ModAssets/Something/SomethingTN.asset");
+            TerminalKeyword SomethingTK = ModAssets.LoadAsset<TerminalKeyword>("Assets/ModAssets/Something/SomethingTK.asset");
             LoggerInstance.LogDebug("Registering enemy network prefab...");
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(something.enemyPrefab);
             LoggerInstance.LogDebug("Registering enemy...");
             Enemies.RegisterEnemy(something, Utils.GetLevelRarities(configSomethingLevelRarities.Value), Utils.GetCustomLevelRarities(configSomethingCustomLevelRarities.Value), SomethingTN, SomethingTK);
 
 
-            EnemyType rabbit = ModAssets.LoadAsset<EnemyType>("Assets/ModAssets/RabbitEnemy.asset");
+            EnemyType rabbit = ModAssets.LoadAsset<EnemyType>("Assets/ModAssets/Rabbit/RabbitEnemy.asset");
             if (rabbit == null) { LoggerInstance.LogError("Error: Couldnt get Rabbit enemy from assets"); return; }
             LoggerInstance.LogDebug($"Got Rabbit enemy prefab");
-            TerminalNode RabbitTN = ModAssets.LoadAsset<TerminalNode>("Assets/ModAssets/Bestiary/RabbitTN.asset");
-            TerminalKeyword RabbitTK = ModAssets.LoadAsset<TerminalKeyword>("Assets/ModAssets/Bestiary/RabbitTK.asset");
-
+            TerminalNode RabbitTN = ModAssets.LoadAsset<TerminalNode>("Assets/ModAssets/Rabbit/RabbitTN.asset");
+            TerminalKeyword RabbitTK = ModAssets.LoadAsset<TerminalKeyword>("Assets/ModAssets/Rabbit/RabbitTK.asset");
             LoggerInstance.LogDebug("Registering enemy network prefab...");
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(rabbit.enemyPrefab);
             LoggerInstance.LogDebug("Registering enemy...");
             Enemies.RegisterEnemy(rabbit, Utils.GetLevelRarities(configRabbitLevelRarities.Value), Utils.GetCustomLevelRarities(configRabbitCustomLevelRarities.Value), RabbitTN, RabbitTK);
 
 
-            EnemyType springCat = ModAssets.LoadAsset<EnemyType>("Assets/ModAssets/SpringCatEnemy.asset");
+            EnemyType springCat = ModAssets.LoadAsset<EnemyType>("Assets/ModAssets/SpringCat/SpringCatEnemy.asset");
             if (springCat == null) { LoggerInstance.LogError("Error: Couldnt get SpringCat enemy from assets"); return; }
             LoggerInstance.LogDebug($"Got SpringCat enemy prefab");
-            TerminalNode SpringCatTN = ModAssets.LoadAsset<TerminalNode>("Assets/ModAssets/Bestiary/SpringCatTN.asset");
-            TerminalKeyword SpringCatTK = ModAssets.LoadAsset<TerminalKeyword>("Assets/ModAssets/Bestiary/SpringCatTK.asset");
-
+            TerminalNode SpringCatTN = ModAssets.LoadAsset<TerminalNode>("Assets/ModAssets/SpringCat/SpringCatTN.asset");
+            TerminalKeyword SpringCatTK = ModAssets.LoadAsset<TerminalKeyword>("Assets/ModAssets/SpringCat/SpringCatTK.asset");
             LoggerInstance.LogDebug("Registering enemy network prefab...");
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(springCat.enemyPrefab);
             LoggerInstance.LogDebug("Registering enemy...");

@@ -6,6 +6,7 @@ namespace Something
 {
     internal class SomethingInputs : LcInputActions
     {
+#pragma warning disable CS8618
         public static SomethingInputs Instance;
 
         public static void Init()
@@ -13,7 +14,8 @@ namespace Something
             Instance = new SomethingInputs();
         }
 
-        [InputAction(KeyboardControl.C, Name = "Calm Down")]
+        [InputAction(KeyboardControl.B, Name = "Breathe")]
         public InputAction BreathKey { get; set; }
+#pragma warning restore CS8618
     }
 }

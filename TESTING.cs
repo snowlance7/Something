@@ -1,5 +1,6 @@
 using BepInEx.Logging;
 using HarmonyLib;
+using System.Linq;
 using UnityEngine;
 using static Something.Plugin;
 
@@ -27,6 +28,22 @@ namespace Something
         public static void PingScan_performedPostFix()
         {
             if (!Utils.testing) { return; }
+
+            /*for (int i = 0; i < playerListSlots.Length; i++) // playerListSlots is in QuickMenuManager
+            {
+                if (playerListSlots[i].isConnected)
+                {
+                    float num = playerListSlots[i].volumeSlider.value / playerListSlots[i].volumeSlider.maxValue;
+                    if (num == -1f)
+                    {
+                        SoundManager.Instance.playerVoiceVolumes[i] = -70f;
+                    }
+                    else
+                    {
+                        SoundManager.Instance.playerVoiceVolumes[i] = num;
+                    }
+                }
+            }*/
         }
 
         [HarmonyPrefix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.SubmitChat_performed))]
@@ -38,7 +55,7 @@ namespace Something
 
             switch (args[0])
             {
-                case "/killIndex":
+                case "/index":
                     SpringCatAI.SpringCatKillIndex = int.Parse(args[1]);
                     HUDManager.Instance.DisplayTip("SpringCatKillIndex", SpringCatAI.SpringCatKillIndex.ToString());
                     break;

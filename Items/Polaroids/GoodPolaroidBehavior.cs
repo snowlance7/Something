@@ -22,7 +22,7 @@ namespace Something.Items.Polaroids
         public override void Start()
         {
             base.Start();
-            if (!IsServerOrHost) { return; }
+            if (!IsServer) { return; }
 
             if (photoIndex == -1)
             {

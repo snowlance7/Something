@@ -17,14 +17,14 @@ namespace Something
     {
         private static ManualLogSource logger = LoggerInstance;
 
-        public static bool isBeta = false;
+        public static bool isBeta = true;
         public static bool trailerMode = false;
 
         public static bool inTestRoom => StartOfRound.Instance?.testRoom != null;
-        public static bool testing = false;
+        public static bool testing = true;
         public static bool DEBUG_disableSpawning = false;
-        public static bool DEBUG_disableTargetting = true;
-        public static bool DEBUG_disableMoving = false;
+        public static bool DEBUG_disableTargetting = false;
+        public static bool DEBUG_disableMoving = true;
 
         public static bool localPlayerFrozen = false;
 

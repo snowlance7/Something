@@ -26,7 +26,7 @@ namespace Something.Items.Polaroids
         public override void EquipItem()
         {
             LoggerInstance.LogDebug("Item held: " + wasHeld); // TODO: Test this
-            if (IsServerOrHost && !wasHeld)
+            if (IsServer && !wasHeld)
             {
                 if (UnityEngine.Random.Range(0f, 1f) < configCursedPolaroidSomethingChance.Value)
                 {
@@ -54,7 +54,7 @@ namespace Something.Items.Polaroids
 
         public void SpawnSomething(PlayerControllerB playerToHaunt, bool playAnim)
         {
-            if (!IsServerOrHost) { return; }
+            if (!IsServer) { return; }
             if (StartOfRound.Instance.inShipPhase || StartOfRound.Instance.shipIsLeaving) { return; }
             SomethingAI something = Instantiate(SomethingPrefab, Vector3.zero, Quaternion.identity).GetComponent<SomethingAI>();
             something.NetworkObject.Spawn(destroyWithScene: true);
@@ -86,7 +86,7 @@ namespace Something.Items.Polaroids
         {
             try
             {
-                if (!IsServerOrHost) { return; }
+                if (!IsServer) { return; }
 
                 foreach (CursedPolaroidBehavior polaroid in Object.FindObjectsOfType<CursedPolaroidBehavior>())
                 {

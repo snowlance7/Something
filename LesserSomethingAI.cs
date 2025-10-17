@@ -37,15 +37,15 @@ namespace Something
         public float destroyTime;
 
         // Configs
-        float idleMinInterval = 3f;
-        float idleMaxInterval = 10f;
-        float maxStareTime = 1f;
-        int damage = 2;
-        float insanityMultiplier = 1f;
-        float insanityChaseMultiplier = 1.2f;
-        float chaseSpeed = 1.5f;
-        float wanderSpeed = 1f;
-        float insanityOnCollision = 5f;
+        const float idleMinInterval = 3f;
+        const float idleMaxInterval = 10f;
+        const float maxStareTime = 1f;
+        const int damage = 2;
+        const float insanityMultiplier = 1f;
+        const float insanityChaseMultiplier = 1.2f;
+        const float chaseSpeed = 1.5f;
+        const float wanderSpeed = 1f;
+        const float insanityOnCollision = 5f;
 
         public void Start()
         {

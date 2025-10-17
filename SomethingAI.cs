@@ -26,7 +26,7 @@ namespace Something
         public SpriteRenderer somethingMesh;
         public GameObject ScanNode;
         public GameObject BreathingMechanicPrefab;
-        BreathingBehavior BreathingUI;
+        SomethingHUDOverlay BreathingUI;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         List<GameObject> SpawnedTinySomethings = [];
@@ -41,23 +41,21 @@ namespace Something
 
         bool choosingNewPlayerToHaunt = true;
 
-        // Constants
-        const float maxInsanity = 50f;
-
         // Configs
-        float lsMinSpawnTime = 10;
-        float lsMaxSpawnTime = 30;
-        float lsAmount = 0.1f;
-        float tsAmount = 0.5f;
-        float insanityPhase3 = 0.3f;
-        float stareCooldown = 20f;
-        float stareBufferTime = 5f;
-        float stareTime = 10f;
-        float insanityIncreaseOnLook = 10f;
-        float somethingChaseSpeed = 10f;
-        float chaseCooldown = 5f;
-        float insanityPhase1 = 0f;
-        float insanityPhase2 = 0.1f;
+        const float maxInsanity = 50f;
+        const float lsMinSpawnTime = 10;
+        const float lsMaxSpawnTime = 30;
+        const float lsAmount = 0.1f;
+        const float tsAmount = 0.5f;
+        const float insanityPhase3 = 0.3f;
+        const float stareCooldown = 20f;
+        const float stareBufferTime = 5f;
+        const float stareTime = 10f;
+        const float insanityIncreaseOnLook = 10f;
+        const float somethingChaseSpeed = 10f;
+        const float chaseCooldown = 5f;
+        const float insanityPhase1 = 0f;
+        const float insanityPhase2 = 0.1f;
 
         public enum State
         {
@@ -72,7 +70,7 @@ namespace Something
 
             currentBehaviourStateIndex = (int)State.Inactive;
 
-            if (!IsServerOrHost) { return; }
+            if (!IsServer) { return; }
             choosingNewPlayerToHaunt = true;
             StartCoroutine(ChoosePlayerToHauntCoroutine(5f));
         }
@@ -83,7 +81,7 @@ namespace Something
 
             if (StartOfRound.Instance.allPlayersDead) { return; }
 
-            if (IsServerOrHost && targetPlayer != null && !targetPlayer.isPlayerControlled && !choosingNewPlayerToHaunt)
+            if (IsServer && targetPlayer != null && !targetPlayer.isPlayerControlled && !choosingNewPlayerToHaunt)
             {
                 targetPlayer = null;
                 choosingNewPlayerToHaunt = true;
@@ -580,14 +578,14 @@ namespace Something
             ChangeOwnershipOfEnemy(targetPlayer.actualClientId);
             hauntingLocalPlayer = localPlayer == targetPlayer;
 
-            if (IsServerOrHost)
+            if (IsServer)
             {
                 NetworkObject.ChangeOwnership(targetPlayer.actualClientId);
             }
 
             SpawnLittleOnes(true);
             if (!hauntingLocalPlayer) { return; };
-            BreathingUI = GameObject.Instantiate(BreathingMechanicPrefab).GetComponent<BreathingBehavior>();
+            BreathingUI = GameObject.Instantiate(BreathingMechanicPrefab).GetComponent<SomethingHUDOverlay>();
             choosingNewPlayerToHaunt = false;
         }
 

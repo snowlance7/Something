@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 3931397590
+CRC: 2025514759
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: d8299371ae63285dfee4c216bc8b8a41
+    Hash: 46bfbbbe1fac48be3351a56503df3461
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 0b6146d04ed9086b04d21f491ebca3be
+    Hash: 68758f1201d962c948c90da01694c49c
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: d8299371ae63285dfee4c216bc8b8a41
+    Hash: 46bfbbbe1fac48be3351a56503df3461
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -49,13 +49,9 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
-- Class: 114
   Script: {fileID: 11500000, guid: 65d3fcb39dd67306e9bb17a603308070, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 04f75356a7e9c978bddc7d568e58a50b, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: c30496d6ae6d6f907456e10a94e01ec6, type: 3}
 - Class: 114
@@ -73,13 +69,7 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
-- Class: 114
   Script: {fileID: 99817204, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
-- Class: 114
-  Script: {fileID: 457316765, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
 - Class: 114
   Script: {fileID: 338336166, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
 - Class: 114
@@ -100,9 +90,9 @@ ClassTypes:
   Script: {fileID: 1918530828, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: d3cecf05b78b173605122a700874719c, type: 3}
+- Class: 114
+  Script: {fileID: -585175328, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
 - Class: 115
-  Script: {instanceID: 0}
-- Class: 128
   Script: {instanceID: 0}
 - Class: 137
   Script: {instanceID: 0}
@@ -133,64 +123,24 @@ SerializeReferenceClassIdentifiers:
   ClassName: EnemyBehaviourState
 - AssemblyName: Assembly-CSharp
   ClassName: NavSizeLimit
-- AssemblyName: Unity.Netcode.Components
-  ClassName: Unity.Netcode.Components.NetworkAnimator/TransitionStateinfo
-- AssemblyName: Unity.TextMeshPro
-  ClassName: TMPro.FaceInfo_Legacy
-- AssemblyName: Unity.TextMeshPro
-  ClassName: TMPro.FontAssetCreationSettings
-- AssemblyName: Unity.TextMeshPro
-  ClassName: TMPro.KerningTable
-- AssemblyName: Unity.TextMeshPro
-  ClassName: TMPro.TMP_Character
-- AssemblyName: Unity.TextMeshPro
-  ClassName: TMPro.TMP_FontFeatureTable
-- AssemblyName: Unity.TextMeshPro
-  ClassName: TMPro.TMP_FontWeightPair
-- AssemblyName: Unity.TextMeshPro
-  ClassName: TMPro.TMP_GlyphAdjustmentRecord
-- AssemblyName: Unity.TextMeshPro
-  ClassName: TMPro.TMP_GlyphPairAdjustmentRecord
-- AssemblyName: Unity.TextMeshPro
-  ClassName: TMPro.TMP_GlyphValueRecord
-- AssemblyName: Unity.TextMeshPro
-  ClassName: TMPro.VertexGradient
 - AssemblyName: UnityEngine.CoreModule
   ClassName: UnityEngine.Events.PersistentCallGroup
-- AssemblyName: UnityEngine.TextCoreFontEngineModule
-  ClassName: UnityEngine.TextCore.FaceInfo
-- AssemblyName: UnityEngine.TextCoreFontEngineModule
-  ClassName: UnityEngine.TextCore.Glyph
-- AssemblyName: UnityEngine.TextCoreFontEngineModule
-  ClassName: UnityEngine.TextCore.GlyphMetrics
-- AssemblyName: UnityEngine.TextCoreFontEngineModule
-  ClassName: UnityEngine.TextCore.GlyphRect
-- AssemblyName: UnityEngine.UI
-  ClassName: UnityEngine.UI.AnimationTriggers
-- AssemblyName: UnityEngine.UI
-  ClassName: UnityEngine.UI.ColorBlock
 - AssemblyName: UnityEngine.UI
   ClassName: UnityEngine.UI.MaskableGraphic/CullStateChangedEvent
-- AssemblyName: UnityEngine.UI
-  ClassName: UnityEngine.UI.Navigation
-- AssemblyName: UnityEngine.UI
-  ClassName: UnityEngine.UI.Slider/SliderEvent
-- AssemblyName: UnityEngine.UI
-  ClassName: UnityEngine.UI.SpriteState
 Assets:
-- Assets/ModAssets/RabbitEnemy.asset
-- Assets/ModAssets/SomethingEnemy.asset
-- Assets/ModAssets/BunnybunItem.asset
-- Assets/ModAssets/Bestiary/SomethingTK.asset
-- Assets/ModAssets/GoodPolaroidItem.asset
-- Assets/ModAssets/BasilPlushItem.asset
-- Assets/ModAssets/MailboxItem.asset
-- Assets/ModAssets/AubreyPlushItem.asset
-- Assets/ModAssets/CursedPolaroidItem.asset
-- Assets/ModAssets/Bestiary/RabbitTK.asset
-- Assets/ModAssets/Bestiary/RabbitTN.asset
-- Assets/ModAssets/BadPolaroidItem.asset
-- Assets/ModAssets/SpringCatEnemy.asset
-- Assets/ModAssets/Bestiary/SomethingTN.asset
-- Assets/ModAssets/KeytarItem.asset
+- Assets/ModAssets/Rabbit/RabbitEnemy.asset
+- Assets/ModAssets/Something/SomethingEnemy.asset
+- Assets/ModAssets/Bunnybun/BunnybunItem.asset
+- Assets/ModAssets/Something/SomethingTK.asset
+- Assets/ModAssets/Polaroids/GoodPolaroidItem.asset
+- Assets/ModAssets/BasilPlush/BasilPlushItem.asset
+- Assets/ModAssets/Mailbox/MailboxItem.asset
+- Assets/ModAssets/AubreyPlush/AubreyPlushItem.asset
+- Assets/ModAssets/Polaroids/CursedPolaroidItem.asset
+- Assets/ModAssets/Rabbit/RabbitTK.asset
+- Assets/ModAssets/Rabbit/RabbitTN.asset
+- Assets/ModAssets/Polaroids/BadPolaroidItem.asset
+- Assets/ModAssets/SpringCat/SpringCatEnemy.asset
+- Assets/ModAssets/Something/SomethingTN.asset
+- Assets/ModAssets/Keytar/KeytarItem.asset
 Dependencies: []

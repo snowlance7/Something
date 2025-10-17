@@ -1,6 +1,6 @@
 {
   "name": "Something",
-  "version_number": "0.3.0",
+  "version_number": "0.4.0",
   "website_url": "https://github.com/snowlance7/Something",
   "description": "Adds Something from Omori as an enemy",
   "dependencies": [

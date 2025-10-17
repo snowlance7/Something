@@ -3,9 +3,7 @@ using GameNetcodeStuff;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Unity.Netcode;
-using Unity.Netcode.Components;
 using UnityEngine;
 using UnityEngine.AI;
 using static Something.Plugin;
@@ -21,7 +19,7 @@ namespace Something
 
         public static int SpringCatKillIndex = 1;
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable CS8618
         public Transform turnCompass;
         public GameObject ScanNode;
         public Transform MeshTransform;
@@ -31,14 +29,16 @@ namespace Something
         public Transform HeadTransform;
         public Transform MouthTransform;
         public GameObject Container;
-        public NetworkAnimator networkAnimator;
         public AudioClip GlassBreakSFX;
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning restore CS8618
 
         BreakerBox? breakerBox;
-        bool grabbingTargetPlayer;
+
+        bool grabbingPlayer;
         bool grabbingRight;
-        bool targetPlayerInChest;
+        bool playerInChest;
+        int bodyPartLeft = -1;
+        int bodyPartRight = -1;
 
         float timeSinceMeow;
         float timeSinceSwitchLights;
@@ -48,15 +48,16 @@ namespace Something
         private Queue<Vector3> etchPath = new Queue<Vector3>();
         private bool followingPath = false;
 
-        // Const
-        const float turnSpeed = 15f;
-        const float throwForce = 20f;
+        bool targetPlayerDead => targetPlayer != null && !targetPlayer.isPlayerControlled && targetPlayer.deadBody != null;
 
         // Configs
-        float triggerDistance = 5f;
-        float meowCooldown = 30f;
-        float lightSwitchCooldown = 5f;
-        float turnOffLightsDistance = 10f;
+        const float turnSpeed = 15f;
+        const float throwForce = 20f;
+        const float triggerDistance = 5f;
+        const float meowCooldown = 30f;
+        const float lightSwitchCooldown = 5f;
+        const float turnOffLightsDistance = 10f;
+        const float playerInMouthTime = 5f;
 
         public enum State
         {
@@ -72,7 +73,7 @@ namespace Something
                 thisNetworkObject = NetworkObject;
                 thisEnemyIndex = RoundManager.Instance.numberOfEnemiesInScene;
                 RoundManager.Instance.numberOfEnemiesInScene++;
-                allAINodes = GameObject.FindGameObjectsWithTag("AINode");
+                allAINodes = Utils.insideAINodes;
                 if (!base.IsServer)
                 {
                     RoundManager.Instance.SpawnedEnemies.Add(this);
@@ -126,7 +127,7 @@ namespace Something
                 HeadTransform.rotation = Quaternion.identity;
             }
 
-            if (!IsServerOrHost) { return; }
+            if (!IsServer) { return; }
 
             timeSinceSwitchLights += Time.deltaTime;
 
@@ -159,16 +160,53 @@ namespace Something
         {
             if (targetPlayer != null)
             {
-                if (grabbingTargetPlayer)
+                if (playerInChest)
                 {
+                    grabbingPlayer = false;
+                    if (targetPlayerDead)
+                    {
+                        ResetVariables();
+                        return;
+                    }
+                    targetPlayer.transform.position = ChestTransform.position;
+                    return;
+                }
+                if (grabbingPlayer)
+                {
+                    if (targetPlayerDead)
+                    {
+                        if (bodyPartLeft > -1 && bodyPartLeft <= 10)
+                        {
+                            targetPlayer.deadBody.secondaryAttachedTo = LeftHandTransform;
+                            targetPlayer.deadBody.secondaryAttachedLimb = targetPlayer.deadBody.bodyParts[bodyPartLeft];
+                        }
+
+                        if (bodyPartRight > -1 && bodyPartRight <= 10)
+                        {
+                            targetPlayer.deadBody.attachedTo = RightHandTransform;
+                            targetPlayer.deadBody.attachedLimb = targetPlayer.deadBody.bodyParts[bodyPartRight];
+                        }
+
+                        targetPlayer.deadBody.matchPositionExactly = true;
+                        return;
+                    }
+
                     targetPlayer.transform.position = grabbingRight ? RightHandTransform.position : LeftHandTransform.position; // TODO: Dont do offset or parenting! Change the transform of the handtransform in unity editor
                     Vector3 chestOffset = targetPlayer.transform.position - targetPlayer.bodyParts[5].position;
                     targetPlayer.transform.position += chestOffset;
                 }
-                else if (targetPlayerInChest)
+                else
                 {
-                    targetPlayer.transform.position = ChestTransform.position;
+                    bodyPartLeft = -1;
+                    bodyPartRight = -1;
                 }
+            }
+            else
+            {
+                grabbingPlayer = false;
+                bodyPartLeft = -1;
+                bodyPartRight = -1;
+                playerInChest = false;
             }
         }
 
@@ -244,6 +282,7 @@ namespace Something
                     }
 
                     //SetDestinationToPosition(targetPlayer.transform.position);
+                    if (Utils.isBeta && Utils.DEBUG_disableMoving) { return; }
                     RecalculatePath();
 
                     break;
@@ -334,7 +373,37 @@ namespace Something
             KillPlayerServerRpc(player.actualClientId);
         }
 
-        // Animations
+        public void ResetVariables()
+        {
+            if (targetPlayer != null)
+            {
+                if (grabbingPlayer || playerInChest)
+                {
+                    targetPlayer.playerRigidbody.isKinematic = true;
+                    targetPlayer.transform.rotation = Quaternion.identity;
+
+                    if (targetPlayer.isPlayerDead && targetPlayer.deadBody != null)
+                    {
+                        targetPlayer.deadBody.attachedTo = null;
+                        targetPlayer.deadBody.attachedLimb = null;
+                        targetPlayer.deadBody.secondaryAttachedTo = null;
+                        targetPlayer.deadBody.secondaryAttachedLimb = null;
+                        targetPlayer.deadBody.matchPositionExactly = false;
+                    }
+                }
+
+                targetPlayer = null;
+            }
+
+            inSpecialAnimation = false;
+            grabbingPlayer = false;
+            playerInChest = false;
+            bodyPartLeft = -1;
+            bodyPartRight = -1;
+        }
+
+        // TODO: Retest these with new animation speeds
+        #region AnimationEvents
 
         public void SetInSpecialAnimation() // Animation
         {
@@ -349,7 +418,8 @@ namespace Something
         }
 
         // TODO: Test all these
-        public void GrabTargetPlayerRightHand() // Animation
+
+        public void GrabPlayerRightHand(int bodyPart = -1) // Animation
         {
             logger.LogDebug("GrabTargetPlayerRightHand");
             if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
@@ -357,11 +427,13 @@ namespace Something
             inSpecialAnimation = true;
             targetPlayer.playerRigidbody.isKinematic = false;
             grabbingRight = true;
-            grabbingTargetPlayer = true;
+            grabbingPlayer = true;
             //targetPlayer.transform.SetParent(RightHandTransform);
+
+            bodyPartRight = bodyPart;
         }
 
-        public void GrabTargetPlayerLeftHand() // Animation
+        public void GrabPlayerLeftHand(int bodyPart = -1) // Animation
         {
             logger.LogDebug("GrabTargetPlayerLeftHand");
             if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
@@ -369,17 +441,19 @@ namespace Something
             inSpecialAnimation = true;
             targetPlayer.playerRigidbody.isKinematic = false;
             grabbingRight = false;
-            grabbingTargetPlayer = true;
+            grabbingPlayer = true;
             //targetPlayer.transform.SetParent(LeftHandTransform);
+
+            bodyPartLeft = bodyPart;
         }
 
-        public void DropTargetPlayer() // Animation
+        public void DropPlayer() // Animation
         {
             logger.LogDebug("DropTargetPlayer");
             if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
 
-            grabbingTargetPlayer = false;
-            targetPlayerInChest = false;
+            grabbingPlayer = false;
+            playerInChest = false;
             targetPlayer.playerRigidbody.isKinematic = true;
             targetPlayer.transform.rotation = Quaternion.identity;
 
@@ -391,39 +465,43 @@ namespace Something
                 targetPlayer.deadBody.secondaryAttachedLimb = null;
                 targetPlayer.deadBody.matchPositionExactly = false;
             }
+
+            targetPlayer = null;
+            bodyPartRight = -1;
+            bodyPartLeft = -1;
         }
 
-        public void ThrowTargetPlayer() // Animation
+        public void ThrowPlayer() // Animation
         {
             logger.LogDebug("ThrowTargetPlayer");
             if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
 
             targetPlayer.playerRigidbody.isKinematic = true;
-            grabbingTargetPlayer = false;
+            grabbingPlayer = false;
 
             if (localPlayer != targetPlayer) { return; }
             localPlayer.KillPlayer(LeftHandTransform.forward * throwForce, true, CauseOfDeath.Inertia);
+
+            targetPlayer = null;
         }
 
-        public void KillTargetPlayerWithDeathAnimation(int deathAnimation) // Animation
+        public void KillPlayerWithDeathAnimation(int deathAnimation) // Animation
         {
             logger.LogDebug("KillTargetPlayerWithDeathAnimation: " + deathAnimation);
             if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
-            //if (localPlayer != targetPlayer) { return; }
 
-            grabbingTargetPlayer = false;
             targetPlayer.playerRigidbody.isKinematic = true;
 
             if (localPlayer != targetPlayer) { return; }
             localPlayer.KillPlayer(Vector3.zero, true, CauseOfDeath.Mauling, deathAnimation);
         }
 
-        public void TearTargetPlayerApart() // Animation
+        /*public void TearPlayerApart() // Animation
         {
             logger.LogDebug("TearTargetPlayerApart");
             if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
 
-            grabbingTargetPlayer = false;
+            grabbingPlayer = false;
             targetPlayer.playerRigidbody.isKinematic = true;
 
             if (localPlayer == targetPlayer)
@@ -432,14 +510,14 @@ namespace Something
             }
 
             StartCoroutine(GrabBodyPartsCoroutine(6, 0));
-        }
-
-        public void PullOffTargetPlayerHead() // Animation
+        }*/
+        
+        /*public void PullOffTargetPlayerHead() // Animation
         {
             logger.LogDebug("PullOffTargetPlayerHead");
             if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
 
-            grabbingTargetPlayer = false;
+            grabbingPlayer = false;
             targetPlayer.playerRigidbody.isKinematic = true;
 
             if (localPlayer == targetPlayer)
@@ -448,13 +526,13 @@ namespace Something
             }
 
             StartCoroutine(GrabBodyPartsCoroutine(0, 5));
-        }
+        }*/
 
-        IEnumerator GrabBodyPartsCoroutine(int leftHandPart, int rightHandPart)
+        /*IEnumerator GrabBodyPartsCoroutine(int leftHandPart, int rightHandPart)
         {
             logger.LogDebug($"GrabBodyPartsCoroutine: {leftHandPart}, {rightHandPart}");
             yield return null;
-            yield return new WaitUntil(() => (targetPlayer.isPlayerDead && targetPlayer.deadBody != null) || !inSpecialAnimation);
+            yield return new WaitUntil(() => targetPlayerDead || !inSpecialAnimation);
             if (!inSpecialAnimation) { logger.LogError("No longer inspecialanimation"); yield break; }
             logger.LogDebug("Continue GrabBodyPartsCoroutine");
 
@@ -465,24 +543,22 @@ namespace Something
             targetPlayer.deadBody.attachedLimb = targetPlayer.deadBody.bodyParts[rightHandPart];
 
             targetPlayer.deadBody.matchPositionExactly = true;
-        }
+        }*/
 
-        public void PutTargetPlayerInChest() // Animation
+        public void PutPlayerInChest() // Animation
         {
             logger.LogDebug("PutTargetPlayerInChest");
             if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
 
-            inSpecialAnimation = true;
             targetPlayer.playerRigidbody.isKinematic = false;
-            targetPlayerInChest = true;
+            playerInChest = true;
         }
 
-        public void PutTargetPlayerInMouth() // Animation
+        public void PutPlayerInMouth() // Animation
         {
             logger.LogDebug("PutTargetPlayerInMouth");
             if (targetPlayer == null) { logger.LogError("TargetPlayer is null"); return; }
 
-            grabbingTargetPlayer = false;
             targetPlayer.playerRigidbody.isKinematic = true;
 
             if (localPlayer == targetPlayer)
@@ -490,19 +566,25 @@ namespace Something
                 localPlayer.KillPlayer(Vector3.zero, true, CauseOfDeath.Mauling, 1);
             }
 
-            StartCoroutine(KeepPlayerInMouthForDelay(targetPlayer, 5f));
+            StartCoroutine(KeepPlayerInMouthForDelay(targetPlayer, playerInMouthTime));
+            targetPlayer = null;
         }
 
         IEnumerator KeepPlayerInMouthForDelay(PlayerControllerB player, float delay)
         {
             logger.LogDebug("KeepPlayerInMouthForDelay");
             yield return null;
-            yield return new WaitUntil(() => (targetPlayer.isPlayerDead && targetPlayer.deadBody != null) || !inSpecialAnimation);
-            if (!inSpecialAnimation) { logger.LogError("No longer inspecialanimation"); yield break; }
+            yield return new WaitUntil(() => (!player.isPlayerControlled && player.deadBody != null) || !inSpecialAnimation);
+            if (!inSpecialAnimation)
+            {
+                logger.LogError("No longer inspecialanimation");
+                ResetVariables();
+                yield break;
+            }
 
-            targetPlayer.deadBody.attachedTo = MouthTransform;
-            targetPlayer.deadBody.attachedLimb = targetPlayer.deadBody.bodyParts[5];
-            targetPlayer.deadBody.matchPositionExactly = true;
+            player.deadBody.attachedTo = MouthTransform;
+            player.deadBody.attachedLimb = player.deadBody.bodyParts[5];
+            player.deadBody.matchPositionExactly = true;
 
             yield return new WaitForSeconds(delay);
 
@@ -511,19 +593,22 @@ namespace Something
             player.deadBody.matchPositionExactly = false;
         }
 
+        #endregion
+
         // RPC's
 
         [ServerRpc(RequireOwnership = false)]
         public void KillPlayerServerRpc(ulong clientId)
         {
-            if (!IsServerOrHost) { return; }
-            int index = Utils.testing ? SpringCatAI.SpringCatKillIndex : UnityEngine.Random.Range(1, 7);
+            if (!IsServer) { return; }
+            int index = Utils.testing && Utils.isBeta ? SpringCatAI.SpringCatKillIndex : UnityEngine.Random.Range(1, 7);
             KillPlayerClientRpc(clientId, $"killPlayer{index}");
         }
 
         [ClientRpc]
         public void KillPlayerClientRpc(ulong clientId, string animationName)
         {
+            inSpecialAnimation = true;
             targetPlayer = PlayerFromId(clientId);
             creatureAnimator.SetTrigger(animationName);
         }

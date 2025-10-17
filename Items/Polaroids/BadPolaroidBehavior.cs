@@ -24,7 +24,7 @@ namespace Something.Items.Polaroids
         public override void Start()
         {
             base.Start();
-            if (!IsServerOrHost) { return; }
+            if (!IsServer) { return; }
 
             if (photoIndex == -1)
             {
@@ -36,7 +36,7 @@ namespace Something.Items.Polaroids
 
         public override void EquipItem()
         {
-            if (IsServerOrHost && !wasHeld)
+            if (IsServer && !wasHeld)
             {
                 if (UnityEngine.Random.Range(0f, 1f) < configBadPolaroidSomethingChance.Value)
                 {
@@ -52,7 +52,7 @@ namespace Something.Items.Polaroids
 
         public void SpawnSomething(PlayerControllerB playerToHaunt)
         {
-            if (!IsServerOrHost) { return; }
+            if (!IsServer) { return; }
             if (StartOfRound.Instance.inShipPhase || StartOfRound.Instance.shipIsLeaving) { return; }
             SomethingAI something = Instantiate(SomethingPrefab, Vector3.zero, Quaternion.identity).GetComponent<SomethingAI>();
             something.NetworkObject.Spawn(destroyWithScene: true);
