@@ -14,9 +14,7 @@ namespace Something
 {
     internal class SomethingAI : EnemyAI
     {
-        private static ManualLogSource logger = LoggerInstance;
-
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable CS8618
         public Transform turnCompass;
         public GameObject[] lesserSomethingPrefabs;
         public GameObject littleOnePrefab;
@@ -27,7 +25,7 @@ namespace Something
         public GameObject ScanNode;
         public GameObject BreathingMechanicPrefab;
         SomethingHUDOverlay BreathingUI;
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning restore CS8618
 
         List<GameObject> SpawnedTinySomethings = [];
 
@@ -112,7 +110,7 @@ namespace Something
             }
 
             turnCompass.LookAt(localPlayer.gameplayCamera.transform.position);
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(new Vector3(0f, turnCompass.eulerAngles.y, 0f)), 10f * Time.deltaTime); // Always look at local player
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(new Vector3(0f, turnCompass.eulerAngles.y, 0f)), 50f * Time.deltaTime); // Always look at local player
 
             float newFear = targetPlayer.insanityLevel / maxInsanity;
             targetPlayer.playersManager.fearLevel = Mathf.Max(targetPlayer.playersManager.fearLevel, newFear); // Change fear based on insanity

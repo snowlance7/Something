@@ -1,34 +1,33 @@
 ﻿using BepInEx.Logging;
+using Dawn;
 using GameNetcodeStuff;
 using HarmonyLib;
-using LethalLib.Modules;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Animations.Rigging;
+using UnityEngine.Assertions;
 using static Something.Plugin;
-using static UnityEngine.Rendering.DebugUI;
+using static UnityEngine.VFX.VisualEffectControlTrackController;
 
 namespace Something
 {
     public static class Utils
     {
-        private static ManualLogSource logger = LoggerInstance;
+        public static bool isBeta = true; // TODO: Set to false before release
+        public static bool testing => _testing && isBeta;
+        public static bool _testing = false;
 
-        public static bool isBeta = true;
         public static bool trailerMode = false;
 
         public static bool inTestRoom => StartOfRound.Instance?.testRoom != null;
-        public static bool testing = true;
         public static bool DEBUG_disableSpawning = false;
         public static bool DEBUG_disableTargetting = false;
-        public static bool DEBUG_disableMoving = true;
+        public static bool DEBUG_disableMoving = false;
 
         public static bool localPlayerFrozen = false;
-
-        public static bool isOnCompanyMoon => StartOfRound.Instance?.currentLevel.levelID == 3;
 
         public static GameObject[] allAINodes => insideAINodes.Concat(outsideAINodes).ToArray();
 
@@ -74,8 +73,8 @@ namespace Something
                     }
                     break;
                 case "/testing":
-                    testing = !testing;
-                    HUDManager.Instance.DisplayTip("Testing", testing.ToString());
+                    _testing = !_testing;
+                    HUDManager.Instance.DisplayTip("Testing", _testing.ToString());
                     break;
                 case "/surfaces":
                     foreach (var surface in StartOfRound.Instance.footstepSurfaces)
@@ -118,103 +117,23 @@ namespace Something
             HUDManager.Instance.AddChatMessage(msg, "Server");
         }
 
-        public static void RegisterItem(string itemPath, string levelRarities = "", string customLevelRarities = "", int minValue = 0, int maxValue = 0)
+        public static Transform? GetClosestAINodeToPosition(Vector3 pos)
         {
-            Item item = ModAssets!.LoadAsset<Item>(itemPath);
-            if (item == null) { LoggerInstance.LogError($"Error: Couldn't get prefab from {itemPath}"); return; }
-            LoggerInstance.LogDebug($"Got {item.name} prefab");
+            Transform? closestTransform = null;
+            float closestDistance = Mathf.Infinity;
 
-            item.minValue = minValue;
-            item.maxValue = maxValue;
-
-            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(item.spawnPrefab);
-            Utilities.FixMixerGroups(item.spawnPrefab);
-            LethalLib.Modules.Items.RegisterScrap(item, GetLevelRarities(levelRarities), GetCustomLevelRarities(customLevelRarities));
-        }
-
-        public static void RegisterEnemy(string enemyPath, string tnPath, string tkPath, string levelRarities = "", string customLevelRarities = "")
-        {
-            EnemyType enemy = ModAssets!.LoadAsset<EnemyType>(enemyPath);
-            if (enemy == null) { LoggerInstance.LogError($"Error: Couldn't get prefab from {enemyPath}"); return; }
-            LoggerInstance.LogDebug($"Got {enemy.name} prefab");
-
-            TerminalNode tn = ModAssets.LoadAsset<TerminalNode>(tnPath);
-            TerminalKeyword tk = ModAssets.LoadAsset<TerminalKeyword>(tkPath);
-
-            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(enemy.enemyPrefab);
-            Enemies.RegisterEnemy(enemy, GetLevelRarities(levelRarities), GetCustomLevelRarities(customLevelRarities), tn, tk);
-        }
-
-        public static Dictionary<Levels.LevelTypes, int>? GetLevelRarities(string? levelsString)
-        {
-            try
+            foreach (var node in allAINodes)
             {
-                Dictionary<Levels.LevelTypes, int> levelRaritiesDict = new Dictionary<Levels.LevelTypes, int>();
+                if (node == null) { continue; }
 
-                if (levelsString != null && levelsString != "")
-                {
-                    string[] levels = levelsString.Split(',');
+                float distance = Vector3.Distance(pos, node.transform.position);
+                if (distance > closestDistance) { continue; }
 
-                    foreach (string level in levels)
-                    {
-                        string[] levelSplit = level.Split(':');
-                        if (levelSplit.Length != 2) { continue; }
-                        string levelType = levelSplit[0].Trim();
-                        string levelRarity = levelSplit[1].Trim();
-
-                        if (Enum.TryParse<Levels.LevelTypes>(levelType, out Levels.LevelTypes levelTypeEnum) && int.TryParse(levelRarity, out int levelRarityInt))
-                        {
-                            levelRaritiesDict.Add(levelTypeEnum, levelRarityInt);
-                        }
-                        else
-                        {
-                            LoggerInstance.LogError($"Error: Invalid level rarity: {levelType}:{levelRarity}");
-                        }
-                    }
-                }
-                return levelRaritiesDict;
+                closestDistance = distance;
+                closestTransform = node.transform;
             }
-            catch (Exception e)
-            {
-                LoggerInstance.LogError($"Error: {e}");
-                return null;
-            }
-        }
 
-        public static Dictionary<string, int>? GetCustomLevelRarities(string? levelsString)
-        {
-            try
-            {
-                Dictionary<string, int> customLevelRaritiesDict = new Dictionary<string, int>();
-
-                if (levelsString != null)
-                {
-                    string[] levels = levelsString.Split(',');
-
-                    foreach (string level in levels)
-                    {
-                        string[] levelSplit = level.Split(':');
-                        if (levelSplit.Length != 2) { continue; }
-                        string levelType = levelSplit[0].Trim();
-                        string levelRarity = levelSplit[1].Trim();
-
-                        if (int.TryParse(levelRarity, out int levelRarityInt))
-                        {
-                            customLevelRaritiesDict.Add(levelType, levelRarityInt);
-                        }
-                        else
-                        {
-                            LoggerInstance.LogError($"Error: Invalid level rarity: {levelType}:{levelRarity}");
-                        }
-                    }
-                }
-                return customLevelRaritiesDict;
-            }
-            catch (Exception e)
-            {
-                LoggerInstance.LogError($"Error: {e}");
-                return null;
-            }
+            return closestTransform;
         }
 
         public static Vector3 GetBestThrowDirection(Vector3 origin, Vector3 forward, int rayCount, float maxDistance, LayerMask layerMask)
@@ -332,7 +251,7 @@ namespace Something
         public static void MakePlayerInvisible(PlayerControllerB player, bool value)
         {
             GameObject scavengerModel = player.gameObject.transform.Find("ScavengerModel").gameObject;
-            if (scavengerModel == null) { LoggerInstance.LogError("ScavengerModel not found"); return; }
+            if (scavengerModel == null) { logger.LogError("ScavengerModel not found"); return; }
             scavengerModel.transform.Find("LOD1").gameObject.SetActive(!value);
             scavengerModel.transform.Find("LOD2").gameObject.SetActive(!value);
             scavengerModel.transform.Find("LOD3").gameObject.SetActive(!value);
@@ -459,6 +378,18 @@ namespace Something
             return nodes[randIndex];
         }
 
+        public static GameObject? GetRandomNode()
+        {
+            logger.LogDebug("Choosing random node...");
+
+            GameObject[] nodes = allAINodes;
+
+            if (nodes.Length == 0) return null;
+
+            int randIndex = UnityEngine.Random.Range(0, nodes.Length);
+            return nodes[randIndex];
+        }
+
         public static Vector3 GetRandomNavMeshPositionInAnnulus(Vector3 center, float minRadius, float maxRadius, int sampleCount = 10)
         {
             Vector3 randomDirection;
@@ -557,13 +488,70 @@ namespace Something
 
             return players.ToArray();
         }
+
+        public static void RebuildRig(PlayerControllerB pcb)
+        {
+            if (pcb != null && pcb.playerBodyAnimator != null)
+            {
+                pcb.playerBodyAnimator.WriteDefaultValues();
+                pcb.playerBodyAnimator.GetComponent<RigBuilder>()?.Build();
+            }
+        }
+
+        public static bool IsPlayerChild(PlayerControllerB player)
+        {
+            return player.thisPlayerBody.localScale.y < 1f;
+        }
+
+        public static PlayerControllerB? GetFarthestPlayerFromPosition(Vector3 position, float minDistance = 0f)
+        {
+            float farthestDistance = minDistance;
+            PlayerControllerB? farthestPlayer = null;
+
+            foreach(var player in StartOfRound.Instance.allPlayerScripts)
+            {
+                if (player == null || !player.isPlayerControlled) { continue; }
+                float distance = Vector3.Distance(position, player.transform.position);
+                if (distance < farthestDistance) { continue; }
+                farthestDistance = distance;
+                farthestPlayer = player;
+            }
+
+            return farthestPlayer;
+        }
+
+        public static void PlaySoundAtPosition(Vector3 pos, AudioClip clip, float volume = 1f, bool randomizePitch = true, bool spatial3D = true, float min3DDistance = 1f, float max3DDistance = 10f)
+        {
+            GameObject soundObj = GameObject.Instantiate(new GameObject("TempSoundEffectObj"), pos, Quaternion.identity);
+            AudioSource source = soundObj.AddComponent<AudioSource>();
+            
+            OccludeAudio occlude = soundObj.AddComponent<OccludeAudio>();
+            occlude.lowPassOverride = 20000f;
+
+            source.rolloffMode = AudioRolloffMode.Linear;
+
+            if (randomizePitch)
+                source.pitch = UnityEngine.Random.Range(0.94f, 1.06f);
+
+            source.clip = clip;
+            source.volume = volume;
+            source.spatialBlend = spatial3D ? 1 : 0;
+            source.minDistance = min3DDistance;
+            source.maxDistance = max3DDistance;
+            source.Play();
+            GameObject.Destroy(soundObj, source.clip.length);
+        }
+
+        public static void PlaySoundAtPosition(Vector3 pos, AudioClip[] clips, float volume = 1f, bool randomizePitch = true, bool spatial3D = true, float min3DDistance = 1f, float max3DDistance = 10f)
+        {
+            int index = UnityEngine.Random.Range(0, clips.Length);
+            PlaySoundAtPosition(pos, clips[index], volume, randomizePitch, spatial3D, min3DDistance, max3DDistance);
+        }
     }
 
     [HarmonyPatch]
     public class UtilsPatches
     {
-        private static ManualLogSource logger = LoggerInstance;
-
         [HarmonyPrefix, HarmonyPatch(typeof(RoundManager), nameof(RoundManager.SpawnInsideEnemiesFromVentsIfReady))]
         public static bool SpawnInsideEnemiesFromVentsIfReadyPrefix()
         {

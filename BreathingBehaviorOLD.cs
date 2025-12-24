@@ -58,7 +58,7 @@ namespace Something
 
             if (SomethingInputs.Instance.BreathKey.WasPressedThisFrame())
             {
-                LoggerInstance.LogDebug("Start Breathing");
+                logger.LogDebug("Start Breathing");
                 localPlayer.movementAudio.Stop();
                 localPlayer.movementAudio.loop = false;
                 localPlayer.movementAudio.clip = BreathInSFX;
@@ -67,7 +67,7 @@ namespace Something
             }
             else if (SomethingInputs.Instance.BreathKey.WasReleasedThisFrame())
             {
-                LoggerInstance.LogDebug("Stop Breathing");
+                logger.LogDebug("Stop Breathing");
                 localPlayer.movementAudio.Stop();
                 localPlayer.movementAudio.loop = false;
                 localPlayer.movementAudio.clip = BreathOutSFX;
@@ -83,7 +83,7 @@ namespace Something
                     if (localPlayer.insanityLevel > 0)
                     {
                         localPlayer.insanityLevel -= Time.deltaTime * insanityMultiplier;
-                        LoggerInstance.LogDebug("Insanity: " + localPlayer.insanityLevel);
+                        logger.LogDebug("Insanity: " + localPlayer.insanityLevel);
                     }
                 }
 

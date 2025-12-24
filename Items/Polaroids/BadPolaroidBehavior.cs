@@ -10,13 +10,13 @@ namespace Something.Items.Polaroids
 {
     public class BadPolaroidBehavior : PhysicsProp
     {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable CS8618
         public AudioSource ItemAudio;
         public GameObject SomethingPrefab;
         public SpriteRenderer renderer;
         public Sprite[] Photos;
         public Sprite[] AltPhotos;
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning restore CS8618
 
         int photoIndex;
         bool wasHeld;
@@ -28,21 +28,21 @@ namespace Something.Items.Polaroids
 
             if (photoIndex == -1)
             {
-                photoIndex = configSpoilerFreeVersion.Value ? Random.Range(0, AltPhotos.Length) : Random.Range(0, Photos.Length);
+                photoIndex = configMinimalSpoilerVersion.Value ? Random.Range(0, AltPhotos.Length) : Random.Range(0, Photos.Length);
             }
 
-            ChangeSpriteClientRpc(photoIndex, configSpoilerFreeVersion.Value);
+            ChangeSpriteClientRpc(photoIndex, configMinimalSpoilerVersion.Value);
         }
 
         public override void EquipItem()
         {
             if (IsServer && !wasHeld)
             {
-                if (UnityEngine.Random.Range(0f, 1f) < configBadPolaroidSomethingChance.Value)
+                /*if (UnityEngine.Random.Range(0f, 1f) < configBadPolaroidSomethingChance.Value) // TODO: fix
                 {
                     SpawnSomething(playerHeldBy);
                     ItemAudio.Play();
-                }
+                }*/
             }
 
             wasHeld = true;

@@ -7,23 +7,15 @@ namespace Something
 {
     internal class RabbitAI : EnemyAI
     {
-        private static ManualLogSource logger = LoggerInstance;
-
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable CS8618
         public Transform turnCompass;
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
-        public enum State
-        {
-            Roaming
-        }
+#pragma warning restore CS8618
 
         public override void Start()
         {
             logger.LogDebug("Rabbit spawned");
             base.Start();
 
-            currentBehaviourStateIndex = (int)State.Roaming;
             StartSearch(transform.position);
         }
 

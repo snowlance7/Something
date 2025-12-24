@@ -8,7 +8,7 @@ namespace Something.Items.Polaroids
 {
     public class GoodPolaroidBehavior : PhysicsProp
     {
-        private static ManualLogSource logger = LoggerInstance;
+        private static ManualLogSource logger = Plugin.logger;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public GameObject SomethingPrefab;
@@ -26,10 +26,10 @@ namespace Something.Items.Polaroids
 
             if (photoIndex == -1)
             {
-                photoIndex = configSpoilerFreeVersion.Value ? Random.Range(0, AltPhotos.Length) : Random.Range(0, Photos.Length);
+                photoIndex = configMinimalSpoilerVersion.Value ? Random.Range(0, AltPhotos.Length) : Random.Range(0, Photos.Length);
             }
 
-            ChangeSpriteClientRpc(photoIndex, configSpoilerFreeVersion.Value);
+            ChangeSpriteClientRpc(photoIndex, configMinimalSpoilerVersion.Value);
         }
 
         public override void EnableItemMeshes(bool enable)

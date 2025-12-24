@@ -13,9 +13,9 @@ namespace Something
 {
     internal class LesserSomethingAI : MonoBehaviour
     {
-        private static ManualLogSource logger = LoggerInstance;
+        private static ManualLogSource logger = Plugin.logger;
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable CS8618
         public Transform turnCompass;
         public NavMeshAgent agent;
         public AudioSource creatureSFX;
@@ -27,7 +27,7 @@ namespace Something
         public PlayerControllerB targetPlayer;
         Coroutine wanderRoutine;
         public Transform spawnNode;
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning restore CS8618
 
         float timeSinceAIInterval;
         float timeSpawned;

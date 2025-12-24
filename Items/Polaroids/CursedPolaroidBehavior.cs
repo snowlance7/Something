@@ -7,32 +7,36 @@ using UnityEngine;
 using static Something.Plugin;
 using HarmonyLib;
 using BepInEx.Logging;
+using static Something.Patches;
 
 namespace Something.Items.Polaroids
 {
     public class CursedPolaroidBehavior : PhysicsProp
     {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable CS8618
         public AudioSource ItemAudio;
         public AudioClip SomethingSFX;
         public Animator ItemAnimator;
         public GameObject SomethingPrefab;
         public SpriteRenderer renderer;
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning restore CS8618
 
         bool wasHeld;
         public PlayerControllerB? cursedPlayer;
 
+        public override void Start()
+        {
+            base.Start();
+            onShipLanded?.AddListener(OnShipLanded);
+        }
+
         public override void EquipItem()
         {
-            LoggerInstance.LogDebug("Item held: " + wasHeld); // TODO: Test this
+            logger.LogDebug("Item held: " + wasHeld); // TODO: Test this
             if (IsServer && !wasHeld)
             {
-                if (UnityEngine.Random.Range(0f, 1f) < configCursedPolaroidSomethingChance.Value)
-                {
-                    cursedPlayer = playerHeldBy;
-                    SpawnSomething(playerHeldBy, !configSpoilerFreeVersion.Value);
-                }
+                cursedPlayer = playerHeldBy;
+                SpawnSomething(playerHeldBy, !configMinimalSpoilerVersion.Value);
             }
 
             wasHeld = true;
@@ -40,15 +44,23 @@ namespace Something.Items.Polaroids
             base.EquipItem();
         }
 
+        public override int GetItemDataToSave()
+        {
+            if (cursedPlayer == null)
+                return -1;
+            return (int)cursedPlayer.actualClientId;
+        }
+
         public override void LoadItemSaveData(int saveData)
         {
             wasHeld = true;
+            if (saveData == -1) { return; }
+            cursedPlayer = PlayerFromId((ulong)saveData);
         }
 
         public override void EnableItemMeshes(bool enable)
         {
             base.EnableItemMeshes(enable);
-
             renderer.enabled = enable;
         }
 
@@ -67,38 +79,18 @@ namespace Something.Items.Polaroids
             }
         }
 
+        public void OnShipLanded()
+        {
+            if (!IsServer) { return; }
+            if (cursedPlayer == null) { return; }
+            SpawnSomething(cursedPlayer, false);
+        }
+
         [ClientRpc]
         public void DoAnimationClientRpc(string animationName)
         {
             ItemAnimator.SetTrigger(animationName);
             ItemAudio.Play();
-        }
-    }
-
-    [HarmonyPatch]
-    public class CursedPolaroidPatches
-    {
-        private static ManualLogSource logger = Plugin.LoggerInstance;
-
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.OnShipLandedMiscEvents))]
-        public static void OnShipLandedMiscEventsPostfix()
-        {
-            try
-            {
-                if (!IsServer) { return; }
-
-                foreach (CursedPolaroidBehavior polaroid in Object.FindObjectsOfType<CursedPolaroidBehavior>())
-                {
-                    if (polaroid.cursedPlayer == null) { continue; }
-                    polaroid.SpawnSomething(polaroid.cursedPlayer, false);
-                }
-            }
-            catch (System.Exception e)
-            {
-                LoggerInstance.LogError(e);
-                return;
-            }
         }
     }
 }

@@ -5,7 +5,7 @@
         <AssemblyName>Snowlance.Something</AssemblyName>
         <Product>Something</Product>
         <!-- Change to whatever version you're currently on. -->
-        <Version>0.4.0</Version>
+        <Version>0.3.1</Version>
     </PropertyGroup>
 
     <!-- Project Properties -->
@@ -46,8 +46,11 @@
     </PropertyGroup>
     <ItemGroup>
       <Compile Remove="SomethingUnityProject\**" />
+      <Compile Remove="ThunderStore\Something\**" />
       <EmbeddedResource Remove="SomethingUnityProject\**" />
+      <EmbeddedResource Remove="ThunderStore\Something\**" />
       <None Remove="SomethingUnityProject\**" />
+      <None Remove="ThunderStore\Something\**" />
     </ItemGroup>
     <ItemGroup>
       <None Remove=".gitattributes" />
@@ -60,8 +63,9 @@
         <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.1" PrivateAssets="all" />
         <PackageReference Include="BepInEx.Core" Version="5.*" PrivateAssets="all" />
         <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" PrivateAssets="all" />
-        <PackageReference Include="Evaisa.LethalLib" Version="1.1.1" />
         <PackageReference Include="LethalCompany.GameLibs.Steam" Version="73.0.0-ngd.0" Publicize="true" PrivateAssets="all" />
+        <PackageReference Include="TeamXiaolan.DawnLib" Version="0.4.12" />
+        <PackageReference Include="TeamXiaolan.DawnLib.DuskMod" Version="0.4.12" />
         <PackageReference Include="UnityEngine.Modules" Version="2022.3.9" IncludeAssets="compile" PrivateAssets="all" />
     </ItemGroup>
 
@@ -71,12 +75,12 @@
 
     <ItemGroup>
       <Folder Include="Assets\" />
-      <Folder Include="ThunderStore\Something\" />
+      <Folder Include="ThunderStore\plugins\Assets\" />
     </ItemGroup>
 
     <ItemGroup>
       <Reference Include="LethalCompanyInputUtils">
-        <HintPath>..\1Resources\1Assemblies\LethalCompanyInputUtils\LethalCompanyInputUtils.dll</HintPath>
+        <HintPath>..\1Assemblies\Rune580-LethalCompany_InputUtils-0.7.10\plugins\LethalCompanyInputUtils\LethalCompanyInputUtils.dll</HintPath>
       </Reference>
     </ItemGroup>
 

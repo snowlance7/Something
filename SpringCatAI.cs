@@ -15,7 +15,7 @@ namespace Something
 {
     internal class SpringCatAI : EnemyAI
     {
-        private static ManualLogSource logger = LoggerInstance;
+        private static ManualLogSource logger = Plugin.logger;
 
         public static int SpringCatKillIndex = 1;
 
