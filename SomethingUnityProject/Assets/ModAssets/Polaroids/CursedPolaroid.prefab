@@ -170,8 +170,8 @@ GameObject:
   - component: {fileID: 4906821555205991102}
   - component: {fileID: 81915821582539373}
   - component: {fileID: 5952254796376091199}
-  - component: {fileID: 7622342300005188296}
   - component: {fileID: 173131949649836978}
+  - component: {fileID: 7622342300005188296}
   - component: {fileID: 5527341153898951258}
   m_Layer: 6
   m_Name: CursedPolaroid
@@ -383,6 +383,27 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &173131949649836978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7905968751901644706}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 527408175
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 1
+  AutoObjectParentSync: 0
 --- !u!114 &7622342300005188296
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -437,26 +458,7 @@ MonoBehaviour:
   SomethingPrefab: {fileID: 6874139027399636449, guid: d21a485c0b18953458dc368fee954d87,
     type: 3}
   renderer: {fileID: 5952254796376091199}
---- !u!114 &173131949649836978
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7905968751901644706}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 951099334
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 1
-  AutoObjectParentSync: 0
+  cursedPlayer: {fileID: 0}
 --- !u!95 &5527341153898951258
 Animator:
   serializedVersion: 5

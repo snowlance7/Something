@@ -23,16 +23,15 @@ namespace Something
         public static Plugin PluginInstance;
         public static ManualLogSource logger { get; private set; }
         public static DuskMod Mod { get; private set; }
+
+        public static ConfigEntry<bool> configMinimalSpoilerVersion;
+        //public static ConfigEntry<float> configBadPolaroidSomethingChance;
 #pragma warning restore CS8618
 
         private readonly Harmony harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
         public static PlayerControllerB localPlayer { get { return GameNetworkManager.Instance.localPlayerController; } }
         public static PlayerControllerB PlayerFromId(ulong id) { return StartOfRound.Instance.allPlayerScripts.Where(x => x.actualClientId == id).First(); }
         public static bool IsServer { get { return NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost; } }
-
-        public static ConfigEntry<bool> configMinimalSpoilerVersion;
-        //public static ConfigEntry<float> configBadPolaroidSomethingChance;
-        //public static ConfigEntry<float> configCursedPolaroidSomethingChance;
 
         private void Awake()
         {
@@ -46,12 +45,6 @@ namespace Something
             harmony.PatchAll();
 
             AssetBundle? mainBundle = AssetBundle.LoadFromFile(Path.Combine(Path.GetDirectoryName(Info.Location), "something_mainassets"));
-            if (mainBundle == null)
-            {
-                Logger.LogError($"Failed to load custom assets.");
-                return;
-            }
-
             Mod = DuskMod.RegisterMod(this, mainBundle);
             Mod.RegisterContentHandlers();
 
@@ -74,7 +67,6 @@ namespace Something
         {
             // General
             configMinimalSpoilerVersion = Config.Bind("Spoilers", "Minimal Spoiler Version", true, "Replaces most spoilers for the game with alternatives.");
-            //configBadPolaroidSomethingChance = Config.Bind("Polaroids", "Bad Polaroid Something Spawn Chance", 0.5f, "Chance of spawning somethiing on first player who picked up Bad Polaroid.");
         }
 
         public static bool IsPlayerHaunted(PlayerControllerB player)

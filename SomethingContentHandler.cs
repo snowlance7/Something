@@ -11,9 +11,7 @@ namespace Something
         public class BunnybunAssets(DuskMod mod, string filePath) : AssetBundleLoader<BunnybunAssets>(mod, filePath) { }
         public class KeytarAssets(DuskMod mod, string filePath) : AssetBundleLoader<KeytarAssets>(mod, filePath) { }
         public class MailboxAssets(DuskMod mod, string filePath) : AssetBundleLoader<MailboxAssets>(mod, filePath) { }
-        public class GoodPolaroidAssets(DuskMod mod, string filePath) : AssetBundleLoader<GoodPolaroidAssets>(mod, filePath) { }
-        public class BadPolaroidAssets(DuskMod mod, string filePath) : AssetBundleLoader<BadPolaroidAssets>(mod, filePath) { }
-        public class CursedPolaroidAssets(DuskMod mod, string filePath) : AssetBundleLoader<CursedPolaroidAssets>(mod, filePath) { }
+        public class PolaroidAssets(DuskMod mod, string filePath) : AssetBundleLoader<PolaroidAssets>(mod, filePath) { }
         public class RabbitAssets(DuskMod mod, string filePath) : AssetBundleLoader<RabbitAssets>(mod, filePath) { }
 
         public SomethingAssets? Something;
@@ -22,23 +20,19 @@ namespace Something
         public BunnybunAssets? Bunnybun;
         public KeytarAssets? Keytar;
         public MailboxAssets? Mailbox;
-        public GoodPolaroidAssets? GoodPolaroid;
-        public BadPolaroidAssets? BadPolaroid;
-        public CursedPolaroidAssets? CursedPolaroid;
+        public PolaroidAssets? Polaroid;
         public RabbitAssets? Rabbit;
 
         public SomethingContentHandler(DuskMod mod) : base(mod)
         {
-            RegisterContent("somethingassets", out Something);
-            RegisterContent("aubreyplushassets", out AubreyPlush);
-            RegisterContent("basilplushassets", out BasilPlush);
-            RegisterContent("bunnybunassets", out Bunnybun);
-            RegisterContent("keytarassets", out Keytar);
-            RegisterContent("mailboxassets", out Mailbox);
-            RegisterContent("goodpolaroidassets", out GoodPolaroid);
-            RegisterContent("badpolaroidassets", out BadPolaroid);
-            RegisterContent("cursedpolaroidassets", out CursedPolaroid);
-            RegisterContent("rabbitassets", out Rabbit);
+            RegisterContent("something", out Something);
+            RegisterContent("aubreyplush", out AubreyPlush);
+            RegisterContent("basilplush", out BasilPlush);
+            RegisterContent("bunnybun", out Bunnybun);
+            RegisterContent("keytar", out Keytar);
+            RegisterContent("mailbox", out Mailbox);
+            RegisterContent("polaroid", out Polaroid);
+            RegisterContent("rabbit", out Rabbit);
         }
     }
 }
