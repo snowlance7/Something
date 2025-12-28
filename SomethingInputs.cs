@@ -14,7 +14,7 @@ namespace Something
             Instance = new SomethingInputs();
         }
 
-        [InputAction(KeyboardControl.B, Name = "Breathe")]
+        [InputAction(KeyboardControl.X, Name = "Breathe")]
         public InputAction BreathKey { get; set; }
 #pragma warning restore CS8618
     }

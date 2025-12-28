@@ -2,15 +2,16 @@ using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using Dawn;
-using Dawn.Utils;
 using Dusk;
 using GameNetcodeStuff;
 using HarmonyLib;
+using Something.Enemies.Something;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Something
 {
@@ -31,7 +32,10 @@ namespace Something
         private readonly Harmony harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
         public static PlayerControllerB localPlayer { get { return GameNetworkManager.Instance.localPlayerController; } }
         public static PlayerControllerB PlayerFromId(ulong id) { return StartOfRound.Instance.allPlayerScripts.Where(x => x.actualClientId == id).First(); }
-        public static bool IsServer { get { return NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost; } }
+        public static bool IsServerOrHost { get { return NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost; } }
+        
+        
+        public static UnityEvent onShipLanded = new UnityEvent();
 
         private void Awake()
         {
@@ -57,11 +61,6 @@ namespace Something
             // Finished
             Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
         }
-        /*public class DuckSongAssets(DuskMod mod, string filePath) : AssetBundleLoader<DuckSongAssets>(mod, filePath)
-        {
-            [LoadFromBundle("DuckHolder.prefab")]
-            public GameObject DuckUIPrefab { get; private set; } = null!;
-        }*/
 
         void InitConfigs()
         {

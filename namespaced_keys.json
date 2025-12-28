@@ -1,0 +1,16 @@
+{
+  "SomethingEnemyKeys": {
+    "__type": "DawnEnemyInfo",
+    "Rabbit": "something:rabbit",
+    "Something": "something:something"
+  },
+  "SomethingItemKeys": {
+    "__type": "DawnItemInfo",
+    "AubreyPlush": "something:aubrey_plush",
+    "BasilPlush": "something:basil_plush",
+    "Bunnybun": "something:bunnybun",
+    "Keytar": "something:keytar",
+    "Mailbox": "something:mailbox",
+    "Polaroid": "something:polaroid"
+  }
+}

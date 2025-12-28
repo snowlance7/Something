@@ -1,21 +1,34 @@
-Shader "UI/BreathVignette"
+Shader "UI/BreathEdgeVignette"
 {
     Properties
     {
-        _LightColor ("Light Color", Color) = (0.6,0.9,1,0.9)
-        _DarkColor ("Dark Color", Color) = (0,0,0,0.9)
-        _DarknessAmount ("Darkness Amount", Range(0,1)) = 0.5
-        _LightSize ("Light Size", Range(0,1)) = 0.25
-        _EdgeFeather ("Edge Feather", Range(0.01,0.5)) = 0.15
+        // Unity UI expects these:
+        [PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
+        _Color ("Tint", Color) = (1,1,1,1)
+
+        _LightColor ("Light Color", Color) = (0.6,0.9,1,0.85)
+
+        // 0 = only very edge; 1 = reaches all the way to center
+        _Inset ("Inset (inward reach)", Range(0,1)) = 0.25
+
+        _Feather ("Feather", Range(0.001,0.5)) = 0.15
+        _Intensity ("Intensity", Range(0,3)) = 1.0
         _CenterOffset ("Center Offset", Vector) = (0.5,0.5,0,0)
     }
+
     SubShader
     {
-        Tags { "Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent" }
-        LOD 100
+        Tags
+        {
+            "Queue"="Transparent"
+            "RenderType"="Transparent"
+            "IgnoreProjector"="True"
+            "CanUseSpriteAtlas"="True"
+        }
+
         Blend SrcAlpha OneMinusSrcAlpha
-        Cull Off
         ZWrite Off
+        Cull Off
 
         Pass
         {
@@ -24,77 +37,61 @@ Shader "UI/BreathVignette"
             #pragma fragment frag
             #include "UnityCG.cginc"
 
-            struct appdata_t {
-                float4 vertex : POSITION;
-                float2 texcoord : TEXCOORD0;
-            };
-
-            struct v2f {
-                float2 uv : TEXCOORD0;
-                float4 vertex : SV_POSITION;
-            };
-
             sampler2D _MainTex;
             float4 _MainTex_ST;
+            fixed4 _Color;
 
             fixed4 _LightColor;
-            fixed4 _DarkColor;
-            float _DarknessAmount;
-            float _LightSize;
-            float _EdgeFeather;
-            float4 _CenterOffset; // .xy is center in normalized screen space
+            float _Inset;
+            float _Feather;
+            float _Intensity;
+            float4 _CenterOffset;
+
+            struct appdata_t
+            {
+                float4 vertex : POSITION;
+                float2 uv     : TEXCOORD0;
+                fixed4 color  : COLOR;
+            };
+
+            struct v2f
+            {
+                float4 vertex : SV_POSITION;
+                float2 uv     : TEXCOORD0;
+                fixed4 color  : COLOR;
+            };
 
             v2f vert (appdata_t v)
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = v.texcoord;
+                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+                o.color = v.color * _Color;
                 return o;
             }
 
             fixed4 frag (v2f i) : SV_Target
             {
-                // Normalized UV (0..1)
-                float2 uv = i.uv;
+                // Respect UI sprite alpha/tint (keeps UI system happy)
+                fixed4 baseCol = tex2D(_MainTex, i.uv) * i.color;
 
-                // distance from center (normalized)
+                // Normalize distance so corners ~= 1.0
                 float2 center = _CenterOffset.xy;
-                float2 d = uv - center;
-                float dist = length(d);
+                float dist = length(i.uv - center);
+                float maxDist = 0.70710678; // distance from center to corner in UV space
+                float d = saturate(dist / maxDist); // 0 center, 1 edges/corners
 
-                // Darkness mask: grows from edges inward. When _DarknessAmount==0 => no darkness.
-                // We'll compute a radial radius that defines the light area; darkness outside it.
-                float lightRadius = _LightSize; // inner radius of light
-                float darknessEdge = lerp(0.5, 0.0, _DarknessAmount); // tweak mapping: higher darkness -> smaller safe radius
+                // Edge vignette: 0 until inner threshold, then ramps to 1 near edges
+                // inner = how close to edge it starts; bigger _Inset -> starts closer to center
+                float inner = saturate(1.0 - _Inset);
+                float feather = max(0.001, _Feather);
 
-                // We want darkness strength as function of dist: near center = light, near edges = dark
-                // Compute a smoothstep between lightRadius and 1.0 (screen far edge)
-                float dToEdge = dist; // normalized 0..~1.4 depends on center position
-                float feather = _EdgeFeather;
-                float darkMix = smoothstep(lightRadius + feather, 0.995, dToEdge); // 0=center, 1=edge
-                // Bias by _DarknessAmount
-                darkMix = saturate(darkMix * _DarknessAmount);
+                float edgeMask = smoothstep(inner, inner + feather, d); // 0 center, 1 edges
 
-                // Compose colors: blue light at center, dark at edges; but we want scene to show through so alpha used
-                fixed4 colLight = _LightColor;
-                fixed4 colDark = _DarkColor;
+                float alpha = edgeMask * _LightColor.a * _Intensity * baseCol.a;
 
-                // final alpha: how much overlay should darken the scene
-                float alpha = darkMix * colDark.a; // darker near edges
-
-                // compute additive light factor at center to push darkness back
-                float lightFactor = smoothstep(lightRadius, lightRadius - feather*0.7, dist);
-                lightFactor = 1.0 - saturate(lightFactor);
-                lightFactor *= colLight.a * (1.0 - _DarknessAmount); // when darkness is huge, center light has to fight
-
-                // final overlay color: lerp between light and dark by darkMix
-                fixed4 overlayColor = lerp(colLight, colDark, darkMix);
-                overlayColor.a = alpha;
-
-                // Additive bluish glow in center: output color premultiplied for UI blending
-                overlayColor.rgb = overlayColor.rgb * overlayColor.a + colLight.rgb * lightFactor;
-
-                return overlayColor;
+                fixed4 outCol = fixed4(_LightColor.rgb * alpha, alpha);
+                return outCol;
             }
             ENDCG
         }

@@ -389,8 +389,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4019931516109562522}
   - component: {fileID: 8125909365014089390}
-  - component: {fileID: 6499710183776256284}
   - component: {fileID: 8025463267489752846}
+  - component: {fileID: 6499710183776256284}
   m_Layer: 19
   m_Name: Rabbit
   m_TagString: Enemy
@@ -442,6 +442,27 @@ NavMeshAgent:
   m_BaseOffset: 0.75
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 0
+--- !u!114 &8025463267489752846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6874139027399636449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 3846454958
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 1
+  AutoObjectParentSync: 1
 --- !u!114 &6499710183776256284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -451,7 +472,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6874139027399636449}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -430495633, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
+  m_Script: {fileID: -1031543214, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   enemyType: {fileID: 11400000, guid: f7be0b6225710d144a1559eb748eb526, type: 2}
@@ -462,15 +483,7 @@ MonoBehaviour:
   creatureSFX: {fileID: 4544119274045938400}
   eye: {fileID: 1509150910048775154}
   dieSFX: {fileID: 0}
-  enemyBehaviourStates:
-  - name: Roaming
-    VoiceClip: {fileID: 0}
-    playOneShotVoice: 0
-    SFXClip: {fileID: 0}
-    playOneShotSFX: 0
-    IsAnimTrigger: 0
-    parameterString: 
-    boolValue: 0
+  enemyBehaviourStates: []
   currentBehaviourState:
     name: 
     VoiceClip: {fileID: 0}
@@ -489,7 +502,7 @@ MonoBehaviour:
   inSpecialAnimationWithPlayer: {fileID: 0}
   serverPosition: {x: 0, y: 0, z: 0}
   serverRotation: {x: 0, y: 0, z: 0}
-  agent: {fileID: 8125909365014089390}
+  agent: {fileID: 0}
   allAINodes: []
   targetNode: {fileID: 0}
   favoriteSpot: {fileID: 0}
@@ -499,13 +512,13 @@ MonoBehaviour:
   thisNetworkObject: {fileID: 0}
   thisEnemyIndex: 0
   isClientCalculatingAI: 0
-  updatePositionThreshold: 99999
+  updatePositionThreshold: 0.22
   targetPlayer: {fileID: 0}
   movingTowardsTargetPlayer: 0
   moveTowardsDestination: 0
   destination: {x: 0, y: 0, z: 0}
   addPlayerVelocityToDestination: 0
-  syncMovementSpeed: 0
+  syncMovementSpeed: 0.2
   timeSinceSpawn: 0
   exitVentAnimationTime: 0
   ventAnimationFinished: 0
@@ -538,26 +551,6 @@ MonoBehaviour:
   debugEnemyAI: 0
   isOutside: 0
   turnCompass: {fileID: 25442072278301996}
---- !u!114 &8025463267489752846
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6874139027399636449}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 951099334
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 1
-  AutoObjectParentSync: 1
 --- !u!1 &6990403434747266115
 GameObject:
   m_ObjectHideFlags: 0

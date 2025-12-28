@@ -13,5 +13,19 @@ MonoBehaviour:
   m_Name: SomethingContentContainer
   m_EditorClassIdentifier: 
   assetBundles:
-  - assetBundleName: somethingassets
+  - assetBundleName: aubreyplush
+    configName: Aubrey Plush
+  - assetBundleName: basilplush
+    configName: Basil Plush
+  - assetBundleName: bunnybun
+    configName: Bunnybun
+  - assetBundleName: keytar
+    configName: Keytar
+  - assetBundleName: mailbox
+    configName: Mailbox
+  - assetBundleName: polaroid
+    configName: Polaroid
+  - assetBundleName: rabbit
+    configName: Rabbit
+  - assetBundleName: something
     configName: Something

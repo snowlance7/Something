@@ -2,7 +2,8 @@
 
 # WARNING
 
-This mod has spoilers for the game "Omori"! If you haven't played the game yet, I highly recommend you do so before playing this mod. This mod also contains sensitive topics from the game.
+## This mod has spoilers for the game "Omori"! A 'minimal spoiler' option is enabled by default but if you want to avoid all spoilers for the game I highly recommend playing the game first before playing with this mod. This mod also contains sensitive topics from the game that some people may find disturbing.
+You can disable the 'minimal spoiler' option in the config if you want to enable all of the content. It mostly effects what polaroid images are used, so you can have it enabled or disabled per client.
 
 ![Breathing Mechanic](https://imgur.com/X4QKyro.gif)
 ![Door Scare](https://imgur.com/phG5vD3.gif)

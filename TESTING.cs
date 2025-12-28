@@ -1,5 +1,6 @@
 using BepInEx.Logging;
 using HarmonyLib;
+using Something.Enemies;
 using System.Linq;
 using UnityEngine;
 using static Something.Plugin;

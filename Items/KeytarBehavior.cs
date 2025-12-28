@@ -1,21 +1,16 @@
 ﻿using GameNetcodeStuff;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Unity.Netcode;
 using UnityEngine;
-using static Something.Plugin;
 
 namespace Something.Items
 {
     internal class KeytarBehavior : PhysicsProp
     {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable CS8618
         public AudioSource ItemAudio;
         public AudioClip[] songs;
 
         PlayerControllerB previousPlayerHeldBy;
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning restore CS8618
 
         int songIndex;
 
