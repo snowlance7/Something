@@ -5,3 +5,4 @@
 - Add more scrap
 - Add black keycaps
 - Let players hang photos on walls!
+- insanity goes down faster if youre crouching or standing still or near players

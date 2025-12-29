@@ -2,10 +2,10 @@
   "name": "Something",
   "version_number": "0.3.1",
   "website_url": "https://github.com/snowlance7/Something",
-  "description": "Adds Something from Omori as an enemy",
+  "description": "Adds Something from the game Omori as an enemy",
   "dependencies": [
     "BepInEx-BepInExPack-5.4.2100",
-    "Evaisa-LethalLib-1.1.1",
-    "Rune580-LethalCompany_InputUtils-0.7.7"
+    "TeamXiaolan-DawnLib-0.5.16",
+    "Rune580-LethalCompany_InputUtils-0.7.12"
   ]
 }

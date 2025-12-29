@@ -1,5 +1,9 @@
 ## 0.3.1
 - Updated for V73
+- Breathing now has a vignette effect instead of a progress bar
+- You can now regain significantly sanity faster if you stop moving while breathing
+- Lots of bug fixes and optimizations
+- Migrated from LethalLib to DawnLib
 
 ## 0.3.0
 - Added a secret enemy

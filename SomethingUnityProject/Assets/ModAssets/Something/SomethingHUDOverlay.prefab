@@ -127,15 +127,13 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 9d9a8b6eb23ec044897c20114d5d342c, type: 3}
   - {fileID: 21300000, guid: f5c54b3da3c4de34ca54ff4cfd8745f2, type: 3}
   - {fileID: 21300000, guid: db9002d5992d2024baa6a05868e8475c, type: 3}
-  - {fileID: 21300000, guid: fe546ee7019803c418061b9130d8733b, type: 3}
-  - {fileID: 21300000, guid: 2446dc7719be07444a6bfd34dfb23080, type: 3}
   altJumpscareSprites:
   - {fileID: 21300000, guid: f5c54b3da3c4de34ca54ff4cfd8745f2, type: 3}
   - {fileID: 21300000, guid: db9002d5992d2024baa6a05868e8475c, type: 3}
   panelObj: {fileID: 8590073690768240218}
   panelImage: {fileID: 5300267828023098393}
-  breathMat: {fileID: 0}
   breathVisual: {fileID: 2779747111521159011}
+  breathMat: {fileID: 0}
 --- !u!82 &6556243838879299228
 AudioSource:
   m_ObjectHideFlags: 0

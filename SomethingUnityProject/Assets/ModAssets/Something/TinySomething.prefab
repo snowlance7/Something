@@ -27,11 +27,10 @@ Transform:
   m_GameObject: {fileID: 1888282836676124410}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.094, z: 0}
+  m_LocalPosition: {x: 0, y: 0.102, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
-  m_Children:
-  - {fileID: 7503828182569951626}
+  m_Children: []
   m_Father: {fileID: 8681838660023862493}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1761497753452199653
@@ -97,7 +96,7 @@ Animator:
   m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: baf6fd47cf8d29b49bbc395754f416ca, type: 2}
-  m_CullingMode: 0
+  m_CullingMode: 2
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
@@ -138,37 +137,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8681838660023862493}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &4209437058147628081
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7503828182569951626}
-  m_Layer: 0
-  m_Name: TurnCompass
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7503828182569951626
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4209437058147628081}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.132, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1008646638887073372}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7096922674049724148
 GameObject:
   m_ObjectHideFlags: 0
@@ -178,11 +146,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8681838660023862493}
-  - component: {fileID: 5170067826494488141}
   - component: {fileID: 525721132075246785}
   - component: {fileID: 7624321511834461748}
-  - component: {fileID: 3203871155190198750}
   - component: {fileID: 4729147638696907593}
+  - component: {fileID: 8417448734977816837}
   m_Layer: 0
   m_Name: TinySomething
   m_TagString: Untagged
@@ -207,27 +174,6 @@ Transform:
   - {fileID: 4379497194737407691}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &5170067826494488141
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7096922674049724148}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: baf6fd47cf8d29b49bbc395754f416ca, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!65 &525721132075246785
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -247,8 +193,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.64, y: 0.85903215, z: 0.34954292}
-  m_Center: {x: 0, y: 0.3844248, z: -0.015351303}
+  m_Size: {x: 0.6038232, y: 1.3076996, z: 0.49700692}
+  m_Center: {x: 0.0039348006, y: 0.58120483, z: -0.020157382}
 --- !u!82 &7624321511834461748
 AudioSource:
   m_ObjectHideFlags: 0
@@ -346,20 +292,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &3203871155190198750
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7096922674049724148}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -721083782, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  turnCompass: {fileID: 4379497194737407691}
-  creatureSFX: {fileID: 7624321511834461748}
 --- !u!114 &4729147638696907593
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -376,3 +308,19 @@ MonoBehaviour:
   overridingLowPass: 0
   lowPassOverride: 20000
   debugLog: 0
+--- !u!114 &8417448734977816837
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7096922674049724148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -721083782, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  turnCompass: {fileID: 4379497194737407691}
+  creatureSFX: {fileID: 7624321511834461748}
+  renderer: {fileID: 1761497753452199653}
+  destroyTime: 10

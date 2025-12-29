@@ -1,22 +1,22 @@
-﻿using BepInEx.Logging;
-using Dawn;
+﻿using Dawn;
+using Dawn.Utils;
 using GameNetcodeStuff;
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Animations.Rigging;
-using UnityEngine.Assertions;
 using static Something.Plugin;
-using static UnityEngine.VFX.VisualEffectControlTrackController;
 
 namespace Something
 {
     public static class Utils
     {
-        public static bool isBeta = true; // TODO: Set to false before release
+        public static bool isBeta = false; // TODO
         public static bool testing => _testing && isBeta;
         public static bool _testing = false;
 
@@ -25,6 +25,7 @@ namespace Something
         public static bool inTestRoom => StartOfRound.Instance?.testRoom != null;
         public static bool DEBUG_disableSpawning = false;
         public static bool DEBUG_disableTargetting = false;
+        public static bool DEBUG_disableHostTargetting = false;
         public static bool DEBUG_disableMoving = false;
 
         public static bool localPlayerFrozen = false;
@@ -257,6 +258,7 @@ namespace Something
             scavengerModel.transform.Find("LOD3").gameObject.SetActive(!value);
             scavengerModel.transform.Find("metarig/spine/spine.001/spine.002/spine.003/LevelSticker").gameObject.SetActive(!value);
             scavengerModel.transform.Find("metarig/spine/spine.001/spine.002/spine.003/BetaBadge").gameObject.SetActive(!value);
+            player.playerBadgeMesh.gameObject.SetActive(!value);
 
         }
 
@@ -301,6 +303,17 @@ namespace Something
             return NavMesh.CalculatePath(from, to, -1, path) && Vector3.Distance(path.corners[path.corners.Length - 1], RoundManager.Instance.GetNavMeshPosition(to, RoundManager.Instance.navHit, 2.7f)) <= 1.55f;
         }
 
+        public static bool CalculatePath(Vector3 fromPos, Vector3 toPos, Vector3 mainEntranceInsidePosition, Vector3 mainEntranceOutsidePosition, bool isOutside)
+        {
+            if (!CalculatePath(fromPos, toPos))
+            {
+                Vector3 entrancePos = isOutside ? mainEntranceOutsidePosition : mainEntranceInsidePosition;
+                Vector3 otherSideEntrancePos = isOutside ? mainEntranceInsidePosition : mainEntranceOutsidePosition;
+                return CalculatePath(fromPos, entrancePos) && CalculatePath(otherSideEntrancePos, toPos);
+            }
+            return true;
+        }
+
         public static T? GetClosestGameObjectOfType<T>(Vector3 position) where T : Component
         {
             T[] objects = GameObject.FindObjectsOfType<T>();
@@ -332,25 +345,65 @@ namespace Something
                 list[n] = value;
             }
         }
-
-        public static GameObject? GetClosestGameObjectToPosition(this List<GameObject> list, Vector3 position)
+        public static T GetRandom<T>(this IEnumerable<T> source, System.Random? random = null)
         {
-            GameObject? closest = null;
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
+            random ??= new System.Random();
+
+            T? chosen = default!;
+            int count = 0;
+
+            foreach (var item in source)
+            {
+                count++;
+                if (random.Next(count) == 0) // replace previous with decreasing probability
+                    chosen = item;
+            }
+
+            if (count == 0)
+                throw new InvalidOperationException("Sequence contains no elements.");
+
+            return chosen;
+        }
+
+        public static T? GetClosestToPosition<T>(this IEnumerable<T> list, Vector3 position, Func<T, Vector3> positionSelector) where T : class
+        {
+            T? closest = null;
             float closestDistance = Mathf.Infinity;
 
             foreach (var item in list)
             {
                 if (item == null) continue;
 
-                float distance = Vector3.Distance(position, item.transform.position);
-                if (distance < closestDistance)
-                {
-                    closest = item;
-                    closestDistance = distance;
-                }
+                float distance = Vector3.Distance(position, positionSelector(item));
+                if (distance >= closestDistance) continue;
+
+                closest = item;
+                closestDistance = distance;
             }
 
             return closest;
+        }
+
+        public static T? GetFarthestFromPosition<T>(this IEnumerable<T> list, Vector3 position, Func<T, Vector3> positionSelector) where T : class
+        {
+            T? farthest = null;
+            float farthestDistance = 0f;
+
+            foreach (var item in list)
+            {
+                if (item == null) continue;
+
+                float distance = Vector3.Distance(position, positionSelector(item));
+                if (distance <= farthestDistance) continue;
+
+                farthest = item;
+                farthestDistance = distance;
+            }
+
+            return farthest;
         }
 
         public static Dictionary<string, GameObject> GetAllHazards()
@@ -364,30 +417,6 @@ namespace Something
                 hazards.Add(item.prefabToSpawn.name, item.prefabToSpawn);
             }
             return hazards;
-        }
-
-        public static GameObject? GetRandomNode(bool outside)
-        {
-            logger.LogDebug("Choosing random node...");
-
-            GameObject[] nodes = outside ? outsideAINodes : insideAINodes;
-
-            if (nodes.Length == 0) return null;
-
-            int randIndex = UnityEngine.Random.Range(0, nodes.Length);
-            return nodes[randIndex];
-        }
-
-        public static GameObject? GetRandomNode()
-        {
-            logger.LogDebug("Choosing random node...");
-
-            GameObject[] nodes = allAINodes;
-
-            if (nodes.Length == 0) return null;
-
-            int randIndex = UnityEngine.Random.Range(0, nodes.Length);
-            return nodes[randIndex];
         }
 
         public static Vector3 GetRandomNavMeshPositionInAnnulus(Vector3 center, float minRadius, float maxRadius, int sampleCount = 10)
@@ -508,7 +537,7 @@ namespace Something
             float farthestDistance = minDistance;
             PlayerControllerB? farthestPlayer = null;
 
-            foreach(var player in StartOfRound.Instance.allPlayerScripts)
+            foreach (var player in StartOfRound.Instance.allPlayerScripts)
             {
                 if (player == null || !player.isPlayerControlled) { continue; }
                 float distance = Vector3.Distance(position, player.transform.position);
@@ -520,11 +549,29 @@ namespace Something
             return farthestPlayer;
         }
 
+        public static float CanPathToPoint(Vector3 startPos, Vector3 endPos)
+        {
+            NavMeshPath path = new NavMeshPath();
+            if (!NavMesh.CalculatePath(startPos, endPos, -1, path) || (int)path.status != 0)
+            {
+                return -1f;
+            }
+            float pathDistance = 0f;
+            if (path.corners.Length > 1)
+            {
+                for (int i = 1; i < path.corners.Length; i++)
+                {
+                    pathDistance += Vector3.Distance(path.corners[i - 1], path.corners[i]);
+                }
+            }
+            return pathDistance;
+        }
+
         public static void PlaySoundAtPosition(Vector3 pos, AudioClip clip, float volume = 1f, bool randomizePitch = true, bool spatial3D = true, float min3DDistance = 1f, float max3DDistance = 10f)
         {
             GameObject soundObj = GameObject.Instantiate(new GameObject("TempSoundEffectObj"), pos, Quaternion.identity);
             AudioSource source = soundObj.AddComponent<AudioSource>();
-            
+
             OccludeAudio occlude = soundObj.AddComponent<OccludeAudio>();
             occlude.lowPassOverride = 20000f;
 
@@ -547,6 +594,40 @@ namespace Something
             int index = UnityEngine.Random.Range(0, clips.Length);
             PlaySoundAtPosition(pos, clips[index], volume, randomizePitch, spatial3D, min3DDistance, max3DDistance);
         }
+
+        public static PlayerControllerB? GetRandomPlayer()
+        {
+            PlayerControllerB[] players = StartOfRound.Instance.allPlayerScripts.Where(x => x != null && x.isPlayerControlled).ToArray();
+            if (players.Length <= 0) { return null; }
+            int index = UnityEngine.Random.Range(0, players.Length);
+            return players[index];
+        }
+
+        public static GrabbableObject? SpawnItem(NamespacedKey<DawnItemInfo> key, Vector3 position, Quaternion rotation = default, float fallTime = 0f)
+        {
+            if (!IsServerOrHost) { return null; }
+            GameObject obj = GameObject.Instantiate(LethalContent.Items[key].Item.spawnPrefab, position, rotation, StartOfRound.Instance.propsContainer);
+            GrabbableObject grabObj = obj.GetComponent<GrabbableObject>();
+            grabObj.fallTime = fallTime;
+            grabObj.NetworkObject.Spawn();
+            return grabObj;
+        }
+
+        public static void MufflePlayer(PlayerControllerB player, bool muffle)
+        {
+            if (player.currentVoiceChatAudioSource == null)
+            {
+                StartOfRound.Instance.RefreshPlayerVoicePlaybackObjects();
+            }
+            if (player.currentVoiceChatAudioSource != null)
+            {
+                OccludeAudio component = player.currentVoiceChatAudioSource.GetComponent<OccludeAudio>();
+                player.currentVoiceChatAudioSource.GetComponent<AudioLowPassFilter>().lowpassResonanceQ = muffle ? 5f : 1f;
+                component.overridingLowPass = muffle;
+                component.lowPassOverride = muffle ? 500f : 20000f;
+                player.voiceMuffledByEnemy = muffle;
+            }
+        }
     }
 
     [HarmonyPatch]
@@ -555,21 +636,21 @@ namespace Something
         [HarmonyPrefix, HarmonyPatch(typeof(RoundManager), nameof(RoundManager.SpawnInsideEnemiesFromVentsIfReady))]
         public static bool SpawnInsideEnemiesFromVentsIfReadyPrefix()
         {
-            if (Utils.DEBUG_disableSpawning) { return false; }
+            if (Utils.isBeta && Utils.DEBUG_disableSpawning) { return false; }
             return true;
         }
 
         [HarmonyPrefix, HarmonyPatch(typeof(RoundManager), nameof(RoundManager.SpawnDaytimeEnemiesOutside))]
         public static bool SpawnDaytimeEnemiesOutsidePrefix()
         {
-            if (Utils.DEBUG_disableSpawning) { return false; }
+            if (Utils.isBeta && Utils.DEBUG_disableSpawning) { return false; }
             return true;
         }
 
         [HarmonyPrefix, HarmonyPatch(typeof(RoundManager), nameof(RoundManager.SpawnEnemiesOutside))]
         public static bool SpawnEnemiesOutsidePrefix()
         {
-            if (Utils.DEBUG_disableSpawning) { return false; }
+            if (Utils.isBeta && Utils.DEBUG_disableSpawning) { return false; }
             return true;
         }
     }

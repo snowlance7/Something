@@ -50,6 +50,7 @@ namespace Something
         [HarmonyPrefix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.SubmitChat_performed))]
         public static void SubmitChat_performedPrefix(HUDManager __instance)
         {
+            if (!Utils.isBeta) { return; }
             string msg = __instance.chatTextField.text;
             string[] args = msg.Split(" ");
             logger.LogDebug(msg);

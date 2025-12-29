@@ -12,15 +12,33 @@ namespace Something.Enemies.Something
 #pragma warning disable CS8618
         public Transform turnCompass;
         public AudioSource creatureSFX;
+        public SpriteRenderer renderer;
 #pragma warning restore CS8618
 
-        public void Start() => Instances.Add(this);
-        public void OnDestroy() => Instances.Remove(this);
+        float timeSpawned;
+        public float destroyTime = 10f;
+
+        public void Start()
+        {
+            Instances.Add(this);
+        }
+        public void OnDestroy()
+        {
+            Instances.Remove(this);
+        }
 
         public void Update()
         {
+            timeSpawned += Time.deltaTime;
+
             turnCompass.LookAt(localPlayer.gameplayCamera.transform.position);
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(new Vector3(0f, turnCompass.eulerAngles.y, 0f)), 999f * Time.deltaTime);
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(new Vector3(0f, turnCompass.eulerAngles.y, 0f)), 50f * Time.deltaTime);
+
+            if (timeSpawned > destroyTime && !renderer.isVisible)
+            {
+                Destroy(this.gameObject);
+                return;
+            }
         }
 
         public void OnTriggerEnter(Collider other)
@@ -31,7 +49,7 @@ namespace Something.Enemies.Something
             localPlayer.insanityLevel++;
             creatureSFX.pitch = Random.Range(0.90f, 1.06f);
             creatureSFX.Play();
-            Destroy(gameObject, 0.5f);
+            Destroy(this.gameObject, 0.5f);
         }
     }
 }

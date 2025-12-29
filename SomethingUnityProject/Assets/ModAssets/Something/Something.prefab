@@ -188,6 +188,7 @@ GameObject:
   - component: {fileID: 3892697628787673672}
   - component: {fileID: 7319610646804869517}
   - component: {fileID: 3132534053582018418}
+  - component: {fileID: 7663544282495890643}
   m_Layer: 19
   m_Name: Something
   m_TagString: Enemy
@@ -204,7 +205,7 @@ Transform:
   m_GameObject: {fileID: 2636469387317948378}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.767, z: 0}
+  m_LocalPosition: {x: 0, y: 0.75, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -217,7 +218,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2636469387317948378}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -283,6 +284,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7663544282495890643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2636469387317948378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1290306688, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainScript: {fileID: 449282770533617526}
 --- !u!1 &2812577377538702201
 GameObject:
   m_ObjectHideFlags: 0
@@ -598,6 +612,14 @@ MonoBehaviour:
     IsAnimTrigger: 0
     parameterString: 
     boolValue: 0
+  - name: Staring
+    VoiceClip: {fileID: 0}
+    playOneShotVoice: 0
+    SFXClip: {fileID: 0}
+    playOneShotSFX: 0
+    IsAnimTrigger: 0
+    parameterString: 
+    boolValue: 0
   - name: Chasing
     VoiceClip: {fileID: 0}
     playOneShotVoice: 0
@@ -640,7 +662,7 @@ MonoBehaviour:
   moveTowardsDestination: 0
   destination: {x: 0, y: 0, z: 0}
   addPlayerVelocityToDestination: 0
-  syncMovementSpeed: 0.35
+  syncMovementSpeed: 0.3
   timeSinceSpawn: 0
   exitVentAnimationTime: 0
   ventAnimationFinished: 0
@@ -675,7 +697,7 @@ MonoBehaviour:
   turnCompass: {fileID: 25442072278301996}
   lesserSomethingPrefab: {fileID: 2714746902841750835, guid: 78d8548a89a19344f97dbc2021b1cf87,
     type: 3}
-  littleOnePrefab: {fileID: 7096922674049724148, guid: 0d4cf58a38da57846a2c7e1f61ff4776,
+  tinySomethingPrefab: {fileID: 7096922674049724148, guid: 0d4cf58a38da57846a2c7e1f61ff4776,
     type: 3}
   disappearSFX: {fileID: 8300000, guid: 0ee2c96baadc0894d9ed783aac4892d2, type: 3}
   ambientSFX:
@@ -686,6 +708,8 @@ MonoBehaviour:
   somethingMesh: {fileID: 7319610646804869517}
   ScanNode: {fileID: 5901302423665127641}
   BreathingMechanicPrefab: {fileID: 4546517236011313295, guid: 71130221a0ce77247a9fed819dc52bf3,
+    type: 3}
+  DEBUG_hudOverlay: {fileID: 4546517236011313295, guid: bb1bc1da5d61713478dcccefb0be539e,
     type: 3}
 --- !u!1 &9018303914392096838
 GameObject:

@@ -30,8 +30,14 @@ More detailed behavior below:
 
 </details>
 
-## Planned Features
+## Planned Features/Ideas
 - More hallucinations, including phobias
+- Workable polaroid camera (including developing photos mechanic?)
+- SpringCat
+- Black Keycaps
+- Hang polaroids on walls
+- Sweethearts Morgenshtern weapon
+- More scrap
 
 ## Contact
 
@@ -54,5 +60,4 @@ For issues and suggestions visit the [github](https://github.com/snowlance7/Some
 - "(OMORI) Headspace Basil 3D Plush" (https://skfb.ly/ptBvs)
 - "(OMORI) Stranger 3D Plush" (https://skfb.ly/ptBAn)
 - "Omori Mailbox" (https://skfb.ly/oPnHX)
-- "Sweetheart's Morgenshtern" (https://skfb.ly/oCIXq)
 - "Bunny Bun - Omori" (https://skfb.ly/oKVBs)
