@@ -21,7 +21,7 @@ namespace Something
     public class Plugin : BaseUnityPlugin
     {
 #pragma warning disable CS8618
-        public static Plugin PluginInstance;
+        public static Plugin Instance;
         public static ManualLogSource logger { get; private set; }
         public static DuskMod Mod { get; private set; }
 
@@ -39,12 +39,12 @@ namespace Something
 
         private void Awake()
         {
-            if (PluginInstance == null)
+            if (Instance == null)
             {
-                PluginInstance = this;
+                Instance = this;
             }
 
-            logger = PluginInstance.Logger;
+            logger = Instance.Logger;
 
             harmony.PatchAll();
 

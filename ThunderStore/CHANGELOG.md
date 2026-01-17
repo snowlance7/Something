@@ -1,3 +1,6 @@
+## 0.3.2
+- Bug fixes
+
 ## 0.3.1
 - Updated for V73
 - Breathing now has a vignette effect instead of a progress bar

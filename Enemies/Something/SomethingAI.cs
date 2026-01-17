@@ -171,7 +171,7 @@ namespace Something.Enemies.Something
                         targetNode = ChoosePositionInFrontOfPlayer(5f);
                         if (targetNode != null)
                         {
-                            StartCoroutine(FreezePlayerCoroutine(3f));
+                            StartCoroutine(FreezePlayerCoroutine(targetPlayer, 3f));
                             Teleport(targetNode.position);
                             SetVisibility(true);
                             inSpecialAnimation = true;
@@ -275,11 +275,11 @@ namespace Something.Enemies.Something
             }
         }
 
-        IEnumerator FreezePlayerCoroutine(float freezeTime)
+        IEnumerator FreezePlayerCoroutine(PlayerControllerB player, float freezeTime)
         {
-            Utils.FreezePlayer(targetPlayer, true);
+            Utils.FreezePlayer(player, true);
             yield return new WaitForSeconds(freezeTime);
-            Utils.FreezePlayer(targetPlayer, false);
+            Utils.FreezePlayer(player, false);
         }
 
         Transform? TryFindingHauntPosition(bool mustBeInLOS = true)
@@ -477,7 +477,7 @@ namespace Something.Enemies.Something
             {
                 logger.LogDebug("In KillPlayerCoroutine()");
                 yield return null;
-                StartCoroutine(FreezePlayerCoroutine(3f));
+                StartCoroutine(FreezePlayerCoroutine(localPlayer, 3f));
                 SetVisibility(false);
                 creatureVoice.Stop();
                 hudOverlay.audioSource.volume = 1f;
@@ -486,7 +486,7 @@ namespace Something.Enemies.Something
 
                 yield return new WaitForSeconds(3f);
                 localPlayer.KillPlayer(Vector3.zero, false);
-                PlayDisappearSFXClientRpc();
+                KillPlayerClientRpc();
             }
 
             StartCoroutine(KillPlayerCoroutine());
@@ -497,7 +497,7 @@ namespace Something.Enemies.Something
             logger.LogDebug("Resetting Hallucinations");
             foreach (var ts in TinySomethingAI.Instances.ToList())
             {
-                Destroy(ts);
+                Destroy(ts.gameObject);
             }
 
             if (hudOverlay != null)
@@ -565,9 +565,10 @@ namespace Something.Enemies.Something
         }
 
         [ClientRpc]
-        public void PlayDisappearSFXClientRpc()
+        public void KillPlayerClientRpc()
         {
             creatureVoice.PlayOneShot(disappearSFX, 1f);
+            targetPlayer = null;
         }
     }
 }
