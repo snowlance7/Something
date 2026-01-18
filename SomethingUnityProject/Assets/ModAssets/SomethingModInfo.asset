@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <AuthorName>k__BackingField: Snowlance
   <ModName>k__BackingField: Something
-  <Version>k__BackingField: 0.3.1
+  <Version>k__BackingField: 0.3.3
   <READMEFile>k__BackingField: {fileID: 4900000, guid: 59583b04d456be54a9dc25227b8ff29e,
     type: 3}
   <ChangelogFile>k__BackingField: {fileID: 4900000, guid: 08fa6519cf5e5bc42a90e79d3fb70772,

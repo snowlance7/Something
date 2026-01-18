@@ -26,7 +26,6 @@ namespace Something
         public static DuskMod Mod { get; private set; }
 
         public static ConfigEntry<bool> configMinimalSpoilerVersion;
-        //public static ConfigEntry<float> configBadPolaroidSomethingChance;
 #pragma warning restore CS8618
 
         private readonly Harmony harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
@@ -36,6 +35,8 @@ namespace Something
         
         
         public static UnityEvent onShipLanded = new UnityEvent();
+
+        public const float turnCompassSpeedGlobal = 50f;
 
         private void Awake()
         {

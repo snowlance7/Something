@@ -22,13 +22,16 @@ namespace Something.Enemies
         {
             base.Update();
 
-            turnCompass.LookAt(localPlayer.gameplayCamera.transform.position);
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(new Vector3(0f, turnCompass.eulerAngles.y, 0f)), 10f * Time.deltaTime); // Always look at local player
-
             if (localPlayer.HasLineOfSightToPosition(transform.position + Vector3.up * 0.25f, 80f, 5, 1f))
             {
                 localPlayer.JumpToFearLevel(1f);
             }
+        }
+
+        public void LateUpdate()
+        {
+            turnCompass.LookAt(localPlayer.gameplayCamera.transform.position);
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(new Vector3(0f, turnCompass.eulerAngles.y, 0f)), turnCompassSpeedGlobal * Time.deltaTime); // Always look at local player
         }
 
         public override void HitEnemy(int force = 1, PlayerControllerB playerWhoHit = null, bool playHitSFX = false, int hitID = -1)

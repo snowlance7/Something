@@ -7,7 +7,7 @@ namespace Something.Enemies.Something
 {
     internal class TinySomethingAI : MonoBehaviour
     {
-        public static List<TinySomethingAI> Instances { get; private set; } = new List<TinySomethingAI>();
+        public static List<TinySomethingAI> Instances { get; private set; } = [];
 
 #pragma warning disable CS8618
         public Transform turnCompass;
@@ -32,7 +32,7 @@ namespace Something.Enemies.Something
             timeSpawned += Time.deltaTime;
 
             turnCompass.LookAt(localPlayer.gameplayCamera.transform.position);
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(new Vector3(0f, turnCompass.eulerAngles.y, 0f)), 50f * Time.deltaTime);
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(new Vector3(0f, turnCompass.eulerAngles.y, 0f)), turnCompassSpeedGlobal * Time.deltaTime);
 
             if (timeSpawned > destroyTime && !renderer.isVisible)
             {

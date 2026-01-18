@@ -74,7 +74,11 @@ namespace Something.Enemies.Something
                 timeSinceAIInterval = 0f;
                 DoAIInterval();
             }
+        }
 
+        public void LateUpdate()
+        {
+            if (targetPlayer == null) { return; }
             turnCompass.LookAt(localPlayer.gameplayCamera.transform.position);
             transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(new Vector3(0f, turnCompass.eulerAngles.y, 0f)), 10f * Time.deltaTime);
         }
@@ -125,7 +129,7 @@ namespace Something.Enemies.Something
 
             yield return new WaitUntil(() => targetPlayer != null);
 
-            while (true)
+            while (spawnNode != null)
             {
                 float timeStopped = 0f;
                 float idleTime = Random.Range(idleMinInterval, idleMaxInterval);

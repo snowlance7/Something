@@ -109,9 +109,6 @@ namespace Something.Enemies.Something
 
             if (targetPlayer == null || !targetPlayer.isPlayerControlled) return;
 
-            turnCompass.LookAt(targetPlayer.gameplayCamera.transform.position);
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(new Vector3(0f, turnCompass.eulerAngles.y, 0f)), 100f * Time.deltaTime); // Always look at local player
-
             float newFear = targetPlayer.insanityLevel / maxInsanity;
             targetPlayer.playersManager.fearLevel = Mathf.Max(targetPlayer.playersManager.fearLevel, newFear); // Change fear based on insanity
 
@@ -126,6 +123,13 @@ namespace Something.Enemies.Something
                 timeSinceAIUpdate = 0f;
                 DoAIInterval();
             }
+        }
+
+        public void LateUpdate()
+        {
+
+            turnCompass.LookAt(localPlayer.gameplayCamera.transform.position);
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(new Vector3(0f, turnCompass.eulerAngles.y, 0f)), turnCompassSpeedGlobal * Time.deltaTime); // Always look at local player
         }
 
         public override void DoAIInterval()
