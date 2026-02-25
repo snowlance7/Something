@@ -33,35 +33,13 @@ namespace Something.Items
 
         bool wasHeld;
 
-        int goodWeight => ContentHandler<SomethingContentHandler>.Instance.Polaroid.GetConfig<int>("Good Weight").Value; // 0
-        int badWeight => ContentHandler<SomethingContentHandler>.Instance.Polaroid.GetConfig<int>("Bad Weight").Value; // 1
-        int cursedWeight => ContentHandler<SomethingContentHandler>.Instance.Polaroid.GetConfig<int>("Cursed Weight").Value; // 2
-        float badSomethingChance => ContentHandler<SomethingContentHandler>.Instance.Polaroid.GetConfig<float>("Bad Something Chance").Value;
-        BoundedRange goodValue => ContentHandler<SomethingContentHandler>.Instance.Polaroid.GetConfig<BoundedRange>("Good Value").Value;
-        BoundedRange badValue => ContentHandler<SomethingContentHandler>.Instance.Polaroid.GetConfig<BoundedRange>("Bad Value").Value;
-        BoundedRange cursedValue => ContentHandler<SomethingContentHandler>.Instance.Polaroid.GetConfig<BoundedRange>("Cursed Value").Value;
-
-        /*public override void OnNetworkSpawn()
-        {
-            base.OnNetworkSpawn();
-
-            if (!IsServer || wasHeld)
-                return;
-
-            photoType = RoundManager.Instance.GetRandomWeightedIndex([goodWeight, badWeight, cursedWeight]);
-            BoundedRange range = cursedValue;
-
-            if (photoType != 2) // not cursed
-            {
-                range = photoType == 0 ? goodValue : badValue;
-                var photos = (photoType == 0) ? goodPhotos : badPhotos;
-                photoIndex = UnityEngine.Random.Range(0, photos.Length);
-            }
-
-            scrapValue = unity
-
-            ChangeSpriteClientRpc(photoType, photoIndex);
-        }*/
+        int goodWeight => ContentHandler<SomethingContentHandler>.Instance.Polaroid!.GetConfig<int>("Good Weight").Value; // 0
+        int badWeight => ContentHandler<SomethingContentHandler>.Instance.Polaroid!.GetConfig<int>("Bad Weight").Value; // 1
+        int cursedWeight => ContentHandler<SomethingContentHandler>.Instance.Polaroid!.GetConfig<int>("Cursed Weight").Value; // 2
+        float badSomethingChance => ContentHandler<SomethingContentHandler>.Instance.Polaroid!.GetConfig<float>("Bad Something Chance").Value;
+        BoundedRange goodValue => ContentHandler<SomethingContentHandler>.Instance.Polaroid!.GetConfig<BoundedRange>("Good Value").Value;
+        BoundedRange badValue => ContentHandler<SomethingContentHandler>.Instance.Polaroid!.GetConfig<BoundedRange>("Bad Value").Value;
+        BoundedRange cursedValue => ContentHandler<SomethingContentHandler>.Instance.Polaroid!.GetConfig<BoundedRange>("Cursed Value").Value;
 
         public override void Start()
         {
@@ -83,6 +61,7 @@ namespace Something.Items
                 var photos = (photoType == 0) ? goodPhotos : badPhotos;
                 photoIndex = random.Next(0, photos.Length);
             }
+
 
             SetScrapValue((int)range.GetRandomInRange(random));
             ChangeSprite(photoType, photoIndex);

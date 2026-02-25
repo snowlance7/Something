@@ -1,5 +1,8 @@
 ## 0.3.3
-
+- Made the collider for polaroid larger
+- Increased the turn speed for all enemies
+- Set default scrap values for all items
+- Bug fixes
 
 ## 0.3.2
 - Bug fixes

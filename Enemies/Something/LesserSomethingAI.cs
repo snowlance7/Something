@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.AI;
 using static Something.Plugin;
 
+// TODO: Make screen darken around edges and give drunk effect when touching them
+
 namespace Something.Enemies.Something
 {
     internal class LesserSomethingAI : MonoBehaviour
