@@ -53,6 +53,12 @@
       <None Remove="ThunderStore\Something\**" />
     </ItemGroup>
     <ItemGroup>
+      <Content Remove="C:\Users\snowl\.nuget\packages\rune580.mods.lethalcompany.inpututils\0.7.13\contentFiles\any\netstandard2.1\AssetBundles\ui-assets" />
+      <Content Remove="C:\Users\snowl\.nuget\packages\rune580.mods.lethalcompany.inpututils\0.7.13\contentFiles\any\netstandard2.1\en_US.json" />
+      <Content Remove="C:\Users\snowl\.nuget\packages\rune580.mods.lethalcompany.inpututils\0.7.13\contentFiles\any\netstandard2.1\ru_RU.json" />
+      <Content Remove="C:\Users\snowl\.nuget\packages\rune580.mods.lethalcompany.inpututils\0.7.13\contentFiles\any\netstandard2.1\zh_CN.json" />
+    </ItemGroup>
+    <ItemGroup>
       <None Remove=".gitattributes" />
       <None Remove=".gitignore" />
     </ItemGroup>
@@ -63,10 +69,11 @@
         <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.1" PrivateAssets="all" />
         <PackageReference Include="BepInEx.Core" Version="5.*" PrivateAssets="all" />
         <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" PrivateAssets="all" />
-        <PackageReference Include="LethalCompany.GameLibs.Steam" Version="73.0.0-ngd.0" Publicize="true" PrivateAssets="all" />
-        <PackageReference Include="TeamXiaolan.DawnLib" Version="0.4.12" />
-        <PackageReference Include="TeamXiaolan.DawnLib.DuskMod" Version="0.4.12" />
-        <PackageReference Include="UnityEngine.Modules" Version="2022.3.9" IncludeAssets="compile" PrivateAssets="all" />
+        <PackageReference Include="LethalCompany.GameLibs.Steam" Version="81.0.5-ngd.0" Publicize="true" PrivateAssets="all" />
+        <PackageReference Include="Rune580.Mods.LethalCompany.InputUtils" Version="0.7.13" />
+        <PackageReference Include="TeamXiaolan.DawnLib" Version="0.9.23" />
+        <PackageReference Include="TeamXiaolan.DawnLib.DuskMod" Version="0.9.23" />
+        <PackageReference Include="UnityEngine.Modules" Version="2022.3.62" IncludeAssets="compile" PrivateAssets="all" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
@@ -77,14 +84,12 @@
       <Folder Include="Assets\" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Reference Include="LethalCompanyInputUtils">
-        <HintPath>..\1Assemblies\Rune580-LethalCompany_InputUtils-0.7.10\plugins\LethalCompanyInputUtils\LethalCompanyInputUtils.dll</HintPath>
-      </Reference>
-    </ItemGroup>
-
   <!-- Netcode Patcher Post-Build Event -->
   <Target Name="NetcodePatch" AfterTargets="PostBuildEvent">
-    <Exec Command="netcode-patch -uv 2022.3.62 -nv 1.12.0 -tv 1.0.0 &quot;$(TargetPath)&quot; @(ReferencePathWithRefAssemblies->'&quot;%(Identity)&quot;', ' ')" />
+    <PropertyGroup>
+      <NetcodePatcherDepsListFile>$(IntermediateOutputPath)ncp-deps.list</NetcodePatcherDepsListFile>
+    </PropertyGroup>
+    <WriteLinesToFile File="$(NetcodePatcherDepsListFile)" Lines="@(ReferencePathWithRefAssemblies)" Overwrite="true" />
+    <Exec Command="netcode-patch -uv 2022.3.62 -nv 1.12.2 -tv 1.0.0 &quot;$(TargetPath)&quot; --dependency-file &quot;$(NetcodePatcherDepsListFile)&quot;" />
   </Target>
 </Project>

@@ -324,7 +324,7 @@ namespace Something.Enemies.Something
             return result;
         }
 
-        public override void EnableEnemyMesh(bool enable, bool overrideDoNotSet = false) { }
+        public override void EnableEnemyMesh(bool enable, bool overrideDoNotSet = false, bool tamperWithMeshes = false) { }
 
         public void SetVisibility(bool enable)
         {

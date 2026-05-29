@@ -12,12 +12,13 @@ using System.Reflection;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
+using LethalCompanyInputUtils;
 
 namespace Something
 {
     [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
     [BepInDependency(DawnLib.PLUGIN_GUID)]
-    [BepInDependency(LethalCompanyInputUtils.PluginInfo.PLUGIN_GUID)]
+    [BepInDependency(LethalCompanyInputUtils.MyPluginInfo.PLUGIN_GUID)]
     public class Plugin : BaseUnityPlugin
     {
 #pragma warning disable CS8618

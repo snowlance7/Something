@@ -2,7 +2,8 @@
 
 # WARNING
 
-This mod has spoilers for the game "Omori"! If you haven't played the game yet, I highly recommend you do so before playing this mod. This mod also contains sensitive topics from the game.
+## This mod has spoilers for the game "Omori"! A 'minimal spoiler' option is enabled by default but if you want to avoid all spoilers for the game I highly recommend playing the game first before playing with this mod. This mod also contains sensitive topics from the game that some people may find disturbing.
+You can disable the 'minimal spoiler' option in the config if you want to enable all of the content. It mostly effects what polaroid images are used, so you can have it enabled or disabled per client.
 
 ![Breathing Mechanic](https://imgur.com/X4QKyro.gif)
 ![Door Scare](https://imgur.com/phG5vD3.gif)
@@ -29,8 +30,14 @@ More detailed behavior below:
 
 </details>
 
-## Planned Features
+## Planned Features/Ideas
 - More hallucinations, including phobias
+- Workable polaroid camera (including developing photos mechanic?)
+- SpringCat
+- Black Keycaps
+- Hang polaroids on walls
+- Sweethearts Morgenshtern weapon
+- More scrap
 
 ## Contact
 
@@ -53,5 +60,4 @@ For issues and suggestions visit the [github](https://github.com/snowlance7/Some
 - "(OMORI) Headspace Basil 3D Plush" (https://skfb.ly/ptBvs)
 - "(OMORI) Stranger 3D Plush" (https://skfb.ly/ptBAn)
 - "Omori Mailbox" (https://skfb.ly/oPnHX)
-- "Sweetheart's Morgenshtern" (https://skfb.ly/oCIXq)
 - "Bunny Bun - Omori" (https://skfb.ly/oKVBs)
