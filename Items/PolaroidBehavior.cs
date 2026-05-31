@@ -13,21 +13,16 @@ namespace Something.Items
 {
     public class PolaroidBehavior : PhysicsProp
     {
-        public static List<PolaroidBehavior> Instances { get; private set; } = new List<PolaroidBehavior>();
+        public AudioSource audioSource = null!;
+        public SpriteRenderer renderer = null!;
+        public Animator animator = null!;
 
-#pragma warning disable CS8618
-        public AudioSource audioSource;
-        public SpriteRenderer renderer;
-        public Animator animator;
-
-        public Sprite[] goodPhotos;
-        public Sprite[] altGoodPhotos;
-        public Sprite[] badPhotos;
-        public Sprite[] altBadPhotos;
-#pragma warning restore CS8618
+        public Sprite[] goodPhotos = null!;
+        public Sprite[] altGoodPhotos = null!;
+        public Sprite[] badPhotos = null!;
+        public Sprite[] altBadPhotos = null!;
 
         bool isLocalPlayerCursed;
-        System.Random random;
 
         int photoType;
         int photoIndex;
@@ -45,27 +40,24 @@ namespace Something.Items
         public override void Start()
         {
             base.Start();
-            Instances.Add(this);
 
-            random = new System.Random(StartOfRound.Instance.randomMapSeed + Instances.Count);
+            if (!IsServer) { return; }
 
             onShipLanded.AddListener(OnShipLanded);
 
             if (wasHeld) return;
 
-            photoType = RoundManager.Instance.GetRandomWeightedIndex([goodWeight, badWeight, cursedWeight], random);
+            photoType = RoundManager.Instance.GetRandomWeightedIndex([goodWeight, badWeight, cursedWeight]);
             BoundedRange range = cursedValue;
 
             if (photoType != 2) // not cursed
             {
                 range = photoType == 0 ? goodValue : badValue;
                 var photos = (photoType == 0) ? goodPhotos : badPhotos;
-                photoIndex = random.Next(0, photos.Length);
+                photoIndex = UnityEngine.Random.Range(0, photos.Length);
             }
 
-
-            SetScrapValue((int)range.GetRandomInRange(random));
-            ChangeSprite(photoType, photoIndex);
+            ChangeSpriteClientRpc(photoType, photoIndex, (int)range.GetRandomInRange(Utils.randomLocal));
         }
 
         void OnShipLanded() // Listener
@@ -76,21 +68,13 @@ namespace Something.Items
             }
         }
 
-        public override void OnDestroy()
-        {
-            Instances.Remove(this);
-            base.OnDestroy();
-        }
-
         public override void EquipItem() // Synced
         {
             base.EquipItem();
 
             if (!wasHeld)
             {
-                bool spawnSomething =
-                    photoType == 2 ||
-                    (photoType == 1 && random.NextFloat(0f, 1f) < badSomethingChance);
+                bool spawnSomething = photoType == 2 || (photoType == 1 && UnityEngine.Random.Range(0f, 1f) < badSomethingChance);
 
                 if (spawnSomething)
                 {
@@ -114,16 +98,6 @@ namespace Something.Items
             }
 
             wasHeld = true;
-        }
-
-
-        public void SpawnSomething(PlayerControllerB playerToHaunt)
-        {
-            if (!IsServer) { return; }
-            if (StartOfRound.Instance.inShipPhase || StartOfRound.Instance.shipIsLeaving) { return; }
-            if (SomethingContentHandler.Instance == null || SomethingContentHandler.Instance.Something == null) { return; }
-            SomethingAI something = (SomethingAI)Utils.SpawnEnemy(SomethingKeys.Something, Vector3.zero, Quaternion.identity)!;
-            something.ChangeTargetPlayerClientRpc(playerToHaunt.actualClientId);
         }
 
         public override void EnableItemMeshes(bool enable)
@@ -185,17 +159,23 @@ namespace Something.Items
             logger.LogDebug($"Changed sprite: {photoType}-{photoIndex}");
         }
 
-        /*[ClientRpc]
+        [ClientRpc]
         public void ChangeSpriteClientRpc(int type, int index, int scrapValue)
         {
             ChangeSprite(type, index);
-        }*/
+            SetScrapValue(scrapValue);
+        }
 
         [ServerRpc(RequireOwnership = false)]
         public void SpawnSomethingServerRpc(ulong hauntedPlayerId)
         {
             if (!IsServer) return;
-            SpawnSomething(PlayerFromId(hauntedPlayerId));
+            PlayerControllerB? playerToHaunt = PlayerFromId(hauntedPlayerId);
+            if (playerToHaunt == null) { return; }
+            if (StartOfRound.Instance.inShipPhase || StartOfRound.Instance.shipIsLeaving) { return; }
+            if (SomethingContentHandler.Instance == null || SomethingContentHandler.Instance.Something == null) { return; }
+            SomethingAI something = (SomethingAI)Utils.SpawnEnemy(SomethingKeys.Something, Vector3.zero, Quaternion.identity)!;
+            something.ChangeTargetPlayerClientRpc(playerToHaunt.actualClientId);
         }
     }
 }

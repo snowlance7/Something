@@ -6,16 +6,11 @@ namespace Something
 {
     internal class SomethingInputs : LcInputActions
     {
-#pragma warning disable CS8618
-        public static SomethingInputs Instance;
+        public static SomethingInputs Instance = new SomethingInputs();
 
-        public static void Init()
-        {
-            Instance = new SomethingInputs();
-        }
+        public string BreathKey_BindingDisplayString =>  BreathKey.GetBindingDisplayString(StartOfRound.Instance.localPlayerUsingController ? 1 : 0);
 
-        [InputAction(KeyboardControl.X, Name = "Breathe")]
-        public InputAction BreathKey { get; set; }
-#pragma warning restore CS8618
+        [InputAction(KeyboardControl.C, Name = "Breathe")]
+        public InputAction BreathKey { get; set; } = null!;
     }
 }

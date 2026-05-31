@@ -26,7 +26,7 @@ namespace Something
         public static ManualLogSource logger { get; private set; }
         public static DuskMod Mod { get; private set; }
 
-        public static ConfigEntry<bool> configMinimalSpoilerVersion;
+        public static ConfigEntry<bool> configMinimalSpoilerVersion { get; private set; }
 #pragma warning restore CS8618
 
         private readonly Harmony harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
@@ -55,8 +55,6 @@ namespace Something
             Mod.RegisterContentHandlers();
 
             InitializeNetworkBehaviours();
-
-            SomethingInputs.Init();
 
             InitConfigs();
 

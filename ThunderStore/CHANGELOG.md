@@ -1,3 +1,6 @@
+## 0.4.2
+- Fixed default spawn weights (delete your config file for the mod)
+
 ## 0.4.1
 - Small fix
 

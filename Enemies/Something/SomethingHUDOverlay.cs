@@ -23,13 +23,7 @@ namespace Something.Enemies.Something
 
         static readonly int LightSizeId = Shader.PropertyToID("_Inset");
 
-        string KeyBind
-        {
-            get
-            {
-                return InputControlPath.ToHumanReadableString(SomethingInputs.Instance.BreathKey.bindings[0].path, InputControlPath.HumanReadableStringOptions.OmitDevice);
-            }
-        }
+        string KeyBind => SomethingInputs.Instance.BreathKey_BindingDisplayString;
 
         bool holdingKey;
         bool showedTooltip;
@@ -57,7 +51,7 @@ namespace Something.Enemies.Something
                 HUDManager.Instance.DisplayTip(
                     $"Hold [{KeyBind}] to breath",
                     "Breathe to lower insanity and control hallucinations",
-                    false, true, "SomethingModBreathingTip"
+                    false, true, "SomethingBreathingTip"
                 );
                 showedTooltip = true;
             }
