@@ -1,3 +1,6 @@
+## 0.4.1
+- Small fix
+
 ## 0.4.0
 - Updated for V80
 

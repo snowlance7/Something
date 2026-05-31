@@ -12,11 +12,7 @@ namespace Something
         public class MailboxAssets(DuskMod mod, string filePath) : AssetBundleLoader<MailboxAssets>(mod, filePath) { }
         public class PolaroidAssets(DuskMod mod, string filePath) : AssetBundleLoader<PolaroidAssets>(mod, filePath) { }
         public class RabbitAssets(DuskMod mod, string filePath) : AssetBundleLoader<RabbitAssets>(mod, filePath) { }
-        public class SomethingAssets(DuskMod mod, string filePath) : AssetBundleLoader<SomethingAssets>(mod, filePath)
-        {
-            [LoadFromBundle("Something.prefab")]
-            public GameObject SomethingPrefab { get; private set; } = null!;
-        }
+        public class SomethingAssets(DuskMod mod, string filePath) : AssetBundleLoader<SomethingAssets>(mod, filePath) { }
 
         public AubreyPlushAssets? AubreyPlush;
         public BasilPlushAssets? BasilPlush;
