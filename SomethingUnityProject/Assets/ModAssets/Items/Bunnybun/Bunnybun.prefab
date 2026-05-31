@@ -469,7 +469,7 @@ GameObject:
   - component: {fileID: 557294120037650917}
   - component: {fileID: 3544466430511231511}
   - component: {fileID: 4211056782186797830}
-  - component: {fileID: 8013917377923555186}
+  - component: {fileID: 2464909842725235626}
   m_Layer: 6
   m_Name: Bunnybun
   m_TagString: PhysicsProp
@@ -524,7 +524,7 @@ AudioSource:
   m_GameObject: {fileID: 2716267495721950081}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 24300008, guid: cb9fb87df5ca10840a2a5b2dc5a4284c,
+  OutputAudioMixerGroup: {fileID: 24300008, guid: 64b08a5192e203847bb952b79319ef18,
     type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
@@ -640,7 +640,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 951099334
+  GlobalObjectIdHash: 624506359
+  InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -648,7 +649,7 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 1
   AutoObjectParentSync: 0
---- !u!114 &8013917377923555186
+--- !u!114 &2464909842725235626
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -657,7 +658,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2716267495721950081}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 338336166, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
+  m_Script: {fileID: 338336166, guid: 5260fe3eeb069494ba18eca34e21143f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   grabbable: 1
@@ -677,7 +678,7 @@ MonoBehaviour:
   isBeingUsed: 0
   isInElevator: 0
   isInShipRoom: 0
-  isInFactory: 0
+  isInFactory: 1
   useCooldown: 0
   currentUseCooldown: 0
   itemProperties: {fileID: 11400000, guid: f930e5dc848bf2a40958bcf5e57ea468, type: 2}
@@ -696,6 +697,7 @@ MonoBehaviour:
   reachedFloorTarget: 0
   grabbableToEnemies: 1
   hasBeenHeld: 0
+  rotateObject: 0
 --- !u!1 &3485505606533122572
 GameObject:
   m_ObjectHideFlags: 0

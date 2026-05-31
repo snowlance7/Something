@@ -1,6 +1,7 @@
 ﻿using Dawn.Utils;
 using Dusk;
 using GameNetcodeStuff;
+using SnowyLib;
 using Something.Enemies.Something;
 using System;
 using System.Collections.Generic;
@@ -121,9 +122,7 @@ namespace Something.Items
             if (!IsServer) { return; }
             if (StartOfRound.Instance.inShipPhase || StartOfRound.Instance.shipIsLeaving) { return; }
             if (SomethingContentHandler.Instance == null || SomethingContentHandler.Instance.Something == null) { return; }
-            SomethingAI something = Instantiate(SomethingContentHandler.Instance.Something.SomethingPrefab, Vector3.zero, Quaternion.identity).GetComponent<SomethingAI>();
-            something.NetworkObject.Spawn(destroyWithScene: true);
-            RoundManager.Instance.SpawnedEnemies.Add(something);
+            SomethingAI something = (SomethingAI)Utils.SpawnEnemy(SomethingKeys.Something, Vector3.zero, Quaternion.identity)!;
             something.ChangeTargetPlayerClientRpc(playerToHaunt.actualClientId);
         }
 

@@ -12,11 +12,11 @@ using System.Reflection;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
-using LethalCompanyInputUtils;
 
 namespace Something
 {
     [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
+    [BepInDependency(SnowyLib.MyPluginInfo.PLUGIN_GUID)]
     [BepInDependency(DawnLib.PLUGIN_GUID)]
     [BepInDependency(LethalCompanyInputUtils.MyPluginInfo.PLUGIN_GUID)]
     public class Plugin : BaseUnityPlugin

@@ -104,7 +104,7 @@ GameObject:
   - component: {fileID: 4311020922359955251}
   - component: {fileID: 8321617195370648896}
   - component: {fileID: 7530798009369984136}
-  - component: {fileID: 5510035088268022599}
+  - component: {fileID: 5156493037004471452}
   m_Layer: 6
   m_Name: Keytar
   m_TagString: PhysicsProp
@@ -159,7 +159,7 @@ AudioSource:
   m_GameObject: {fileID: 3505483464004804818}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 24300008, guid: cb9fb87df5ca10840a2a5b2dc5a4284c,
+  OutputAudioMixerGroup: {fileID: 24300008, guid: 64b08a5192e203847bb952b79319ef18,
     type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
@@ -275,7 +275,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 951099334
+  GlobalObjectIdHash: 1959245978
+  InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -283,7 +284,7 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 1
   AutoObjectParentSync: 0
---- !u!114 &5510035088268022599
+--- !u!114 &5156493037004471452
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -292,7 +293,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3505483464004804818}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1559722288, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
+  m_Script: {fileID: 1559722288, guid: 5260fe3eeb069494ba18eca34e21143f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   grabbable: 1
@@ -312,7 +313,7 @@ MonoBehaviour:
   isBeingUsed: 0
   isInElevator: 0
   isInShipRoom: 0
-  isInFactory: 0
+  isInFactory: 1
   useCooldown: 0
   currentUseCooldown: 0
   itemProperties: {fileID: 11400000, guid: 9a8ab2309a9a411409bf43163af6e918, type: 2}
@@ -331,6 +332,7 @@ MonoBehaviour:
   reachedFloorTarget: 0
   grabbableToEnemies: 1
   hasBeenHeld: 0
+  rotateObject: 0
   ItemAudio: {fileID: 4311020922359955251}
   songs:
   - {fileID: 8300000, guid: 019d5fb7b850f4847ae21d11a30789ce, type: 3}

@@ -6,6 +6,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
 using static Something.Plugin;
+using SnowyLib;
 
 // TODO: Stare head rotation is around x: 30
 // TODO: StartYPosition: 0.279
@@ -279,7 +280,7 @@ namespace Something.Enemies
                     }
 
                     //SetDestinationToPosition(targetPlayer.transform.position);
-                    if (Utils.isBeta && Utils.DEBUG_disableMoving) { return; }
+                    //if (Utils.isBeta && Utils.DEBUG_disableMoving) { return; }
                     RecalculatePath();
 
                     break;
@@ -303,7 +304,7 @@ namespace Something.Enemies
             foreach (PlayerControllerB player in StartOfRound.Instance.allPlayerScripts)
             {
                 if (player == null || !PlayerIsTargetable(player)) { continue; }
-                if (Utils.isBeta && Utils.DEBUG_disableTargetting && player.isHostPlayerObject) { continue; }
+                //if (Utils.isBeta && Utils.DEBUG_disableTargetting && player.isHostPlayerObject) { continue; }
                 float distance = Vector3.Distance(player.transform.position, transform.position);
                 if (distance <= range && distance < closestDistance)
                 {
@@ -327,7 +328,7 @@ namespace Something.Enemies
             targetPlayer = null;
             for (int i = 0; i < StartOfRound.Instance.connectedPlayersAmount + 1; i++)
             {
-                if (Utils.isBeta && Utils.DEBUG_disableTargetting && StartOfRound.Instance.allPlayerScripts[i].isHostPlayerObject) { continue; }
+                //if (Utils.isBeta && Utils.DEBUG_disableTargetting && StartOfRound.Instance.allPlayerScripts[i].isHostPlayerObject) { continue; }
                 if (PlayerIsTargetable(StartOfRound.Instance.allPlayerScripts[i]) && !PathIsIntersectedByLineOfSight(StartOfRound.Instance.allPlayerScripts[i].transform.position, calculatePathDistance: false, avoidLineOfSight: false) && (!requireLineOfSight || CheckLineOfSightForPosition(StartOfRound.Instance.allPlayerScripts[i].gameplayCamera.transform.position, viewWidth, 40)))
                 {
                     tempDist = Vector3.Distance(transform.position, StartOfRound.Instance.allPlayerScripts[i].transform.position);
@@ -347,9 +348,9 @@ namespace Something.Enemies
 
         IEnumerator FreezePlayerCoroutine(float freezeTime)
         {
-            Utils.FreezePlayer(targetPlayer, true);
+            targetPlayer.FreezePlayer(true);
             yield return new WaitForSeconds(freezeTime);
-            Utils.FreezePlayer(targetPlayer, false);
+            targetPlayer.FreezePlayer(false);
         }
 
         GameObject GetRandomAINode(List<GameObject> nodes)
@@ -598,7 +599,7 @@ namespace Something.Enemies
         public void KillPlayerServerRpc(ulong clientId)
         {
             if (!IsServer) { return; }
-            int index = Utils.testing && Utils.isBeta ? SpringCatKillIndex : UnityEngine.Random.Range(1, 7);
+            int index = Utils.testing ? SpringCatKillIndex : UnityEngine.Random.Range(1, 7);
             KillPlayerClientRpc(clientId, $"killPlayer{index}");
         }
 

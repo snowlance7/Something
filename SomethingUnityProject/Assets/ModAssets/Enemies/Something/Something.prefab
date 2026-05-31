@@ -73,7 +73,7 @@ AudioSource:
   m_GameObject: {fileID: 1066994213363414582}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 24300008, guid: cb9fb87df5ca10840a2a5b2dc5a4284c,
+  OutputAudioMixerGroup: {fileID: 24300008, guid: 64b08a5192e203847bb952b79319ef18,
     type: 2}
   m_audioClip: {fileID: 8300000, guid: dc60eeed99933ba48a70affefbd6fc9e, type: 3}
   m_PlayOnAwake: 0
@@ -188,7 +188,7 @@ GameObject:
   - component: {fileID: 3892697628787673672}
   - component: {fileID: 7319610646804869517}
   - component: {fileID: 3132534053582018418}
-  - component: {fileID: 7663544282495890643}
+  - component: {fileID: 9140448996742581044}
   m_Layer: 19
   m_Name: Something
   m_TagString: Enemy
@@ -284,7 +284,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &7663544282495890643
+--- !u!114 &9140448996742581044
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -293,10 +293,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 2636469387317948378}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1290306688, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
+  m_Script: {fileID: -1290306688, guid: 5260fe3eeb069494ba18eca34e21143f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainScript: {fileID: 449282770533617526}
+  mainScript: {fileID: 6486925288374769937}
 --- !u!1 &2812577377538702201
 GameObject:
   m_ObjectHideFlags: 0
@@ -343,9 +343,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d7127b8f98ca8ec9896b384a71d39a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainScript: {fileID: 449282770533617526}
+  mainScript: {fileID: 6486925288374769937}
   canCollideWithEnemies: 0
   onlyCollideWhenGrounded: 0
+  alwaysAllowHitting: 0
 --- !u!65 &2933637256261265459
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -510,7 +511,7 @@ GameObject:
   - component: {fileID: 4019931516109562522}
   - component: {fileID: 8125909365014089390}
   - component: {fileID: 703010787320862861}
-  - component: {fileID: 449282770533617526}
+  - component: {fileID: 6486925288374769937}
   m_Layer: 19
   m_Name: Something
   m_TagString: Enemy
@@ -583,7 +584,7 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 1
   AutoObjectParentSync: 1
---- !u!114 &449282770533617526
+--- !u!114 &6486925288374769937
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -592,7 +593,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6874139027399636449}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 627594004, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
+  m_Script: {fileID: 627594004, guid: 5260fe3eeb069494ba18eca34e21143f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   enemyType: {fileID: 11400000, guid: 3d36bf8c395f41b429d9a7aaf3711def, type: 2}
@@ -639,7 +640,7 @@ MonoBehaviour:
     boolValue: 0
   currentBehaviourStateIndex: 0
   previousBehaviourStateIndex: 0
-  currentOwnershipOnThisClient: 0
+  currentOwnershipOnThisClient: -1
   isInsidePlayerShip: 0
   AIIntervalTime: 0.2
   inSpecialAnimation: 0
@@ -648,6 +649,7 @@ MonoBehaviour:
   serverRotation: {x: 0, y: 0, z: 0}
   agent: {fileID: 8125909365014089390}
   allAINodes: []
+  agentMask: 0
   targetNode: {fileID: 0}
   favoriteSpot: {fileID: 0}
   tempDist: 0
@@ -656,19 +658,20 @@ MonoBehaviour:
   thisNetworkObject: {fileID: 0}
   thisEnemyIndex: 0
   isClientCalculatingAI: 0
-  updatePositionThreshold: 0.22
+  updatePositionThreshold: 1
   targetPlayer: {fileID: 0}
   movingTowardsTargetPlayer: 0
-  moveTowardsDestination: 0
+  moveTowardsDestination: 1
   destination: {x: 0, y: 0, z: 0}
   addPlayerVelocityToDestination: 0
-  syncMovementSpeed: 0.3
+  syncMovementSpeed: 0.22
   timeSinceSpawn: 0
-  exitVentAnimationTime: 0
+  exitVentAnimationTime: 1
   ventAnimationFinished: 0
   isEnemyDead: 0
   daytimeEnemyLeaving: 0
-  enemyHP: 0
+  enemyHP: 3
+  nodesTempArray: []
   openDoorSpeedMultiplier: 0
   useSecondaryAudiosOnAnimatedObjects: 0
   currentSearch:
@@ -678,13 +681,14 @@ MonoBehaviour:
     waitingForTargetNode: 0
     choseTargetNode: 0
     currentSearchStartPosition: {x: 0, y: 0, z: 0}
-    loopSearch: 0
+    loopSearch: 1
     timesFinishingSearch: 0
     nodesEliminatedInCurrentSearch: 0
     inProgress: 0
     calculatingNodeInSearch: 0
-    searchWidth: 0
-    searchPrecision: 0
+    startedSearchAtSelf: 0
+    searchWidth: 200
+    searchPrecision: 5
     randomized: 0
     onlySearchNodesInLOS: 0
   DebugEnemy: 0
@@ -693,7 +697,11 @@ MonoBehaviour:
   postStunInvincibilityTimer: 0
   stunnedByPlayer: {fileID: 0}
   debugEnemyAI: 0
+  removedPowerLevel: 0
   isOutside: 0
+  hitsPhysicsObjects: 0
+  gotFarthestNodeAsync: 0
+  overrideSettingEnemyMeshes: 0
   turnCompass: {fileID: 25442072278301996}
   lesserSomethingPrefab: {fileID: 2714746902841750835, guid: 78d8548a89a19344f97dbc2021b1cf87,
     type: 3}
@@ -709,8 +717,7 @@ MonoBehaviour:
   ScanNode: {fileID: 5901302423665127641}
   BreathingMechanicPrefab: {fileID: 4546517236011313295, guid: 71130221a0ce77247a9fed819dc52bf3,
     type: 3}
-  DEBUG_hudOverlay: {fileID: 4546517236011313295, guid: bb1bc1da5d61713478dcccefb0be539e,
-    type: 3}
+  DEBUG_hudOverlay: {fileID: 0}
 --- !u!1 &9018303914392096838
 GameObject:
   m_ObjectHideFlags: 0
@@ -753,7 +760,7 @@ AudioSource:
   m_GameObject: {fileID: 9018303914392096838}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 24300008, guid: cb9fb87df5ca10840a2a5b2dc5a4284c,
+  OutputAudioMixerGroup: {fileID: 24300008, guid: 64b08a5192e203847bb952b79319ef18,
     type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0

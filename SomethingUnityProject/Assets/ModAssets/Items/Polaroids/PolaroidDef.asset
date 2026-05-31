@@ -9,123 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 466683445, guid: 41d6645f64e86c743812eb594070972f, type: 3}
+  m_Script: {fileID: 466683445, guid: 1f73291e6cf64124796e048d841e7d1f, type: 3}
   m_Name: PolaroidDef
   m_EditorClassIdentifier: 
-  _configEntries:
-  - settingName: Good Weight
-    DynamicConfigType: 1
-    defaultString: 
-    defaultInt: 50
-    defaultFloat: 0
-    defaultBool: 0
-    defaultBoundedRange:
-      <Min>k__BackingField: 0
-      <Max>k__BackingField: 0
-    defaultAnimationCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 0
-      m_PostInfinity: 0
-      m_RotationOrder: 0
-    Description: Weighted chance the polaroid will be a good polaroid when spawned
-  - settingName: Bad Weight
-    DynamicConfigType: 1
-    defaultString: 
-    defaultInt: 25
-    defaultFloat: 0
-    defaultBool: 0
-    defaultBoundedRange:
-      <Min>k__BackingField: 0
-      <Max>k__BackingField: 0
-    defaultAnimationCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 0
-      m_PostInfinity: 0
-      m_RotationOrder: 0
-    Description: Weighted chance the polaroid will be a bad polaroid when spawned
-  - settingName: Cursed Weight
-    DynamicConfigType: 1
-    defaultString: 
-    defaultInt: 10
-    defaultFloat: 0
-    defaultBool: 0
-    defaultBoundedRange:
-      <Min>k__BackingField: 0
-      <Max>k__BackingField: 0
-    defaultAnimationCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 0
-      m_PostInfinity: 0
-      m_RotationOrder: 0
-    Description: Weighted chance the polaroid will be a cursed polaroid when spawned
-  - settingName: Bad Something Chance
-    DynamicConfigType: 2
-    defaultString: 
-    defaultInt: 0
-    defaultFloat: 0.5
-    defaultBool: 0
-    defaultBoundedRange:
-      <Min>k__BackingField: 0
-      <Max>k__BackingField: 0
-    defaultAnimationCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 0
-      m_PostInfinity: 0
-      m_RotationOrder: 0
-    Description: Percent chance (from 0-1) that a bad polaroid will spawn something
-      when picked up
-  - settingName: Good Value
-    DynamicConfigType: 4
-    defaultString: 
-    defaultInt: 0
-    defaultFloat: 0.5
-    defaultBool: 0
-    defaultBoundedRange:
-      <Min>k__BackingField: 50
-      <Max>k__BackingField: 100
-    defaultAnimationCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 0
-      m_PostInfinity: 0
-      m_RotationOrder: 0
-    Description: Scrap value of a good polaroid
-  - settingName: Bad Value
-    DynamicConfigType: 4
-    defaultString: 
-    defaultInt: 0
-    defaultFloat: 0.5
-    defaultBool: 0
-    defaultBoundedRange:
-      <Min>k__BackingField: 50
-      <Max>k__BackingField: 150
-    defaultAnimationCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 0
-      m_PostInfinity: 0
-      m_RotationOrder: 0
-    Description: Scrap value of a bad polaroid
-  - settingName: Cursed Value
-    DynamicConfigType: 4
-    defaultString: 
-    defaultInt: 0
-    defaultFloat: 0.5
-    defaultBool: 0
-    defaultBoundedRange:
-      <Min>k__BackingField: 50
-      <Max>k__BackingField: 200
-    defaultAnimationCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 0
-      m_PostInfinity: 0
-      m_RotationOrder: 0
-    Description: Scrap value of a cursed polaroid
+  _configEntries: []
   _tags: []
   <Key>k__BackingField:
     _namespace: something
@@ -138,13 +25,215 @@ MonoBehaviour:
     <ItemInfoNode>k__BackingField: {fileID: 0}
   <TerminalPredicate>k__BackingField: {fileID: 0}
   <PricingStrategy>k__BackingField: {fileID: 0}
-  <MoonSpawnWeights>k__BackingField: Vanilla=+25, Custom=+30, Valley=+0, Canyon=+0,
-    Tundra=+0, Marsh=+0, Military=+0, Rocky=+0,Amythest=+0, Experimentation=+0, Assurance=+0,
-    Vow=+0, Offense=+0, March=+0, Adamance=+0, Rend=+0, Dine=+0, Titan=+0, Artifice=+0,
-    Embrion=+0
-  <InteriorSpawnWeights>k__BackingField: Facility=+0, Mansion=+0, Mineshaft=+0
-  <WeatherSpawnWeights>k__BackingField: None=*1, DustClouds=*1, Rainy=*1, Stormy=*1,
-    Foggy=*1, Flooded=*1, Eclipsed=*1
+  <MoonSpawnWeightsConfig>k__BackingField:
+  - NamespacedKey:
+      _namespace: lethal_company
+      _key: vanilla
+    MathOperation: 0
+    Weight: 30
+  - NamespacedKey:
+      _namespace: lethal_company
+      _key: custom
+    MathOperation: 0
+    Weight: 35
+  - NamespacedKey:
+      _namespace: lethal_company
+      _key: experimentation
+    MathOperation: 0
+    Weight: 0
+  - NamespacedKey:
+      _namespace: lethal_company
+      _key: vow
+    MathOperation: 0
+    Weight: 0
+  - NamespacedKey:
+      _namespace: lethal_company
+      _key: march
+    MathOperation: 0
+    Weight: 0
+  - NamespacedKey:
+      _namespace: lethal_company
+      _key: assurance
+    MathOperation: 0
+    Weight: 0
+  - NamespacedKey:
+      _namespace: lethal_company
+      _key: offense
+    MathOperation: 0
+    Weight: 0
+  - NamespacedKey:
+      _namespace: lethal_company
+      _key: adamance
+    MathOperation: 0
+    Weight: 0
+  - NamespacedKey:
+      _namespace: lethal_company
+      _key: embrion
+    MathOperation: 0
+    Weight: 0
+  - NamespacedKey:
+      _namespace: lethal_company
+      _key: rend
+    MathOperation: 0
+    Weight: 0
+  - NamespacedKey:
+      _namespace: lethal_company
+      _key: dine
+    MathOperation: 0
+    Weight: 0
+  - NamespacedKey:
+      _namespace: lethal_company
+      _key: titan
+    MathOperation: 0
+    Weight: 0
+  - NamespacedKey:
+      _namespace: lethal_company
+      _key: artifice
+    MathOperation: 0
+    Weight: 0
+  - NamespacedKey:
+      _namespace: something
+      _key: polaroid_none
+    MathOperation: 2
+    Weight: 0
+  - NamespacedKey:
+      _namespace: something
+      _key: polaroid_low
+    MathOperation: 0
+    Weight: 0
+  - NamespacedKey:
+      _namespace: something
+      _key: polaroid_medium
+    MathOperation: 0
+    Weight: 0
+  - NamespacedKey:
+      _namespace: something
+      _key: polaroid_high
+    MathOperation: 0
+    Weight: 0
+  - NamespacedKey:
+      _namespace: something
+      _key: polaroid_ultra_high
+    MathOperation: 0
+    Weight: 0
+  <InteriorSpawnWeightsConfig>k__BackingField:
+  - NamespacedKey:
+      _namespace: lethal_company
+      _key: vanilla
+    MathOperation: 0
+    Weight: 0
+  - NamespacedKey:
+      _namespace: lethal_company
+      _key: custom
+    MathOperation: 0
+    Weight: 0
+  - NamespacedKey:
+      _namespace: lethal_company
+      _key: facility
+    MathOperation: 0
+    Weight: 0
+  - NamespacedKey:
+      _namespace: lethal_company
+      _key: mansion
+    MathOperation: 2
+    Weight: 2
+  - NamespacedKey:
+      _namespace: lethal_company
+      _key: mineshaft
+    MathOperation: 0
+    Weight: 0
+  - NamespacedKey:
+      _namespace: something
+      _key: polaroid_none
+    MathOperation: 2
+    Weight: 0
+  - NamespacedKey:
+      _namespace: something
+      _key: polaroid_low
+    MathOperation: 0
+    Weight: 0
+  - NamespacedKey:
+      _namespace: something
+      _key: polaroid_medium
+    MathOperation: 0
+    Weight: 0
+  - NamespacedKey:
+      _namespace: something
+      _key: polaroid_high
+    MathOperation: 0
+    Weight: 0
+  - NamespacedKey:
+      _namespace: something
+      _key: polaroid_ultra_high
+    MathOperation: 0
+    Weight: 0
+  <WeatherSpawnWeightsConfig>k__BackingField:
+  - NamespacedKey:
+      _namespace: lethal_company
+      _key: vanilla
+    MathOperation: 2
+    Weight: 1
+  - NamespacedKey:
+      _namespace: lethal_company
+      _key: custom
+    MathOperation: 2
+    Weight: 1
+  - NamespacedKey:
+      _namespace: lethal_company
+      _key: none
+    MathOperation: 2
+    Weight: 1
+  - NamespacedKey:
+      _namespace: lethal_company
+      _key: rainy
+    MathOperation: 2
+    Weight: 1
+  - NamespacedKey:
+      _namespace: lethal_company
+      _key: stormy
+    MathOperation: 2
+    Weight: 1
+  - NamespacedKey:
+      _namespace: lethal_company
+      _key: foggy
+    MathOperation: 2
+    Weight: 1
+  - NamespacedKey:
+      _namespace: lethal_company
+      _key: flooded
+    MathOperation: 2
+    Weight: 1
+  - NamespacedKey:
+      _namespace: lethal_company
+      _key: eclipsed
+    MathOperation: 2
+    Weight: 1
+  - NamespacedKey:
+      _namespace: something
+      _key: polaroid_none
+    MathOperation: 2
+    Weight: 0
+  - NamespacedKey:
+      _namespace: something
+      _key: polaroid_low
+    MathOperation: 2
+    Weight: 1
+  - NamespacedKey:
+      _namespace: something
+      _key: polaroid_medium
+    MathOperation: 2
+    Weight: 1
+  - NamespacedKey:
+      _namespace: something
+      _key: polaroid_high
+    MathOperation: 2
+    Weight: 1
+  - NamespacedKey:
+      _namespace: something
+      _key: polaroid_ultra_high
+    MathOperation: 2
+    Weight: 1
+  <RouteSpawnWeightsConfig>k__BackingField: []
   <GenerateSpawnWeightsConfig>k__BackingField: 1
   <IsScrap>k__BackingField: 1
   <GenerateScrapConfig>k__BackingField: 1
@@ -153,3 +242,6 @@ MonoBehaviour:
   <Cost>k__BackingField: 0
   <GenerateDisableUnlockConfig>k__BackingField: 1
   <GenerateDisablePricingStrategyConfig>k__BackingField: 1
+  <MoonSpawnWeights>k__BackingField: 
+  <InteriorSpawnWeights>k__BackingField: 
+  <WeatherSpawnWeights>k__BackingField: 

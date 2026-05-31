@@ -1,3 +1,6 @@
+## 0.4.0
+- Updated for V80
+
 ## 0.3.3
 - Made the collider for polaroid larger
 - Increased the turn speed for all enemies

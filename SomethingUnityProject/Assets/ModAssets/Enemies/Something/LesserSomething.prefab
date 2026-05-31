@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 6118785546368017483}
   - component: {fileID: 732621924933249427}
   - component: {fileID: 1159904213252214788}
-  - component: {fileID: 4644898170631266998}
   - component: {fileID: 8388171869913994248}
+  - component: {fileID: 2602435696664470070}
   m_Layer: 0
   m_Name: LesserSomething
   m_TagString: Untagged
@@ -73,7 +73,7 @@ AudioSource:
   m_GameObject: {fileID: 2714746902841750835}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 24300008, guid: cb9fb87df5ca10840a2a5b2dc5a4284c,
+  OutputAudioMixerGroup: {fileID: 24300008, guid: 64b08a5192e203847bb952b79319ef18,
     type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
@@ -161,7 +161,34 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &4644898170631266998
+--- !u!54 &8388171869913994248
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2714746902841750835}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!114 &2602435696664470070
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -170,7 +197,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2714746902841750835}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 231335200, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
+  m_Script: {fileID: 231335200, guid: 5260fe3eeb069494ba18eca34e21143f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   turnCompass: {fileID: 7695321744401863105}
@@ -210,33 +237,6 @@ MonoBehaviour:
   targetPlayer: {fileID: 0}
   spawnNode: {fileID: 0}
   destroyTime: 0
---- !u!54 &8388171869913994248
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2714746902841750835}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!1 &3381964199924062709
 GameObject:
   m_ObjectHideFlags: 0
@@ -249,7 +249,7 @@ GameObject:
   - component: {fileID: 411583534865730695}
   - component: {fileID: 74164591975754594}
   - component: {fileID: 7949530900013913396}
-  - component: {fileID: 5149399479187145307}
+  - component: {fileID: 3608316098559143673}
   m_Layer: 0
   m_Name: Merci
   m_TagString: Untagged
@@ -366,7 +366,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.7099998, y: 4.0199995, z: 0.19999999}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &5149399479187145307
+--- !u!114 &3608316098559143673
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -375,10 +375,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 3381964199924062709}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1611618348, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
+  m_Script: {fileID: -1611618348, guid: 5260fe3eeb069494ba18eca34e21143f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainScript: {fileID: 4644898170631266998}
+  mainScript: {fileID: 2602435696664470070}
 --- !u!1 &4451833395718257008
 GameObject:
   m_ObjectHideFlags: 0
@@ -391,7 +391,7 @@ GameObject:
   - component: {fileID: 8950910853658548711}
   - component: {fileID: 1128441492416182604}
   - component: {fileID: 6163763493488366227}
-  - component: {fileID: 7300333814518708344}
+  - component: {fileID: 394513132651507308}
   m_Layer: 0
   m_Name: Salli
   m_TagString: Untagged
@@ -508,7 +508,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.6, y: 1.79, z: 0.2}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7300333814518708344
+--- !u!114 &394513132651507308
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -517,10 +517,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 4451833395718257008}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1611618348, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
+  m_Script: {fileID: -1611618348, guid: 5260fe3eeb069494ba18eca34e21143f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainScript: {fileID: 4644898170631266998}
+  mainScript: {fileID: 2602435696664470070}
 --- !u!1 &4856482631676303231
 GameObject:
   m_ObjectHideFlags: 0
@@ -533,7 +533,7 @@ GameObject:
   - component: {fileID: 6518210026852354786}
   - component: {fileID: 8878017441329476256}
   - component: {fileID: 4255811574617511143}
-  - component: {fileID: 1843978280561439690}
+  - component: {fileID: 3662065064441668419}
   m_Layer: 0
   m_Name: Nanci
   m_TagString: Untagged
@@ -650,7 +650,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 3.26, y: 3.58, z: 0.2}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1843978280561439690
+--- !u!114 &3662065064441668419
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -659,10 +659,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 4856482631676303231}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1611618348, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
+  m_Script: {fileID: -1611618348, guid: 5260fe3eeb069494ba18eca34e21143f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainScript: {fileID: 4644898170631266998}
+  mainScript: {fileID: 2602435696664470070}
 --- !u!1 &5279885369776018300
 GameObject:
   m_ObjectHideFlags: 0
@@ -706,7 +706,7 @@ GameObject:
   - component: {fileID: 7474143239386180597}
   - component: {fileID: 3197409974337440963}
   - component: {fileID: 7297111847035525724}
-  - component: {fileID: 7183506719250134738}
+  - component: {fileID: 2803612437614093005}
   m_Layer: 0
   m_Name: Cindi
   m_TagString: Untagged
@@ -823,7 +823,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.42, y: 2.65, z: 0.2}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7183506719250134738
+--- !u!114 &2803612437614093005
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -832,10 +832,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 6898408213554888356}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1611618348, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
+  m_Script: {fileID: -1611618348, guid: 5260fe3eeb069494ba18eca34e21143f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainScript: {fileID: 4644898170631266998}
+  mainScript: {fileID: 2602435696664470070}
 --- !u!1 &8389746931271817270
 GameObject:
   m_ObjectHideFlags: 0
@@ -848,7 +848,7 @@ GameObject:
   - component: {fileID: 7507261198607399961}
   - component: {fileID: 1215887974603080971}
   - component: {fileID: 2389801710985414171}
-  - component: {fileID: 867013530695253065}
+  - component: {fileID: 8176841220755852349}
   m_Layer: 0
   m_Name: Lilli
   m_TagString: Untagged
@@ -965,7 +965,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.92, y: 1.84, z: 0.2}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &867013530695253065
+--- !u!114 &8176841220755852349
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -974,10 +974,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 8389746931271817270}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1611618348, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
+  m_Script: {fileID: -1611618348, guid: 5260fe3eeb069494ba18eca34e21143f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainScript: {fileID: 4644898170631266998}
+  mainScript: {fileID: 2602435696664470070}
 --- !u!1 &9033442586356315759
 GameObject:
   m_ObjectHideFlags: 0
@@ -990,7 +990,7 @@ GameObject:
   - component: {fileID: 5390972344425280807}
   - component: {fileID: 375801731386199020}
   - component: {fileID: 8090253573220332074}
-  - component: {fileID: 7513213592976790972}
+  - component: {fileID: 5180652858218708685}
   m_Layer: 0
   m_Name: Dorothi
   m_TagString: Untagged
@@ -1107,7 +1107,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.6199996, y: 3.3599997, z: 0.19999999}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7513213592976790972
+--- !u!114 &5180652858218708685
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1116,7 +1116,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 9033442586356315759}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1611618348, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
+  m_Script: {fileID: -1611618348, guid: 5260fe3eeb069494ba18eca34e21143f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainScript: {fileID: 4644898170631266998}
+  mainScript: {fileID: 2602435696664470070}

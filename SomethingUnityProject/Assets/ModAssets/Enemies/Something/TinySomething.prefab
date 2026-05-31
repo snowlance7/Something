@@ -149,7 +149,7 @@ GameObject:
   - component: {fileID: 525721132075246785}
   - component: {fileID: 7624321511834461748}
   - component: {fileID: 4729147638696907593}
-  - component: {fileID: 8417448734977816837}
+  - component: {fileID: 6880747722641399582}
   m_Layer: 0
   m_Name: TinySomething
   m_TagString: Untagged
@@ -204,7 +204,7 @@ AudioSource:
   m_GameObject: {fileID: 7096922674049724148}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 24300008, guid: cb9fb87df5ca10840a2a5b2dc5a4284c,
+  OutputAudioMixerGroup: {fileID: 24300008, guid: 64b08a5192e203847bb952b79319ef18,
     type: 2}
   m_audioClip: {fileID: 8300000, guid: 81c5836ebcde74b47a3f736c5b708ad4, type: 3}
   m_PlayOnAwake: 0
@@ -308,7 +308,7 @@ MonoBehaviour:
   overridingLowPass: 0
   lowPassOverride: 20000
   debugLog: 0
---- !u!114 &8417448734977816837
+--- !u!114 &6880747722641399582
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -317,7 +317,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7096922674049724148}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -721083782, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
+  m_Script: {fileID: -721083782, guid: 5260fe3eeb069494ba18eca34e21143f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   turnCompass: {fileID: 4379497194737407691}

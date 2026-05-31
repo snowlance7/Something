@@ -29,8 +29,8 @@ namespace Something
 
         public SomethingContentHandler(DuskMod mod) : base(mod)
         {
-            RegisterContent("aubreyplush", out AubreyPlush);
-            RegisterContent("basilplush", out BasilPlush);
+            RegisterContent("aubrey_plush", out AubreyPlush);
+            RegisterContent("basil_plush", out BasilPlush);
             RegisterContent("bunnybun", out Bunnybun);
             RegisterContent("keytar", out Keytar);
             RegisterContent("mailbox", out Mailbox);

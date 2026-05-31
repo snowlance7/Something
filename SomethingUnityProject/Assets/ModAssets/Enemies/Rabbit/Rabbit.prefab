@@ -73,7 +73,7 @@ AudioSource:
   m_GameObject: {fileID: 1066994213363414582}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 24300008, guid: cb9fb87df5ca10840a2a5b2dc5a4284c,
+  OutputAudioMixerGroup: {fileID: 24300008, guid: 64b08a5192e203847bb952b79319ef18,
     type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
@@ -223,9 +223,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d7127b8f98ca8ec9896b384a71d39a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainScript: {fileID: 6499710183776256284}
+  mainScript: {fileID: 1574945556781025776}
   canCollideWithEnemies: 0
   onlyCollideWhenGrounded: 0
+  alwaysAllowHitting: 0
 --- !u!65 &2933637256261265459
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -390,7 +391,7 @@ GameObject:
   - component: {fileID: 4019931516109562522}
   - component: {fileID: 8125909365014089390}
   - component: {fileID: 8025463267489752846}
-  - component: {fileID: 6499710183776256284}
+  - component: {fileID: 1574945556781025776}
   m_Layer: 19
   m_Name: Rabbit
   m_TagString: Enemy
@@ -463,7 +464,7 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 1
   AutoObjectParentSync: 1
---- !u!114 &6499710183776256284
+--- !u!114 &1574945556781025776
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -472,7 +473,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6874139027399636449}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1031543214, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
+  m_Script: {fileID: -1031543214, guid: 5260fe3eeb069494ba18eca34e21143f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   enemyType: {fileID: 11400000, guid: f7be0b6225710d144a1559eb748eb526, type: 2}
@@ -495,15 +496,16 @@ MonoBehaviour:
     boolValue: 0
   currentBehaviourStateIndex: 0
   previousBehaviourStateIndex: 0
-  currentOwnershipOnThisClient: 0
+  currentOwnershipOnThisClient: -1
   isInsidePlayerShip: 0
   AIIntervalTime: 0.2
   inSpecialAnimation: 0
   inSpecialAnimationWithPlayer: {fileID: 0}
   serverPosition: {x: 0, y: 0, z: 0}
   serverRotation: {x: 0, y: 0, z: 0}
-  agent: {fileID: 0}
+  agent: {fileID: 8125909365014089390}
   allAINodes: []
+  agentMask: 0
   targetNode: {fileID: 0}
   favoriteSpot: {fileID: 0}
   tempDist: 0
@@ -512,19 +514,20 @@ MonoBehaviour:
   thisNetworkObject: {fileID: 0}
   thisEnemyIndex: 0
   isClientCalculatingAI: 0
-  updatePositionThreshold: 0.22
+  updatePositionThreshold: 1
   targetPlayer: {fileID: 0}
   movingTowardsTargetPlayer: 0
-  moveTowardsDestination: 0
+  moveTowardsDestination: 1
   destination: {x: 0, y: 0, z: 0}
   addPlayerVelocityToDestination: 0
-  syncMovementSpeed: 0.2
+  syncMovementSpeed: 0.22
   timeSinceSpawn: 0
-  exitVentAnimationTime: 0
+  exitVentAnimationTime: 1
   ventAnimationFinished: 0
   isEnemyDead: 0
   daytimeEnemyLeaving: 0
-  enemyHP: 0
+  enemyHP: 1
+  nodesTempArray: []
   openDoorSpeedMultiplier: 0
   useSecondaryAudiosOnAnimatedObjects: 0
   currentSearch:
@@ -534,13 +537,14 @@ MonoBehaviour:
     waitingForTargetNode: 0
     choseTargetNode: 0
     currentSearchStartPosition: {x: 0, y: 0, z: 0}
-    loopSearch: 0
+    loopSearch: 1
     timesFinishingSearch: 0
     nodesEliminatedInCurrentSearch: 0
     inProgress: 0
     calculatingNodeInSearch: 0
-    searchWidth: 0
-    searchPrecision: 0
+    startedSearchAtSelf: 0
+    searchWidth: 200
+    searchPrecision: 5
     randomized: 0
     onlySearchNodesInLOS: 0
   DebugEnemy: 0
@@ -549,7 +553,11 @@ MonoBehaviour:
   postStunInvincibilityTimer: 0
   stunnedByPlayer: {fileID: 0}
   debugEnemyAI: 0
+  removedPowerLevel: 0
   isOutside: 0
+  hitsPhysicsObjects: 0
+  gotFarthestNodeAsync: 0
+  overrideSettingEnemyMeshes: 0
   turnCompass: {fileID: 25442072278301996}
 --- !u!1 &6990403434747266115
 GameObject:
@@ -677,7 +685,7 @@ AudioSource:
   m_GameObject: {fileID: 9018303914392096838}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 24300008, guid: cb9fb87df5ca10840a2a5b2dc5a4284c,
+  OutputAudioMixerGroup: {fileID: 24300008, guid: 64b08a5192e203847bb952b79319ef18,
     type: 2}
   m_audioClip: {fileID: 8300000, guid: cce9b178fa8747045aeec5ddfdd52f97, type: 3}
   m_PlayOnAwake: 1

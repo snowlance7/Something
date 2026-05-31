@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10ba37b74c3357e42a779e4e104c1dbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildOutputPath: C:/Users/snowl/source/repos/Something/Assets
+  buildOutputPath: C:/Users/snowl/source/repos/LethalCompany/Something/Assets
   buildOnlyChanged: 0
   processDependenciesRecursively: 0
   assetSortOption: 0

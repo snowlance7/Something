@@ -6,6 +6,7 @@ using System.Reflection;
 using Unity.Netcode;
 using UnityEngine;
 using static Something.Plugin;
+using SnowyLib;
 
 namespace Something.Enemies.Something
 {
@@ -21,8 +22,6 @@ namespace Something.Enemies.Something
         public SpriteRenderer somethingMesh;
         public GameObject ScanNode;
         public GameObject BreathingMechanicPrefab;
-
-        public GameObject DEBUG_hudOverlay;
 
         SomethingHUDOverlay hudOverlay;
 #pragma warning restore CS8618
@@ -65,14 +64,6 @@ namespace Something.Enemies.Something
             Inactive,
             Staring,
             Chasing
-        }
-
-        public override void Start()
-        {
-            base.Start();
-
-            if (Utils.isBeta)
-                Instantiate(DEBUG_hudOverlay, Vector3.zero, Quaternion.identity);
         }
 
         public override void Update()
@@ -134,8 +125,6 @@ namespace Something.Enemies.Something
 
         public override void DoAIInterval()
         {
-            UpdateTestingHUD();
-
             if (inSpecialAnimation || targetPlayer == null)
             {
                 StopAgent();
@@ -261,29 +250,11 @@ namespace Something.Enemies.Something
             agent.velocity = Vector3.zero;
         }
 
-        void UpdateTestingHUD()
-        {
-            if (Utils.isBeta && TestingHUDOverlay.Instance != null) // TestingHUD
-            {
-                TestingHUDOverlay.Instance.label1.text = ((State)currentBehaviourStateIndex).ToString();
-
-                TestingHUDOverlay.Instance.label2.text = "TargetPlayer: " + targetPlayer?.playerUsername;
-
-                TestingHUDOverlay.Instance.label3.text = "Insanity: " + localPlayer.insanityLevel;
-
-                //TestingHUDOverlay.Instance.toggle1.isOn = isOutside;
-                //TestingHUDOverlay.Instance.toggle1Label.text = "isOutside";
-
-                TestingHUDOverlay.Instance.toggle2.isOn = inSpecialAnimation;
-                TestingHUDOverlay.Instance.toggle2Label.text = "inSpecialAnimation";
-            }
-        }
-
         IEnumerator FreezePlayerCoroutine(PlayerControllerB player, float freezeTime)
         {
-            Utils.FreezePlayer(player, true);
+            player.FreezePlayer(true);
             yield return new WaitForSeconds(freezeTime);
-            Utils.FreezePlayer(player, false);
+            player.FreezePlayer(false);
         }
 
         Transform? TryFindingHauntPosition(bool mustBeInLOS = true)
@@ -524,7 +495,7 @@ namespace Something.Enemies.Something
             logger.LogDebug("OnFinishSpawnAnimation()");
             inSpecialAnimation = false;
             creatureVoice.Play();
-            Utils.FreezePlayer(targetPlayer, false);
+            targetPlayer.FreezePlayer(false);
         }
 
         public void OnFinishDespawnAnimation() // Animation

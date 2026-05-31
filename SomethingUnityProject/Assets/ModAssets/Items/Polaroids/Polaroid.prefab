@@ -171,8 +171,8 @@ GameObject:
   - component: {fileID: 81915821582539373}
   - component: {fileID: 5952254796376091199}
   - component: {fileID: 173131949649836978}
-  - component: {fileID: 7622342300005188296}
   - component: {fileID: 5527341153898951258}
+  - component: {fileID: 3892224607748853358}
   m_Layer: 6
   m_Name: Polaroid
   m_TagString: PhysicsProp
@@ -227,7 +227,7 @@ AudioSource:
   m_GameObject: {fileID: 7905968751901644706}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 24300008, guid: cb9fb87df5ca10840a2a5b2dc5a4284c,
+  OutputAudioMixerGroup: {fileID: 24300008, guid: 64b08a5192e203847bb952b79319ef18,
     type: 2}
   m_audioClip: {fileID: 8300000, guid: 0ee2c96baadc0894d9ed783aac4892d2, type: 3}
   m_PlayOnAwake: 0
@@ -404,7 +404,28 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 1
   AutoObjectParentSync: 0
---- !u!114 &7622342300005188296
+--- !u!95 &5527341153898951258
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7905968751901644706}
+  m_Enabled: 0
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 95eee3e6ce8711840bd705f0a5d71a0f, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &3892224607748853358
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -413,7 +434,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7905968751901644706}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 913991268, guid: 3f4567ffb54134a40aba392ae1dd23ac, type: 3}
+  m_Script: {fileID: 913991268, guid: 5260fe3eeb069494ba18eca34e21143f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   grabbable: 1
@@ -433,7 +454,7 @@ MonoBehaviour:
   isBeingUsed: 0
   isInElevator: 0
   isInShipRoom: 0
-  isInFactory: 0
+  isInFactory: 1
   useCooldown: 0
   currentUseCooldown: 0
   itemProperties: {fileID: 11400000, guid: e88e97049caf90443942c9e7f375870f, type: 2}
@@ -450,8 +471,9 @@ MonoBehaviour:
   heldByPlayerOnServer: 0
   radarIcon: {fileID: 0}
   reachedFloorTarget: 0
-  grabbableToEnemies: 0
+  grabbableToEnemies: 1
   hasBeenHeld: 0
+  rotateObject: 0
   audioSource: {fileID: 4906821555205991102}
   renderer: {fileID: 5952254796376091199}
   animator: {fileID: 5527341153898951258}
@@ -597,24 +619,3 @@ MonoBehaviour:
   - {fileID: 21300000, guid: d3919c341034a3845a6bc165e81c48f6, type: 3}
   - {fileID: 21300000, guid: e3f50397114065c4c8ebe2c99c096862, type: 3}
   - {fileID: 21300000, guid: eafb7590c7f5223479182ca6147b9e4d, type: 3}
---- !u!95 &5527341153898951258
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7905968751901644706}
-  m_Enabled: 0
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 95eee3e6ce8711840bd705f0a5d71a0f, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
