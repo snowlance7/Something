@@ -63,7 +63,7 @@ namespace Something.Items
         {
             if (!hasBeenHeld)
             {
-                bool spawnSomething = photoType == 2 || (photoType == 1 && UnityEngine.Random.Range(0f, 1f) < badSomethingChance);
+                bool spawnSomething = photoType == 2 || (photoType == 1 && UnityEngine.Random.Range(0f, 1f) < 0.5f);
 
                 if (spawnSomething)
                 {
