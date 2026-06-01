@@ -5,7 +5,7 @@ using Dawn;
 using Dusk;
 using GameNetcodeStuff;
 using HarmonyLib;
-using Something.Enemies.Something;
+using Something.Enemies;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -33,9 +33,6 @@ namespace Something
         public static PlayerControllerB localPlayer { get { return GameNetworkManager.Instance.localPlayerController; } }
         public static PlayerControllerB PlayerFromId(ulong id) { return StartOfRound.Instance.allPlayerScripts.Where(x => x.actualClientId == id).First(); }
         public static bool IsServerOrHost { get { return NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost; } }
-        
-        
-        public static UnityEvent onShipLanded = new UnityEvent();
 
         public const float turnCompassSpeedGlobal = 50f;
 
@@ -66,19 +63,6 @@ namespace Something
         {
             // General
             configMinimalSpoilerVersion = Config.Bind("Spoilers", "Minimal Spoiler Version", true, "Replaces most spoilers for the game with alternatives.");
-        }
-
-        public static bool IsPlayerHaunted(PlayerControllerB player)
-        {
-            if (StartOfRound.Instance.inShipPhase) { return false; }
-            foreach (EnemyAI enemy in RoundManager.Instance.SpawnedEnemies)
-            {
-                if (enemy is SomethingAI && enemy.targetPlayer == player)
-                {
-                    return true;
-                }
-            }
-            return false;
         }
 
         private static void InitializeNetworkBehaviours()

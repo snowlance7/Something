@@ -1,14 +1,17 @@
 ﻿using GameNetcodeStuff;
+using HarmonyLib;
+using SnowyLib;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.UI;
 using static Something.Plugin;
-using SnowyLib;
 
-namespace Something.Enemies.Something
+namespace Something.Enemies
 {
     internal class SomethingAI : EnemyAI
     {
@@ -141,7 +144,7 @@ namespace Something.Enemies.Something
             if (timeSinceSpawnLS > nextSpawnTimeLS && maxInsanity * insanityPhase1 <= targetPlayer.insanityLevel)
             {
                 timeSinceSpawnLS = 0f;
-                nextSpawnTimeLS = UnityEngine.Random.Range(lsMinSpawnTime, lsMaxSpawnTime);
+                nextSpawnTimeLS = Random.Range(lsMinSpawnTime, lsMaxSpawnTime);
                 SpawnLittleOnes();
 
                 if (maxInsanity * insanityPhase2 <= targetPlayer.insanityLevel)
@@ -248,6 +251,19 @@ namespace Something.Enemies.Something
                 agent.ResetPath();
             }
             agent.velocity = Vector3.zero;
+        }
+
+        public static bool IsPlayerHaunted(PlayerControllerB player)
+        {
+            if (StartOfRound.Instance.inShipPhase) { return false; }
+            foreach (EnemyAI enemy in RoundManager.Instance.SpawnedEnemies)
+            {
+                if (enemy is SomethingAI && enemy.targetPlayer == player)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         IEnumerator FreezePlayerCoroutine(PlayerControllerB player, float freezeTime)
@@ -544,6 +560,365 @@ namespace Something.Enemies.Something
         {
             creatureVoice.PlayOneShot(disappearSFX, 1f);
             targetPlayer = null;
+        }
+    }
+
+    [HarmonyPatch]
+    public class SomethingPatches
+    {
+        [HarmonyPrefix, HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.NearOtherPlayers))]
+        public static bool NearOtherPlayersPrefix(PlayerControllerB __instance, ref bool __result)
+        {
+            try
+            {
+                if (SomethingAI.IsPlayerHaunted(__instance))
+                {
+                    __result = false;
+                    return false;
+                }
+                return true;
+            }
+            catch
+            {
+                return true;
+            }
+        }
+    }
+
+    internal class SomethingAnimatorRouter : MonoBehaviour
+    {
+#pragma warning disable CS8618
+        public SomethingAI mainScript;
+#pragma warning restore CS8618
+
+        public void OnFinishSpawnAnimation() // Animation
+        {
+            mainScript.OnFinishSpawnAnimation();
+        }
+
+        public void OnFinishDespawnAnimation() // Animation
+        {
+            mainScript.OnFinishDespawnAnimation();
+        }
+    }
+
+    internal class SomethingHUDOverlay : MonoBehaviour
+    {
+#pragma warning disable CS8618
+        public AudioSource audioSource;
+        public AudioClip breathInSFX;
+        public AudioClip breathOutSFX;
+        public Sprite[] jumpscareSprites;
+        public Sprite[] altJumpscareSprites;
+        public GameObject panelObj;
+        public Image panelImage;
+        public Image breathVisual;
+        [HideInInspector]
+        public Material breathMat;
+#pragma warning restore CS8618
+
+        static readonly int LightSizeId = Shader.PropertyToID("_Inset");
+
+        string KeyBind => SomethingInputs.Instance.BreathKey_BindingDisplayString;
+
+        bool holdingKey;
+        bool showedTooltip;
+        float breathProgress;
+
+        // Configs
+        const float breathMultiplier = 0.5f;
+        float insanityMultiplier = 2.5f;
+        const float insanityToShowTooltip = 25f;
+
+        const float fillBreathMin = -0.5f;
+        const float fillBreathMax = 0.15f;
+
+        public void Start()
+        {
+            breathProgress = fillBreathMin;
+            breathMat = breathVisual.material;
+        }
+
+        public void Update()
+        {
+            // Tooltip (one-time)
+            if (!showedTooltip && localPlayer.insanityLevel >= insanityToShowTooltip)
+            {
+                HUDManager.Instance.DisplayTip(
+                    $"Hold [{KeyBind}] to breath",
+                    "Breathe to lower insanity and control hallucinations",
+                    false, true, "SomethingBreathingTip"
+                );
+                showedTooltip = true;
+            }
+
+            // Input edges (press/release)
+            bool pressed = SomethingInputs.Instance.BreathKey.WasPressedThisFrame();
+            bool released = SomethingInputs.Instance.BreathKey.WasReleasedThisFrame();
+
+            if (pressed || released)
+            {
+                holdingKey = pressed;
+
+                logger.LogDebug(holdingKey ? "Start Breathing" : "Stop Breathing");
+
+                audioSource.Stop();
+                audioSource.clip = holdingKey ? breathInSFX : breathOutSFX;
+                audioSource.volume = 0.5f;
+                audioSource.Play();
+            }
+
+            // Breath progress (single path)
+            float target = holdingKey ? fillBreathMax : fillBreathMin;
+            float prev = breathProgress;
+            breathProgress = Mathf.MoveTowards(breathProgress, target, Time.deltaTime * breathMultiplier);
+
+            // Insanity drain only while actively filling
+            if (holdingKey && breathProgress > prev && localPlayer.insanityLevel > 0f)
+            {
+                insanityMultiplier = localPlayer.isWalking || localPlayer.isSprinting ? 2f : 3f;
+                localPlayer.insanityLevel = Mathf.Max(0f, localPlayer.insanityLevel - Time.deltaTime * insanityMultiplier);
+                logger.LogDebug("Insanity: " + localPlayer.insanityLevel);
+            }
+
+            breathMat.SetFloat(LightSizeId, breathProgress);
+        }
+
+
+        public void JumpscarePlayer(float time, bool destroy = false)
+        {
+            panelObj.SetActive(true);
+            Sprite[] sprites = configMinimalSpoilerVersion.Value ? altJumpscareSprites : jumpscareSprites;
+            int index = Random.Range(0, sprites.Length);
+            panelImage.sprite = sprites[index];
+
+            IEnumerator JumpscarePlayerCoroutine(float time)
+            {
+                yield return new WaitForSeconds(time);
+                panelObj.SetActive(false);
+                if (destroy)
+                    Destroy(gameObject);
+            }
+
+            StartCoroutine(JumpscarePlayerCoroutine(time));
+        }
+    }
+
+    internal class LesserSomethingAI : MonoBehaviour // TODO: Make screen darken around edges and give drunk effect when touching them
+    {
+        public static List<LesserSomethingAI> Instances { get; private set; } = new List<LesserSomethingAI>();
+
+#pragma warning disable CS8618
+        public Transform turnCompass;
+        public NavMeshAgent agent;
+        public AudioSource audioSource;
+        public AudioClip[] ambientSFX;
+        public AudioClip[] alertSFX;
+        public AudioClip[] attackSFX;
+        public GameObject[] variants;
+
+        [HideInInspector]
+        public PlayerControllerB targetPlayer;
+        [HideInInspector]
+        public Transform spawnNode;
+
+        Coroutine wanderRoutine;
+#pragma warning restore CS8618
+
+        float timeSinceAIInterval;
+        float timeSpawned;
+        bool chasing;
+        float stareTime;
+        int variantIndex;
+
+        [HideInInspector]
+        public float destroyTime;
+
+        const float AITimeInterval = 0.2f;
+
+        // Configs
+        const float idleMinInterval = 3f;
+        const float idleMaxInterval = 10f;
+        const float maxStareTime = 1f;
+        //const int damage = 2;
+        const float insanityMultiplier = 1f;
+        const float insanityChaseMultiplier = 1.2f;
+        const float chaseSpeed = 1.5f;
+        const float wanderSpeed = 1f;
+        const float insanityOnCollision = 5f;
+
+        public void Start()
+        {
+            Instances.Add(this);
+            variantIndex = Random.Range(0, variants.Length);
+            variants[variantIndex].SetActive(true);
+            wanderRoutine = StartCoroutine(WanderingCoroutine());
+        }
+
+        public void OnDestroy()
+        {
+            Instances.Remove(this);
+        }
+
+        public void Update()
+        {
+            if (targetPlayer == null) { return; }
+            timeSinceAIInterval += Time.deltaTime;
+            timeSpawned += Time.deltaTime;
+
+            if (timeSinceAIInterval >= AITimeInterval)
+            {
+                timeSinceAIInterval = 0f;
+                DoAIInterval();
+            }
+        }
+
+        public void LateUpdate()
+        {
+            if (targetPlayer == null) { return; }
+            turnCompass.LookAt(localPlayer.gameplayCamera.transform.position);
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(new Vector3(0f, turnCompass.eulerAngles.y, 0f)), 10f * Time.deltaTime);
+        }
+
+        public void DoAIInterval()
+        {
+            bool inLOS = targetPlayer.HasLineOfSightToPosition(transform.position);
+
+            if (!inLOS && timeSpawned > destroyTime)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            if (chasing)
+            {
+                agent.speed = chaseSpeed;
+
+                agent.SetDestination(targetPlayer.transform.position);
+
+                if (inLOS)
+                {
+                    targetPlayer.insanityLevel += AITimeInterval * insanityChaseMultiplier;
+                }
+            }
+            else
+            {
+                agent.speed = wanderSpeed;
+
+                if (!inLOS) { return; }
+
+                targetPlayer.insanityLevel += AITimeInterval * insanityMultiplier;
+                stareTime += AITimeInterval;
+
+                if (stareTime >= maxStareTime)
+                {
+                    StopCoroutine(wanderRoutine);
+                    chasing = true;
+                    RoundManager.PlayRandomClip(audioSource, alertSFX);
+                    return;
+                }
+            }
+        }
+
+        IEnumerator WanderingCoroutine()
+        {
+            yield return null;
+
+            yield return new WaitUntil(() => targetPlayer != null);
+
+            while (spawnNode != null)
+            {
+                float timeStopped = 0f;
+                float idleTime = Random.Range(idleMinInterval, idleMaxInterval);
+                Vector3 position = RoundManager.Instance.GetRandomNavMeshPositionInRadius(spawnNode.position, 3, RoundManager.Instance.navHit);
+                agent.SetDestination(position);
+                while (true)
+                {
+                    yield return new WaitForSeconds(AITimeInterval);
+                    if (!agent.hasPath || timeStopped > 1f)
+                    {
+                        RoundManager.PlayRandomClip(audioSource, ambientSFX);
+                        yield return new WaitForSeconds(idleTime);
+                        break;
+                    }
+
+                    if (agent.velocity == Vector3.zero)
+                    {
+                        timeStopped += AITimeInterval;
+                    }
+                }
+            }
+        }
+
+        public void OnCollision(Collider other)
+        {
+            if (!other.CompareTag("Player") || !other.gameObject.TryGetComponent(out PlayerControllerB player)) { return; }
+            if (player != localPlayer) { return; }
+            logger.LogDebug("Player collided with lesser something");
+            //localPlayer.DamagePlayer(damage);
+            localPlayer.insanityLevel += insanityOnCollision;
+            RoundManager.PlayRandomClip(localPlayer.statusEffectAudio, attackSFX);
+            Destroy(gameObject);
+        }
+    }
+
+    internal class LesserSomethingCollision : MonoBehaviour
+    {
+#pragma warning disable CS8618
+        public LesserSomethingAI mainScript;
+#pragma warning restore CS8618
+
+        public void OnTriggerEnter(Collider other)
+        {
+            mainScript.OnCollision(other);
+        }
+    }
+
+    internal class TinySomethingAI : MonoBehaviour
+    {
+        public static List<TinySomethingAI> Instances { get; private set; } = [];
+
+#pragma warning disable CS8618
+        public Transform turnCompass;
+        public AudioSource creatureSFX;
+        public SpriteRenderer renderer;
+#pragma warning restore CS8618
+
+        float timeSpawned;
+        public float destroyTime = 10f;
+
+        public void Start()
+        {
+            Instances.Add(this);
+        }
+        public void OnDestroy()
+        {
+            Instances.Remove(this);
+        }
+
+        public void Update()
+        {
+            timeSpawned += Time.deltaTime;
+
+            turnCompass.LookAt(localPlayer.gameplayCamera.transform.position);
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(new Vector3(0f, turnCompass.eulerAngles.y, 0f)), turnCompassSpeedGlobal * Time.deltaTime);
+
+            if (timeSpawned > destroyTime && !renderer.isVisible)
+            {
+                Destroy(gameObject);
+                return;
+            }
+        }
+
+        public void OnTriggerEnter(Collider other)
+        {
+            if (!other.CompareTag("Player") || !other.gameObject.TryGetComponent(out PlayerControllerB player)) { return; }
+            if (player != localPlayer) { return; }
+            logger.LogDebug("Player stepped on little one");
+            localPlayer.insanityLevel++;
+            creatureSFX.pitch = Random.Range(0.90f, 1.06f);
+            creatureSFX.Play();
+            Destroy(gameObject, 0.5f);
         }
     }
 }

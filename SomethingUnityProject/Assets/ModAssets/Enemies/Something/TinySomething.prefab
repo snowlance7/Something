@@ -149,7 +149,7 @@ GameObject:
   - component: {fileID: 525721132075246785}
   - component: {fileID: 7624321511834461748}
   - component: {fileID: 4729147638696907593}
-  - component: {fileID: 6880747722641399582}
+  - component: {fileID: 2399509009348220700}
   m_Layer: 0
   m_Name: TinySomething
   m_TagString: Untagged
@@ -308,7 +308,7 @@ MonoBehaviour:
   overridingLowPass: 0
   lowPassOverride: 20000
   debugLog: 0
---- !u!114 &6880747722641399582
+--- !u!114 &2399509009348220700
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -317,7 +317,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7096922674049724148}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -721083782, guid: 5260fe3eeb069494ba18eca34e21143f, type: 3}
+  m_Script: {fileID: 1851730089, guid: 5260fe3eeb069494ba18eca34e21143f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   turnCompass: {fileID: 4379497194737407691}

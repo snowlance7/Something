@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1670190242570823144}
   - component: {fileID: 6556243838879299228}
   - component: {fileID: 6220450549051942271}
-  - component: {fileID: 8073283865322007331}
+  - component: {fileID: 6920175104389906712}
   m_Layer: 5
   m_Name: SomethingHUDOverlay
   m_TagString: Untagged
@@ -219,7 +219,7 @@ MonoBehaviour:
   overridingLowPass: 0
   lowPassOverride: 20000
   debugLog: 0
---- !u!114 &8073283865322007331
+--- !u!114 &6920175104389906712
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -228,21 +228,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 4546517236011313295}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -2010092880, guid: 5260fe3eeb069494ba18eca34e21143f, type: 3}
+  m_Script: {fileID: -1656701944, guid: 5260fe3eeb069494ba18eca34e21143f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   audioSource: {fileID: 6556243838879299228}
   breathInSFX: {fileID: 8300000, guid: 276b1b18738f60149a4773afbd7638d9, type: 3}
   breathOutSFX: {fileID: 8300000, guid: 057de5f59c9679a45ad1f750e770f920, type: 3}
   jumpscareSprites:
-  - {fileID: 21300000, guid: db9002d5992d2024baa6a05868e8475c, type: 3}
-  - {fileID: 21300000, guid: f5c54b3da3c4de34ca54ff4cfd8745f2, type: 3}
+  - {fileID: 21300000, guid: fe546ee7019803c418061b9130d8733b, type: 3}
+  - {fileID: 21300000, guid: 2446dc7719be07444a6bfd34dfb23080, type: 3}
   - {fileID: 21300000, guid: e4690477e9b04ae4288076e0cb656a2d, type: 3}
   - {fileID: 21300000, guid: 4dfa20017220c7948a8f561590b01754, type: 3}
   - {fileID: 21300000, guid: 9d9a8b6eb23ec044897c20114d5d342c, type: 3}
-  altJumpscareSprites:
   - {fileID: 21300000, guid: db9002d5992d2024baa6a05868e8475c, type: 3}
   - {fileID: 21300000, guid: f5c54b3da3c4de34ca54ff4cfd8745f2, type: 3}
+  altJumpscareSprites:
+  - {fileID: 21300000, guid: 4dfa20017220c7948a8f561590b01754, type: 3}
+  - {fileID: 21300000, guid: e4690477e9b04ae4288076e0cb656a2d, type: 3}
+  - {fileID: 21300000, guid: f5c54b3da3c4de34ca54ff4cfd8745f2, type: 3}
+  - {fileID: 21300000, guid: db9002d5992d2024baa6a05868e8475c, type: 3}
   panelObj: {fileID: 8590073690768240218}
   panelImage: {fileID: 5300267828023098393}
   breathVisual: {fileID: 2779747111521159011}

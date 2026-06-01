@@ -188,7 +188,7 @@ GameObject:
   - component: {fileID: 3892697628787673672}
   - component: {fileID: 7319610646804869517}
   - component: {fileID: 3132534053582018418}
-  - component: {fileID: 9140448996742581044}
+  - component: {fileID: 7332912659811772552}
   m_Layer: 19
   m_Name: Something
   m_TagString: Enemy
@@ -284,7 +284,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &9140448996742581044
+--- !u!114 &7332912659811772552
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -293,10 +293,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 2636469387317948378}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1290306688, guid: 5260fe3eeb069494ba18eca34e21143f, type: 3}
+  m_Script: {fileID: 1082237075, guid: 5260fe3eeb069494ba18eca34e21143f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainScript: {fileID: 6486925288374769937}
+  mainScript: {fileID: 8324401909555377987}
 --- !u!1 &2812577377538702201
 GameObject:
   m_ObjectHideFlags: 0
@@ -343,7 +343,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d7127b8f98ca8ec9896b384a71d39a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainScript: {fileID: 6486925288374769937}
+  mainScript: {fileID: 8324401909555377987}
   canCollideWithEnemies: 0
   onlyCollideWhenGrounded: 0
   alwaysAllowHitting: 0
@@ -511,7 +511,7 @@ GameObject:
   - component: {fileID: 4019931516109562522}
   - component: {fileID: 8125909365014089390}
   - component: {fileID: 703010787320862861}
-  - component: {fileID: 6486925288374769937}
+  - component: {fileID: 8324401909555377987}
   m_Layer: 19
   m_Name: Something
   m_TagString: Enemy
@@ -584,7 +584,7 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 1
   AutoObjectParentSync: 1
---- !u!114 &6486925288374769937
+--- !u!114 &8324401909555377987
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -593,7 +593,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6874139027399636449}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 627594004, guid: 5260fe3eeb069494ba18eca34e21143f, type: 3}
+  m_Script: {fileID: 1012387316, guid: 5260fe3eeb069494ba18eca34e21143f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   enemyType: {fileID: 11400000, guid: 3d36bf8c395f41b429d9a7aaf3711def, type: 2}
@@ -717,7 +717,6 @@ MonoBehaviour:
   ScanNode: {fileID: 5901302423665127641}
   BreathingMechanicPrefab: {fileID: 4546517236011313295, guid: 71130221a0ce77247a9fed819dc52bf3,
     type: 3}
-  DEBUG_hudOverlay: {fileID: 0}
 --- !u!1 &9018303914392096838
 GameObject:
   m_ObjectHideFlags: 0

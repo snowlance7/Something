@@ -2,12 +2,13 @@
 using Dusk;
 using GameNetcodeStuff;
 using SnowyLib;
-using Something.Enemies.Something;
 using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using static Something.Plugin;
+using static Something.Configs;
+using Something.Enemies;
 
 namespace Something.Items
 {
@@ -27,25 +28,15 @@ namespace Something.Items
         int photoType;
         int photoIndex;
 
-        bool wasHeld;
-
-        int goodWeight => ContentHandler<SomethingContentHandler>.Instance.Polaroid!.GetConfig<int>("Good Weight").Value; // 0
-        int badWeight => ContentHandler<SomethingContentHandler>.Instance.Polaroid!.GetConfig<int>("Bad Weight").Value; // 1
-        int cursedWeight => ContentHandler<SomethingContentHandler>.Instance.Polaroid!.GetConfig<int>("Cursed Weight").Value; // 2
-        float badSomethingChance => ContentHandler<SomethingContentHandler>.Instance.Polaroid!.GetConfig<float>("Bad Something Chance").Value;
-        BoundedRange goodValue => ContentHandler<SomethingContentHandler>.Instance.Polaroid!.GetConfig<BoundedRange>("Good Value").Value;
-        BoundedRange badValue => ContentHandler<SomethingContentHandler>.Instance.Polaroid!.GetConfig<BoundedRange>("Bad Value").Value;
-        BoundedRange cursedValue => ContentHandler<SomethingContentHandler>.Instance.Polaroid!.GetConfig<BoundedRange>("Cursed Value").Value;
-
         public override void Start()
         {
             base.Start();
 
             if (!IsServer) { return; }
 
-            onShipLanded.AddListener(OnShipLanded);
+            Utils.OnShipLanded.AddListener(OnShipLanded);
 
-            if (wasHeld) return;
+            if (hasBeenHeld) return;
 
             photoType = RoundManager.Instance.GetRandomWeightedIndex([goodWeight, badWeight, cursedWeight]);
             BoundedRange range = cursedValue;
@@ -68,11 +59,9 @@ namespace Something.Items
             }
         }
 
-        public override void EquipItem() // Synced
+        public override void EquipItem() // SYNCED
         {
-            base.EquipItem();
-
-            if (!wasHeld)
+            if (!hasBeenHeld)
             {
                 bool spawnSomething = photoType == 2 || (photoType == 1 && UnityEngine.Random.Range(0f, 1f) < badSomethingChance);
 
@@ -90,14 +79,12 @@ namespace Something.Items
                         }
                     }
 
-                    if (playerHeldBy == localPlayer)
-                    {
-                        SpawnSomethingServerRpc(playerHeldBy.actualClientId);
-                    }
+                    if (IsServer)
+                        SpawnSomethingOnServer(playerHeldBy);
                 }
             }
 
-            wasHeld = true;
+            base.EquipItem();
         }
 
         public override void EnableItemMeshes(bool enable)
@@ -108,7 +95,7 @@ namespace Something.Items
 
         public override void LoadItemSaveData(int saveData)
         {
-            wasHeld = true;
+            hasBeenHeld = true; // TODO: Test this
             Decode(saveData, out int type, out int index);
             ChangeSprite(type, index);
         }
@@ -159,6 +146,15 @@ namespace Something.Items
             logger.LogDebug($"Changed sprite: {photoType}-{photoIndex}");
         }
 
+        void SpawnSomethingOnServer(PlayerControllerB playerToHaunt)
+        {
+            if (!IsServer) return;
+            if (StartOfRound.Instance.inShipPhase || StartOfRound.Instance.shipIsLeaving) { return; }
+            if (SomethingContentHandler.Instance == null || SomethingContentHandler.Instance.Something == null) { return; }
+            SomethingAI something = (SomethingAI)Utils.SpawnEnemy(SomethingKeys.Something, Vector3.zero, Quaternion.identity)!;
+            something.ChangeTargetPlayerClientRpc(playerToHaunt.actualClientId);
+        }
+
         [ClientRpc]
         public void ChangeSpriteClientRpc(int type, int index, int scrapValue)
         {
@@ -169,13 +165,10 @@ namespace Something.Items
         [ServerRpc(RequireOwnership = false)]
         public void SpawnSomethingServerRpc(ulong hauntedPlayerId)
         {
-            if (!IsServer) return;
+            if (!IsServer) { return; }
             PlayerControllerB? playerToHaunt = PlayerFromId(hauntedPlayerId);
             if (playerToHaunt == null) { return; }
-            if (StartOfRound.Instance.inShipPhase || StartOfRound.Instance.shipIsLeaving) { return; }
-            if (SomethingContentHandler.Instance == null || SomethingContentHandler.Instance.Something == null) { return; }
-            SomethingAI something = (SomethingAI)Utils.SpawnEnemy(SomethingKeys.Something, Vector3.zero, Quaternion.identity)!;
-            something.ChangeTargetPlayerClientRpc(playerToHaunt.actualClientId);
+            SpawnSomethingOnServer(playerToHaunt);
         }
     }
 }
