@@ -12,7 +12,7 @@ using Something.Enemies;
 
 namespace Something.Items
 {
-    public class PolaroidBehavior : PhysicsProp
+    public class PolaroidBehavior : PhysicsProp // TODO: Add functionality for putting polaroids on the wall of the ship TODO: Functioning polaroid camera and photo album that saves on your pc and is transferable? TODO: Funtionality for a folder representing the photo album. it has a ui and you can flip through them, select which photos to take out into the lethal company world, and hang on the ship and works like a import/export for polaroid photos
     {
         public AudioSource audioSource = null!;
         public SpriteRenderer renderer = null!;

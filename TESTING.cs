@@ -40,7 +40,6 @@ namespace Something
                         HUDManager.Instance.DisplayTip("SpringCatKillIndex", SpringCatAI.SpringCatKillIndex.ToString());
                         break;
                     default:
-                        Utils.ChatCommand(args);
                         break;
                 }
             }
